@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Bilgi Yarışması — Prototip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   BİLGİ YARIŞMASI — tek dosya prototip
+   Çevrimdışı (tek kişi)  +  Çevrimiçi (genel / özel grup odaları)
+   Çevrimiçi katman: BroadcastChannel ile aynı tarayıcıdaki sekmeler
+   arasında gerçek senkron + tek başına oynayınca bot rakipler.
+   ============================================================ */
+:root{
+  --bg:#f4f1ea;         --bg2:#ece7db;
+  --card:#fffdf8;       --card2:#f7f3ea;
+  --ink:#221f1a;        --ink-soft:#5d574c;
+  --line:#e2dccc;       --line-strong:#cfc7b2;
+  --accent:#7c3aed;     --accent-ink:#fff;
+  --gold:#c99a00;
+  --ok:#1f9d55;         --bad:#d64545;
+  --a:#e2483d;          --b:#1368ce;          --c:#c98a00;          --d:#1f8f3b;
+  --shadow:0 10px 30px rgba(40,34,20,.12), 0 2px 8px rgba(40,34,20,.06);
+  --radius:18px;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --disp:'Fraunces',Georgia,serif;
+  --ui:'Manrope',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#17150f;       --bg2:#100e0a;
+    --card:#232016;     --card2:#1b1810;
+    --ink:#f3eee0;      --ink-soft:#b6ad97;
+    --line:#38331f;     --line-strong:#4a4327;
+    --accent:#a986ff;   --accent-ink:#1a1626;
+    --gold:#e7bd3b;
+    --ok:#4cc57e;       --bad:#ef6d6d;
+    --a:#ef6a5f;        --b:#4d97e6;          --c:#e0a92e;          --d:#49b463;
+    --shadow:0 14px 40px rgba(0,0,0,.5), 0 2px 10px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--ui);
+  background:radial-gradient(1200px 700px at 15% -10%, var(--bg2), var(--bg)) fixed;
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+}
+button{font-family:inherit;cursor:pointer;color:inherit}
+input{font-family:inherit}
+.wrap{max-width:940px;margin:0 auto;padding:20px 18px 60px}
+
+/* ---------- header ---------- */
+header.top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-bottom:22px;
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .logo{
+  width:46px;height:46px;border-radius:14px;flex:none;
+  background:linear-gradient(140deg,var(--accent),#e2483d);
+  display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow);
+}
+.brand h1{
+  font-family:var(--disp);font-weight:700;font-size:1.35rem;margin:0;letter-spacing:.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.brand .sub{font-size:.78rem;color:var(--ink-soft);margin-top:-2px}
+.top-actions{display:flex;gap:8px;flex:none}
+.icon-btn{
+  border:1px solid var(--line-strong);background:var(--card);
+  width:40px;height:40px;border-radius:12px;font-size:18px;display:grid;place-items:center;
+  transition:transform .12s ease, background .2s;
+}
+.icon-btn:hover{transform:translateY(-1px);background:var(--card2)}
+
+/* ---------- generic ---------- */
+.screen{display:none;animation:fade .28s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:22px;
+}
+.card + .card{margin-top:16px}
+h2.title{font-family:var(--disp);font-weight:700;font-size:1.5rem;margin:.1rem 0 .2rem}
+p.lead{color:var(--ink-soft);margin:.2rem 0 1rem}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.grow{flex:1 1 auto}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;
+  background:var(--card2);border:1px solid var(--line);font-size:.8rem;font-weight:600;color:var(--ink-soft)
+}
+.btn{
+  border:1px solid var(--line-strong);background:var(--card2);color:var(--ink);
+  padding:12px 18px;border-radius:13px;font-weight:700;font-size:.95rem;
+  transition:transform .12s ease, box-shadow .2s, background .2s;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent;box-shadow:var(--shadow)}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%;justify-content:center;display:flex}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.field{
+  width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line-strong);
+  background:var(--card2);color:var(--ink);font-size:1rem;font-weight:600;
+}
+.field:focus{outline:2px solid var(--accent);outline-offset:1px}
+label.lbl{font-size:.8rem;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{
+  border:1px solid var(--line-strong);background:var(--card2);padding:9px 14px;border-radius:11px;
+  font-weight:700;font-size:.88rem;color:var(--ink-soft)
+}
+.seg button.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.muted{color:var(--ink-soft);font-size:.85rem}
+.divider{height:1px;background:var(--line);margin:16px 0}
+
+/* ---------- home mode cards ---------- */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.mode-grid{grid-template-columns:1fr}}
+.mode{
+  text-align:left;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
+  padding:22px;box-shadow:var(--shadow);transition:transform .14s ease, border-color .2s;
+}
+.mode:hover{transform:translateY(-3px);border-color:var(--accent)}
+.mode .emoji{font-size:34px}
+.mode h3{font-family:var(--disp);font-size:1.25rem;margin:.5rem 0 .3rem}
+.mode p{color:var(--ink-soft);font-size:.9rem;margin:0}
+
+/* ---------- category grid ---------- */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.cat{
+  border:1px solid var(--line-strong);background:var(--card2);border-radius:14px;padding:14px 12px;
+  text-align:center;font-weight:700;transition:transform .12s ease, border-color .2s, background .2s;
+}
+.cat .ce{font-size:26px;display:block;margin-bottom:4px}
+.cat.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.cat:hover{transform:translateY(-2px)}
+
+/* ---------- quiz ---------- */
+.quiz-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.timer-ring{position:relative;width:74px;height:74px;flex:none}
+.timer-ring svg{transform:rotate(-90deg)}
+.timer-ring .t-num{
+  position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:1.15rem
+}
+.score-box{display:flex;gap:14px;align-items:center}
+.score-box .s{font-family:var(--mono);font-weight:700;font-size:1.35rem}
+.score-box .lab{font-size:.68rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px}
+.streak{display:flex;align-items:center;gap:4px;font-weight:800;color:var(--gold)}
+.qprog{height:8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);overflow:hidden;margin-bottom:16px}
+.qprog > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#e2483d);transition:width .3s ease}
+.qtext{font-family:var(--disp);font-weight:700;font-size:1.5rem;line-height:1.3;margin:6px 0 20px}
+@media(max-width:640px){.qtext{font-size:1.22rem}}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.answers{grid-template-columns:1fr}}
+.ans{
+  display:flex;align-items:center;gap:12px;text-align:left;padding:16px;border-radius:14px;
+  border:2px solid transparent;color:#fff;font-weight:700;font-size:1rem;min-height:62px;
+  transition:transform .1s ease, filter .2s, opacity .2s;
+}
+.ans:hover{transform:translateY(-2px)}
+.ans .shape{width:26px;height:26px;flex:none;display:grid;place-items:center;font-size:1rem;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+.ans.a{background:var(--a)} .ans.b{background:var(--b)} .ans.c{background:var(--c)} .ans.d{background:var(--d)}
+.ans.dim{opacity:.35;filter:grayscale(.4)}
+.ans.correct{outline:4px solid #fff;box-shadow:0 0 0 4px var(--ok),0 12px 24px rgba(0,0,0,.25)}
+.ans.wrong{outline:4px solid #fff;box-shadow:0 0 0 4px var(--bad);opacity:.9}
+.ans:disabled{cursor:default}
+.reveal-card{margin-top:16px;border:1px dashed var(--line-strong);border-radius:14px;padding:14px 16px;background:var(--card2)}
+.reveal-card b{color:var(--ok)}
+
+/* ---------- online lobby ---------- */
+.room-list{display:flex;flex-direction:column;gap:10px}
+.room-item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:1px solid var(--line-strong);border-radius:13px;padding:12px 14px;background:var(--card2)
+}
+.room-item .r-name{font-weight:800}
+.room-item .r-meta{font-size:.8rem;color:var(--ink-soft)}
+.players{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.pl{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:11px;background:var(--card2);
+  border:1px solid var(--line)
+}
+.pl .av{width:30px;height:30px;border-radius:9px;flex:none;display:grid;place-items:center;font-weight:800;color:#fff;font-size:.9rem}
+.pl .nm{font-weight:700}
+.pl .tag{margin-left:auto;font-size:.75rem;font-weight:700;color:var(--ink-soft)}
+.pl .tag.ready{color:var(--ok)}
+.pl .tag.host{color:var(--gold)}
+.chat{border:1px solid var(--line);border-radius:12px;background:var(--card2);margin-top:12px;overflow:hidden}
+.chat .log{max-height:150px;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:5px;font-size:.88rem}
+.chat .log .c-row b{color:var(--accent)}
+.chat .in{display:flex;border-top:1px solid var(--line)}
+.chat .in input{flex:1;border:0;background:transparent;padding:10px 12px;color:var(--ink)}
+.chat .in button{border:0;background:var(--accent);color:var(--accent-ink);padding:0 16px;font-weight:800}
+
+/* live scoreboard during online quiz */
+.side-board{margin-top:16px;border:1px solid var(--line);border-radius:14px;background:var(--card2);padding:12px 14px}
+.side-board h4{margin:0 0 8px;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft)}
+.sb-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-weight:700}
+.sb-row .sb-sc{margin-left:auto;font-family:var(--mono)}
+.sb-row .dot{width:8px;height:8px;border-radius:50%;background:var(--ink-soft)}
+.sb-row .dot.answered{background:var(--ok)}
+
+/* ---------- results / podium ---------- */
+.stars{font-size:2rem;letter-spacing:6px;color:var(--gold)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:14px}
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:14px;text-align:center}
+.stat .v{font-family:var(--mono);font-weight:700;font-size:1.4rem}
+.stat .k{font-size:.72rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:14px;margin:22px 0 8px}
+.pod{display:flex;flex-direction:column;align-items:center;gap:8px;width:96px}
+.pod .col{width:100%;border-radius:12px 12px 0 0;display:grid;place-items:start center;padding-top:10px;font-family:var(--mono);font-weight:700;color:#fff}
+.pod.p1 .col{height:120px;background:linear-gradient(180deg,var(--gold),#a97e00)}
+.pod.p2 .col{height:92px;background:linear-gradient(180deg,#9fb0c9,#6c7d97)}
+.pod.p3 .col{height:70px;background:linear-gradient(180deg,#c99a6a,#8a6237)}
+.pod .who{font-weight:800;font-size:.9rem;text-align:center}
+.final-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;font-weight:700;
+  opacity:0;pointer-events:none;transition:.3s;z-index:50;box-shadow:var(--shadow);max-width:90vw;text-align:center
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:40}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+footer.foot{text-align:center;color:var(--ink-soft);font-size:.78rem;margin-top:26px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="logo">🧠</div>
+      <div style="min-width:0">
+        <h1>Bilgi Yarışması</h1>
+        <div class="sub">Çevrimdışı & Çevrimiçi · prototip</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="soundBtn" title="Ses">🔊</button>
+      <button class="icon-btn" id="homeBtn" title="Ana menü">🏠</button>
+    </div>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <section class="screen active" id="sc-home">
+    <div class="card" style="text-align:center">
+      <h2 class="title">Nasıl oynamak istersin?</h2>
+      <p class="lead">Tek başına kendi rekorunu kır ya da bir odaya katılıp arkadaşlarınla yarış.</p>
+    </div>
+    <div class="mode-grid" style="margin-top:16px">
+      <button class="mode" data-action="go-offline">
+        <div class="emoji">🎯</div>
+        <h3>Tek Başına</h3>
+        <p>Çevrimdışı. Konu seç, süreye karşı yarış, en iyi skorunu sakla.</p>
+      </button>
+      <button class="mode" data-action="go-online">
+        <div class="emoji">🌐</div>
+        <h3>Çevrimiçi Grup</h3>
+        <p>Genel odaya katıl ya da arkadaşların için özel oda kur. Canlı sıralama.</p>
+      </button>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="row" style="align-items:center">
+        <div class="grow">
+          <b>Konular</b>
+          <div class="muted">Karışık · Spor · Sanat · Tarih · Bilim · Coğrafya · Genel Kültür</div>
+        </div>
+        <span class="pill">🎲 <span id="qCountInfo">…</span> soru havuzu</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OFFLINE SETUP ============ -->
+  <section class="screen" id="sc-off-setup">
+    <div class="card">
+      <button class="btn ghost" data-action="home" style="padding:6px 10px;margin-bottom:8px">← Geri</button>
+      <h2 class="title">🎯 Tek Başına — Ayarlar</h2>
+      <p class="lead">Bir konu seç ve yarışmayı başlat.</p>
+
+      <label class="lbl">Konu</label>
+      <div class="cat-grid" id="offCats"></div>
+
+      <div class="divider"></div>
+      <div class="row">
+        <div class="grow">
+          <label class="lbl">Soru sayısı</label>
+          <div class="seg" id="offCount">
+            <button data-v="5">5</button><button data-v="10" class="on">10</button>
+            <button data-v="15">15</button><button data-v="20">20</button>
+          </div>
+        </div>
+        <div class="grow">
+          <label class="lbl">Zorluk (süre)</label>
+          <div class="seg" id="offDiff">
+            <button data-v="kolay">Kolay · 25s</button>
+            <button data-v="normal" class="on">Normal · 20s</button>
+            <button data-v="zor">Zor · 12s</button>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <button class="btn primary wide" data-action="start-offline">Yarışmayı Başlat →</button>
+    </div>
+  </section>
+
+  <!-- ============ ONLINE ENTRY ============ -->
+  <section class="screen" id="sc-online-entry">
+    <div class="card">
+      <button class="btn ghost" data-action="home" style="padding:6px 10px;margin-bottom:8px">← Geri</button>
+      <h2 class="title">🌐 Çevrimiçi — Takma ad</h2>
+      <p class="lead">Odalarda görünecek adını yaz. (Prototip: odalar aynı tarayıcının sekmeleri arasında gerçek zamanlı çalışır; tek başınayken bot rakip ekleyebilirsin.)</p>
+      <label class="lbl">Takma ad</label>
+      <input class="field" id="nickInput" maxlength="16" placeholder="ör. mustafa" />
+      <div style="height:12px"></div>
+      <button class="btn primary wide" data-action="enter-lobby">Devam →</button>
+    </div>
+  </section>
+
+  <!-- ============ ONLINE LOBBY BROWSER ============ -->
+  <section class="screen" id="sc-lobby">
+    <div class="card">
+      <div class="row" style="align-items:center">
+        <button class="btn ghost" data-action="online-entry" style="padding:6px 10px">← Geri</button>
+        <div class="grow"></div>
+        <span class="pill">👤 <span id="lobbyNick">—</span></span>
+      </div>
+      <h2 class="title">Genel Odalar</h2>
+      <p class="lead">Bir genel odaya katıl, ya da kendi odanı oluştur.</p>
+      <div class="room-list" id="roomList"><div class="muted">Odalar aranıyor…</div></div>
+      <div class="divider"></div>
+      <div class="row">
+        <button class="btn" data-action="refresh-rooms">↻ Yenile</button>
+        <button class="btn primary" data-action="create-public">+ Genel Oda Kur</button>
+        <button class="btn" data-action="create-private">🔒 Özel Oda Kur</button>
+      </div>
+      <div class="divider"></div>
+      <label class="lbl">Özel oda kodu ile katıl</label>
+      <div class="row">
+        <input class="field grow" id="joinCode" maxlength="6" placeholder="ör. K7QP2X" style="text-transform:uppercase" />
+        <button class="btn" data-action="join-by-code">Katıl</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ROOM LOBBY ============ -->
+  <section class="screen" id="sc-room">
+    <div class="card">
+      <div class="row" style="align-items:center">
+        <button class="btn ghost" data-action="leave-room" style="padding:6px 10px">← Odadan çık</button>
+        <div class="grow"></div>
+        <span class="pill" id="roomKind">oda</span>
+        <span class="pill" id="roomCodePill">kod: —</span>
+      </div>
+      <h2 class="title" id="roomTitle">Oda</h2>
+      <p class="lead" id="roomHint">Herkes hazır olduğunda oda sahibi yarışmayı başlatır.</p>
+
+      <div id="hostSettings" style="display:none">
+        <label class="lbl">Konu</label>
+        <div class="cat-grid" id="roomCats"></div>
+        <div class="divider"></div>
+        <div class="row">
+          <div class="grow">
+            <label class="lbl">Soru sayısı</label>
+            <div class="seg" id="roomCount">
+              <button data-v="5">5</button><button data-v="8" class="on">8</button>
+              <button data-v="12">12</button><button data-v="15">15</button>
+            </div>
+          </div>
+          <div class="grow">
+            <label class="lbl">Zorluk (süre + bot seviyesi)</label>
+            <div class="seg" id="roomDiff">
+              <button data-v="kolay">Kolay</button>
+              <button data-v="normal" class="on">Normal</button>
+              <button data-v="zor">Zor</button>
+            </div>
+          </div>
+        </div>
+        <div class="divider"></div>
+      </div>
+
+      <div class="row" style="align-items:center">
+        <b class="grow">Oyuncular (<span id="plCount">0</span>)</b>
+        <button class="btn ghost" id="addBotBtn" data-action="add-bot" style="display:none">🤖 Bot ekle</button>
+      </div>
+      <div class="players" id="roomPlayers"></div>
+
+      <div class="chat">
+        <div class="log" id="chatLog"></div>
+        <div class="in">
+          <input id="chatInput" maxlength="120" placeholder="mesaj yaz…" />
+          <button data-action="send-chat">Gönder</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="row">
+        <button class="btn grow" id="readyBtn" data-action="toggle-ready">Hazırım ✓</button>
+        <button class="btn primary grow" id="startBtn" data-action="host-start" style="display:none">Yarışmayı Başlat →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUIZ (offline + online ortak) ============ -->
+  <section class="screen" id="sc-quiz">
+    <div class="card">
+      <div class="quiz-head">
+        <span class="pill" id="quizCat">🎲 Karışık</span>
+        <div class="timer-ring">
+          <svg width="74" height="74"><circle cx="37" cy="37" r="31" stroke="var(--line)" stroke-width="6" fill="none"/>
+            <circle id="ringFg" cx="37" cy="37" r="31" stroke="var(--accent)" stroke-width="6" fill="none"
+              stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="0"/></svg>
+          <div class="t-num" id="tNum">20</div>
+        </div>
+        <div class="score-box">
+          <div style="text-align:right">
+            <div class="s" id="scoreNum">0</div>
+            <div class="lab">puan</div>
+          </div>
+          <div class="streak" id="streakBox" style="visibility:hidden">🔥<span id="streakNum">0</span></div>
+        </div>
+      </div>
+      <div class="qprog"><i id="qProg" style="width:0%"></i></div>
+      <div class="muted" id="qCounter" style="margin-bottom:2px">Soru 1 / 10</div>
+      <div class="qtext" id="qText">…</div>
+      <div class="answers" id="answers"></div>
+      <div id="revealWrap"></div>
+      <div id="sideBoardWrap"></div>
+      <div class="row" id="quizNav" style="margin-top:16px;display:none">
+        <button class="btn primary grow" data-action="next-q">Sonraki Soru →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="screen" id="sc-result">
+    <div class="card" id="resultCard"></div>
+  </section>
+
+  <footer class="foot">Bilgi Yarışması · tek dosyalık prototip · konu havuzu genişletilebilir</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   0) Yardımcılar
+   ===================================================================== */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const rnd = n => Math.floor(Math.random()*n);
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];} return a; };
+const uid = () => Math.random().toString(36).slice(2,10);
+const now = () => Date.now();
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200); }
+function code6(){ const s='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let r=''; for(let i=0;i<6;i++) r+=s[rnd(s.length)]; return r; }
+function avatarColor(str){ let h=0; for(const c of str) h=(h*31+c.charCodeAt(0))>>>0; return `hsl(${h%360} 62% 48%)`; }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* =====================================================================
+   1) Ses (Web Audio, çok hafif)
+   ===================================================================== */
+const Sound = (()=>{
+  let ctx=null, on=true;
+  const ac = () => (ctx ||= new (window.AudioContext||window.webkitAudioContext)());
+  function blip(freq=440,dur=.12,type='sine',vol=.16){
+    if(!on) return;
+    try{
+      const c=ac(), o=c.createOscillator(), g=c.createGain();
+      o.type=type; o.frequency.value=freq; o.connect(g); g.connect(c.destination);
+      g.gain.setValueAtTime(vol,c.currentTime);
+      g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+dur);
+      o.start(); o.stop(c.currentTime+dur);
+    }catch(e){}
+  }
+  return {
+    toggle(){ on=!on; $('#soundBtn').textContent = on?'🔊':'🔇'; return on; },
+    tick(){ blip(880,.05,'square',.08); },
+    correct(){ blip(660,.1,'sine',.18); setTimeout(()=>blip(990,.16,'sine',.18),90); },
+    wrong(){ blip(180,.22,'sawtooth',.14); },
+    start(){ blip(440,.08); setTimeout(()=>blip(660,.1),90); },
+    win(){ [523,659,784,1047].forEach((f,i)=>setTimeout(()=>blip(f,.16,'triangle',.2),i*120)); },
+  };
+})();
+$('#soundBtn').addEventListener('click',()=>Sound.toggle());
+
+/* =====================================================================
+   2) Soru havuzu (Türkçe) — konu bazlı, "karisik" hepsini birleştirir
+   ===================================================================== */
+const CATS = [
+  {key:'karisik', label:'Karışık', emoji:'🎲'},
+  {key:'spor',    label:'Spor',    emoji:'⚽'},
+  {key:'sanat',   label:'Sanat',   emoji:'🎨'},
+  {key:'tarih',   label:'Tarih',   emoji:'🏛️'},
+  {key:'bilim',   label:'Bilim',   emoji:'🔬'},
+  {key:'cografya',label:'Coğrafya',emoji:'🌍'},
+  {key:'kultur',  label:'Genel Kültür', emoji:'🧩'},
+];
+const catLabel = k => (CATS.find(c=>c.key===k)||{label:k}).label;
+const catEmoji = k => (CATS.find(c=>c.key===k)||{emoji:'❓'}).emoji;
+
+const BANK = {
+  spor:[
+    {q:'Hangi ülke en fazla FIFA Dünya Kupası kazanmıştır?',o:['Brezilya','Almanya','İtalya','Arjantin'],a:0,exp:'Brezilya 5 kez şampiyon oldu (1958, 62, 70, 94, 2002).'},
+    {q:'NBA basketbolunda bir maç kaç periyottan oluşur?',o:['2','3','4','5'],a:2,exp:'Her biri 12 dakikalık 4 periyot oynanır.'},
+    {q:'Yaz Olimpiyat Oyunları kaç yılda bir düzenlenir?',o:['2','3','4','5'],a:2,exp:'Modern Olimpiyatlar dört yılda bir yapılır.'},
+    {q:'Wimbledon tenis turnuvası hangi zeminde oynanır?',o:['Toprak','Çim','Sert kort','Sentetik'],a:1,exp:'Wimbledon çim kortlarıyla ünlüdür.'},
+    {q:'Formula 1’de bir yarışı kazanan pilota kaç puan verilir?',o:['10','18','25','30'],a:2,exp:'Birincilik 25 puan, ikincilik 18 puandır.'},
+    {q:'Voleybolda bir seti kazanmak için gereken normal sayı kaçtır?',o:['15','21','25','30'],a:2,exp:'Set 25 sayıya ulaşan ve 2 fark yapan takımın olur.'},
+    {q:'"El Clasico" hangi iki takım arasındaki maçtır?',o:['Milan - Inter','Real Madrid - Barcelona','Boca - River','Roma - Lazio'],a:1,exp:'İspanya’nın en büyük rekabeti Real Madrid ile Barcelona arasındadır.'},
+    {q:'Bir maraton koşusunun uzunluğu yaklaşık kaç kilometredir?',o:['21','32','42','50'],a:2,exp:'Resmî maraton mesafesi 42,195 km’dir.'},
+    {q:'Buz hokeyinde bir takımda sahada kaç oyuncu bulunur?',o:['5','6','7','11'],a:1,exp:'Kaleci dahil 6 oyuncu sahada olur.'},
+    {q:'Michael Phelps hangi spor dalında rekorlarıyla ünlüdür?',o:['Atletizm','Yüzme','Jimnastik','Bisiklet'],a:1,exp:'Phelps 23 olimpiyat altın madalyası kazanan bir yüzücüdür.'},
+    {q:'Golfte standart bir sahada kaç delik vardır?',o:['9','12','18','24'],a:2,exp:'Tam tur 18 delikten oluşur.'},
+    {q:'A Milli Erkek Basketbol Takımımız ilk kez hangi yıl EuroBasket finaline çıktı?',o:['2001','2009','2013','2017'],a:0,exp:'2001’de ev sahibi Türkiye finalde Yugoslavya’ya kaybetti.'},
+  ],
+  sanat:[
+    {q:'"Mona Lisa" tablosunu kim yapmıştır?',o:['Michelangelo','Leonardo da Vinci','Raphael','Rembrandt'],a:1,exp:'Leonardo da Vinci’nin eseri Louvre Müzesi’ndedir.'},
+    {q:'"Yıldızlı Gece" tablosu hangi ressama aittir?',o:['Vincent van Gogh','Claude Monet','Pablo Picasso','Salvador Dali'],a:0,exp:'Van Gogh bu eseri 1889’da bir akıl hastanesindeyken yaptı.'},
+    {q:'Kübizm akımının öncülerinden biri kimdir?',o:['Salvador Dali','Pablo Picasso','Claude Monet','Edvard Munch'],a:1,exp:'Picasso ve Georges Braque kübizmi birlikte geliştirdi.'},
+    {q:'"Çığlık" tablosunun ressamı kimdir?',o:['Edvard Munch','Gustav Klimt','Johannes Vermeer','Francisco Goya'],a:0,exp:'Norveçli sanatçı Edvard Munch’un birkaç versiyonu vardır.'},
+    {q:'Senfoni orkestrasında en tiz sesli yaylı çalgı hangisidir?',o:['Viyola','Çello','Keman','Kontrbas'],a:2,exp:'Keman yaylı çalgıların en ince (tiz) sesli olanıdır.'},
+    {q:'Michelangelo’nun tavan fresklerini yaptığı şapel hangisidir?',o:['Sistine Şapeli','Notre Dame','Aya Sofya','Pantheon'],a:0,exp:'Vatikan’daki Sistine Şapeli tavanı 1508-1512 arasında boyandı.'},
+    {q:'Ünlü mermer "David" heykelini kim yapmıştır?',o:['Donatello','Bernini','Michelangelo','Auguste Rodin'],a:2,exp:'Michelangelo’nun 5 metrelik David’i Floransa’dadır.'},
+    {q:'Baledeki "pirouette" terimi ne anlama gelir?',o:['Sıçrama','Dönme','Eğilme','Koşma'],a:1,exp:'Pirouette, tek ayak üzerinde dönüş demektir.'},
+    {q:'Empresyonizm (İzlenimcilik) akımı hangi ülkede doğmuştur?',o:['İtalya','Fransa','Hollanda','İspanya'],a:1,exp:'1860’larda Fransa’da Monet, Renoir gibi ressamlarla başladı.'},
+    {q:'Picasso’nun "Guernica" tablosu hangi olayı konu alır?',o:['Fransız Devrimi','İspanya İç Savaşı','1. Dünya Savaşı','Sanayi Devrimi'],a:1,exp:'1937’de Guernica kasabasının bombalanmasını anlatır.'},
+    {q:'Standart bir piyanoda kaç tuş bulunur?',o:['76','85','88','92'],a:2,exp:'52 beyaz + 36 siyah = 88 tuş.'},
+    {q:'"Düşünen Adam" heykeli kime aittir?',o:['Auguste Rodin','Pablo Picasso','Camille Claudel','Constantin Brancusi'],a:0,exp:'Rodin’in bu eseri başlangıçta "Cehennemin Kapıları" için tasarlandı.'},
+  ],
+  tarih:[
+    {q:'Türkiye Cumhuriyeti hangi yıl ilan edildi?',o:['1919','1920','1923','1938'],a:2,exp:'29 Ekim 1923’te Cumhuriyet ilan edildi.'},
+    {q:'Birinci Dünya Savaşı hangi yıl başladı?',o:['1912','1914','1918','1939'],a:1,exp:'Savaş 1914’te başlayıp 1918’de bitti.'},
+    {q:'İstanbul’un fethi hangi yıl gerçekleşti?',o:['1071','1299','1453','1492'],a:2,exp:'II. Mehmed 29 Mayıs 1453’te şehri aldı.'},
+    {q:'Fransız İhtilali hangi yıl başladı?',o:['1776','1789','1804','1848'],a:1,exp:'14 Temmuz 1789’da Bastille baskınıyla başladı.'},
+    {q:'Malazgirt Meydan Muharebesi hangi yıl yapıldı?',o:['1071','1176','1243','1299'],a:0,exp:'1071’de Sultan Alp Arslan Bizans’ı yendi.'},
+    {q:'1492’de Amerika kıtasına ulaşan denizci kimdir?',o:['Macellan','Kristof Kolomb','Vasco da Gama','James Cook'],a:1,exp:'Kolomb İspanya adına Atlas Okyanusu’nu geçti.'},
+    {q:'Berlin Duvarı hangi yıl yıkıldı?',o:['1985','1989','1991','1993'],a:1,exp:'9 Kasım 1989’da yıkıldı, Almanya 1990’da birleşti.'},
+    {q:'Osmanlı Devleti’nin kurucusu kimdir?',o:['Ertuğrul Gazi','Osman Bey','Orhan Bey','I. Murad'],a:1,exp:'Beylik, adını kurucusu Osman Bey’den alır.'},
+    {q:'Kurtuluş Savaşı sırasında TBMM hangi yıl açıldı?',o:['1919','1920','1921','1922'],a:1,exp:'23 Nisan 1920’de Ankara’da açıldı.'},
+    {q:'Piramitleriyle ünlü antik uygarlık hangisidir?',o:['Sümerler','Mısırlılar','Mayalar','Persler'],a:1,exp:'Giza piramitleri Antik Mısır firavunları için yapıldı.'},
+    {q:'İkinci Dünya Savaşı hangi yıl sona erdi?',o:['1943','1944','1945','1946'],a:2,exp:'Avrupa’da Mayıs, Pasifik’te Eylül 1945’te bitti.'},
+    {q:'Magna Carta hangi ülkede imzalanmıştır?',o:['Fransa','İngiltere','Almanya','İtalya'],a:1,exp:'1215’te İngiltere Kralı John tarafından kabul edildi.'},
+  ],
+  bilim:[
+    {q:'Suyun kimyasal formülü nedir?',o:['CO₂','H₂O','O₂','NaCl'],a:1,exp:'İki hidrojen, bir oksijen atomu.'},
+    {q:'Güneş sistemimizin en büyük gezegeni hangisidir?',o:['Dünya','Satürn','Jüpiter','Neptün'],a:2,exp:'Jüpiter, Dünya’nın yaklaşık 11 katı çapındadır.'},
+    {q:'İnsan vücudundaki en büyük organ hangisidir?',o:['Karaciğer','Deri','Akciğer','Beyin'],a:1,exp:'Deri yüzey alanı ve ağırlığıyla en büyük organdır.'},
+    {q:'Işığın boşluktaki hızı yaklaşık kaç km/s’dir?',o:['300.000','30.000','3.000.000','300'],a:0,exp:'Saniyede yaklaşık 299.792 km.'},
+    {q:'"DNA" kısaltmasındaki ilk harf hangi kelimeden gelir?',o:['Double','Deoksiribo','Di','Deuterium'],a:1,exp:'Deoksiribonükleik asit.'},
+    {q:'Periyodik tabloda "O" sembolü hangi elementi gösterir?',o:['Altın','Oksijen','Osmiyum','Oganesson'],a:1,exp:'Oksijen, atom numarası 8.'},
+    {q:'Bir üçgenin iç açıları toplamı kaç derecedir?',o:['90','180','270','360'],a:1,exp:'Öklid geometrisinde her üçgende 180°.'},
+    {q:'Kütle çekim yasasını formülleştiren bilim insanı kimdir?',o:['Einstein','Isaac Newton','Galileo','Nikola Tesla'],a:1,exp:'Newton, 1687’de evrensel kütle çekimini yayımladı.'},
+    {q:'Ses, uzay boşluğunda yayılır mı?',o:['Evet','Hayır','Sadece sıcakta','Sadece geceleri'],a:1,exp:'Ses bir ortam (madde) gerektirir; boşlukta yayılmaz.'},
+    {q:'Kandaki oksijeni taşıyan hücreler hangisidir?',o:['Akyuvarlar','Alyuvarlar','Trombositler','Plazma'],a:1,exp:'Alyuvarlardaki hemoglobin oksijene bağlanır.'},
+    {q:'E = mc² denklemi kime aittir?',o:['Niels Bohr','Albert Einstein','Max Planck','Stephen Hawking'],a:1,exp:'Einstein’ın 1905 özel görelilik çalışmasından.'},
+    {q:'Normal (artık olmayan) bir yılda kaç gün vardır?',o:['360','365','366','370'],a:1,exp:'Artık yıllarda ise 366 gün olur.'},
+  ],
+  cografya:[
+    {q:'Türkiye’nin başkenti neresidir?',o:['İstanbul','İzmir','Ankara','Bursa'],a:2,exp:'Başkent 13 Ekim 1923’te Ankara oldu.'},
+    {q:'Sahra Çölü hangi kıtadadır?',o:['Asya','Afrika','Avustralya','Güney Amerika'],a:1,exp:'Kuzey Afrika’da, dünyanın en büyük sıcak çölüdür.'},
+    {q:'Everest Dağı hangi sıradağlarda yer alır?',o:['Alpler','And Dağları','Himalayalar','Kayalık Dağlar'],a:2,exp:'8.849 m ile dünyanın en yüksek noktasıdır.'},
+    {q:'Başkenti Canberra olan ülke hangisidir?',o:['Yeni Zelanda','Avustralya','Kanada','Güney Afrika'],a:1,exp:'Sidney değil, Canberra Avustralya’nın başkentidir.'},
+    {q:'Dünyanın en büyük okyanusu hangisidir?',o:['Atlas','Hint','Arktik','Pasifik'],a:3,exp:'Pasifik, Dünya yüzeyinin üçte birini kaplar.'},
+    {q:'Türkiye kaç coğrafi bölgeye ayrılır?',o:['5','6','7','8'],a:2,exp:'1941 Coğrafya Kongresi’nde 7 bölge belirlendi.'},
+    {q:'Vezüv Yanardağı hangi ülkededir?',o:['Yunanistan','İtalya','İzlanda','Japonya'],a:1,exp:'MS 79’da Pompeii’yi yok eden yanardağ Napoli yakınındadır.'},
+    {q:'Dünyayı kuzey ve güney yarım küreye ayıran çizgi hangisidir?',o:['Başlangıç meridyeni','Ekvator','Yengeç dönencesi','Greenwich hattı'],a:1,exp:'Ekvator 0° enlem dairesidir.'},
+    {q:'Yüzölçümü en küçük bağımsız ülke hangisidir?',o:['Monako','Nauru','Vatikan','San Marino'],a:2,exp:'Vatikan yaklaşık 0,49 km²’dir.'},
+    {q:'Nil Nehri sularını hangi denize boşaltır?',o:['Kızıldeniz','Akdeniz','Karadeniz','Hint Okyanusu'],a:1,exp:'Mısır’da bir delta oluşturarak Akdeniz’e dökülür.'},
+    {q:'2023 itibarıyla dünyanın en kalabalık ülkesi hangisidir?',o:['Çin','Hindistan','ABD','Endonezya'],a:1,exp:'Hindistan 2023’te Çin’i geçti.'},
+    {q:'Panama Kanalı hangi iki okyanusu birbirine bağlar?',o:['Atlas - Hint','Atlas - Pasifik','Pasifik - Arktik','Hint - Pasifik'],a:1,exp:'Orta Amerika’da Atlas ve Pasifik okyanuslarını bağlar.'},
+  ],
+  kultur:[
+    {q:'Bir hafta kaç gündür?',o:['5','6','7','8'],a:2,exp:'Yedi gün: Pazartesi’den Pazar’a.'},
+    {q:'Gökkuşağında geleneksel olarak kaç renk sayılır?',o:['5','6','7','8'],a:2,exp:'Kırmızı, turuncu, sarı, yeşil, mavi, çivit, mor.'},
+    {q:'Satrançta oyunun başında her oyuncunun kaç taşı vardır?',o:['8','12','16','20'],a:2,exp:'8 piyon + 8 büyük taş = 16.'},
+    {q:'"Sherlock Holmes" karakterini kim yaratmıştır?',o:['Agatha Christie','Arthur Conan Doyle','Edgar Allan Poe','Jules Verne'],a:1,exp:'İskoç yazar Arthur Conan Doyle, 1887’de yarattı.'},
+    {q:'Dünyada ana dili en çok konuşulan dil hangisidir?',o:['İngilizce','İspanyolca','Mandarin Çincesi','Hintçe'],a:2,exp:'Ana dil olarak en çok Mandarin Çincesi konuşulur.'},
+    {q:'Bir düzine kaç eder?',o:['6','10','12','20'],a:2,exp:'Düzine = 12; deste = 10.'},
+    {q:'Trafik lambasında "dur" anlamına gelen renk hangisidir?',o:['Yeşil','Sarı','Kırmızı','Mavi'],a:2,exp:'Kırmızı dur, sarı hazır ol, yeşil geç demektir.'},
+    {q:'Sağlıklı bir insanda kaç çift kromozom bulunur?',o:['21','22','23','24'],a:2,exp:'23 çift, toplam 46 kromozom.'},
+    {q:'"Hamlet" oyununu kim yazmıştır?',o:['William Shakespeare','Molière','Anton Çehov','Henrik Ibsen'],a:0,exp:'Shakespeare’in yaklaşık 1600 tarihli trajedisidir.'},
+    {q:'Ay’a ayak basan ilk insan kimdir?',o:['Yuri Gagarin','Neil Armstrong','Buzz Aldrin','Michael Collins'],a:1,exp:'20 Temmuz 1969, Apollo 11 görevi.'},
+    {q:'Bir asır kaç yıldır?',o:['10','50','100','1000'],a:2,exp:'Asır = yüzyıl = 100 yıl.'},
+    {q:'Türk bayrağında hangi semboller bulunur?',o:['Ay ve yıldız','Kartal','Aslan','Güneş'],a:0,exp:'Kırmızı zemin üzerinde hilal ve beş köşeli yıldız.'},
+  ],
+};
+function poolFor(catKey){
+  if(catKey==='karisik'){
+    let all=[]; for(const k in BANK) all=all.concat(BANK[k].map(x=>({...x,cat:k})));
+    return all;
+  }
+  return (BANK[catKey]||[]).map(x=>({...x,cat:catKey}));
+}
+const TOTAL_Q = Object.values(BANK).reduce((s,a)=>s+a.length,0);
+$('#qCountInfo').textContent = TOTAL_Q;
+
+/* build a question set: normalize option order kept, answer index tracked */
+function buildQuestions(catKey,count){
+  const pool = shuffle(poolFor(catKey)).slice(0,count);
+  return pool.map(item=>{
+    // shuffle options, remember new correct index
+    const opts = item.o.map((text,i)=>({text,correct:i===item.a}));
+    const sh = shuffle(opts);
+    return {
+      q:item.q,
+      options:sh.map(o=>o.text),
+      answer:sh.findIndex(o=>o.correct),
+      exp:item.exp,
+      cat:item.cat||catKey,
+    };
+  });
+}
+
+/* =====================================================================
+   3) Puanlama  (Kahoot benzeri hız bonusu + seri bonusu)
+   ===================================================================== */
+const DIFF = {
+  kolay:{time:25000, botAcc:0.55, botMin:2200},
+  normal:{time:20000, botAcc:0.72, botMin:1800},
+  zor:{time:12000, botAcc:0.85, botMin:1200},
+};
+function scoreFor(correct, responseMs, limitMs, streakBefore){
+  if(!correct) return {base:0, bonus:0, total:0};
+  const frac = clamp(responseMs/limitMs, 0, 1);
+  const base = Math.round((1 - frac/2) * 1000);          // en yavaş doğru bile ~500
+  const bonus = clamp(streakBefore,0,5) * 100;            // 2. doğrudan itibaren +100, tavan +500
+  return {base, bonus, total:base+bonus};
+}
+const SHAPES=['▲','◆','●','■'];
+const ANSCLS=['a','b','c','d'];
+
+/* =====================================================================
+   4) Ekran yönlendirme
+   ===================================================================== */
+const SCREENS=['home','off-setup','online-entry','lobby','room','quiz','result'];
+function show(name){
+  SCREENS.forEach(s=>$('#sc-'+s).classList.toggle('active', s===name));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$('#homeBtn').addEventListener('click',()=>goHome());
+function goHome(){
+  Offline.stop(); Online.leave(true); Lobby.stop();
+  show('home');
+}
+
+/* =====================================================================
+   5) ÇEVRİMDIŞI oyun
+   ===================================================================== */
+const BEST_KEY='bqz_best_v1';
+const bestScores = ()=>{ try{return JSON.parse(localStorage.getItem(BEST_KEY))||{};}catch(e){return {};} };
+const saveBest = (k,v)=>{ const b=bestScores(); if(!(k in b)||v>b[k]){ b[k]=v; localStorage.setItem(BEST_KEY,JSON.stringify(b)); return true;} return false; };
+
+const Offline = {
+  cfg:{cat:'karisik', count:10, diff:'normal'},
+  qs:[], i:0, score:0, streak:0, correctCount:0,
+  qStart:0, answered:false, choice:-1, raf:0, running:false,
+  setup(){
+    // category grid
+    const g=$('#offCats'); g.innerHTML='';
+    CATS.forEach(c=>{
+      const b=document.createElement('button');
+      b.className='cat'+(c.key===this.cfg.cat?' on':'');
+      b.dataset.k=c.key;
+      b.innerHTML=`<span class="ce">${c.emoji}</span>${c.label}`;
+      b.onclick=()=>{ this.cfg.cat=c.key; $$('#offCats .cat').forEach(x=>x.classList.toggle('on',x.dataset.k===c.key)); };
+      g.appendChild(b);
+    });
+    bindSeg('#offCount',v=>this.cfg.count=+v);
+    bindSeg('#offDiff', v=>this.cfg.diff=v);
+    show('off-setup');
+  },
+  start(){
+    this.qs=buildQuestions(this.cfg.cat,this.cfg.count);
+    if(!this.qs.length){ toast('Bu konuda soru bulunamadı'); return; }
+    this.i=0;this.score=0;this.streak=0;this.correctCount=0;this.running=true;
+    Sound.start();
+    show('quiz');
+    $('#sideBoardWrap').innerHTML='';
+    this.render();
+  },
+  render(){
+    const q=this.qs[this.i];
+    this.answered=false;this.choice=-1;this.qStart=now();
+    $('#quizCat').textContent = `${catEmoji(q.cat)} ${catLabel(q.cat)}`;
+    $('#qCounter').textContent = `Soru ${this.i+1} / ${this.qs.length}`;
+    $('#qProg').style.width = ((this.i)/this.qs.length*100)+'%';
+    $('#qText').textContent = q.q;
+    $('#scoreNum').textContent = this.score;
+    updateStreak(this.streak);
+    $('#revealWrap').innerHTML='';
+    $('#quizNav').style.display='none';
+    const wrap=$('#answers'); wrap.innerHTML='';
+    q.options.forEach((opt,idx)=>{
+      const b=document.createElement('button');
+      b.className='ans '+ANSCLS[idx];
+      b.innerHTML=`<span class="shape">${SHAPES[idx]}</span><span>${esc(opt)}</span>`;
+      b.onclick=()=>this.answer(idx);
+      wrap.appendChild(b);
+    });
+    this.loop();
+  },
+  loop(){
+    cancelAnimationFrame(this.raf);
+    const limit=DIFF[this.cfg.diff].time;
+    const step=()=>{
+      const el=now()-this.qStart, rem=Math.max(0,limit-el);
+      paintTimer(rem,limit);
+      if(rem<=0 && !this.answered){ this.answer(-1); return; }
+      if(!this.answered) this.raf=requestAnimationFrame(step);
+    };
+    step();
+  },
+  answer(idx){
+    if(this.answered) return;
+    this.answered=true; this.choice=idx;
+    cancelAnimationFrame(this.raf);
+    const q=this.qs[this.i];
+    const limit=DIFF[this.cfg.diff].time;
+    const rt=clamp(now()-this.qStart,0,limit);
+    const correct = idx===q.answer;
+    const sc = scoreFor(correct, rt, limit, this.streak);
+    if(correct){ this.score+=sc.total; this.streak++; this.correctCount++; Sound.correct(); }
+    else { this.streak=0; Sound.wrong(); }
+    // paint buttons
+    $$('#answers .ans').forEach((b,i)=>{
+      b.disabled=true;
+      if(i===q.answer) b.classList.add('correct');
+      else if(i===idx) b.classList.add('wrong');
+      else b.classList.add('dim');
+    });
+    $('#scoreNum').textContent=this.score;
+    updateStreak(this.streak);
+    $('#qProg').style.width = ((this.i+1)/this.qs.length*100)+'%';
+    const gained = correct ? `<b>+${sc.total} puan</b> (hız ${sc.base}${sc.bonus?` · seri +${sc.bonus}`:''})` : (idx===-1?'Süre doldu':'Yanlış');
+    $('#revealWrap').innerHTML =
+      `<div class="reveal-card">${gained}. Doğru cevap: <b>${esc(q.options[q.answer])}</b><br><span class="muted">${esc(q.exp)}</span></div>`;
+    $('#quizNav').style.display='flex';
+    $('#quizNav button').textContent = (this.i+1>=this.qs.length)?'Sonuçları Gör →':'Sonraki Soru →';
+  },
+  next(){
+    if(this.i+1>=this.qs.length){ this.finish(); return; }
+    this.i++; this.render();
+  },
+  finish(){
+    this.running=false;
+    const total=this.qs.length, acc=Math.round(this.correctCount/total*100);
+    const stars = acc>=80?3: acc>=50?2:1;
+    const isBest = saveBest(this.cfg.cat, this.score);
+    const best = bestScores()[this.cfg.cat]||this.score;
+    if(stars>=2) { Sound.win(); confetti(); }
+    $('#resultCard').innerHTML = `
+      <h2 class="title" style="text-align:center">${stars===3?'Muhteşem! 🏆':stars===2?'İyi iş! 👏':'Bitti ⏱️'}</h2>
+      <div class="stars" style="text-align:center">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      <p class="lead" style="text-align:center">${catEmoji(this.cfg.cat)} ${catLabel(this.cfg.cat)} · ${total} soru${isBest?' · <b>yeni rekor!</b>':''}</p>
+      <div class="stat-grid">
+        <div class="stat"><div class="v">${this.score}</div><div class="k">Puan</div></div>
+        <div class="stat"><div class="v">${this.correctCount}/${total}</div><div class="k">Doğru</div></div>
+        <div class="stat"><div class="v">%${acc}</div><div class="k">İsabet</div></div>
+        <div class="stat"><div class="v">${best}</div><div class="k">En iyi skor</div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="row">
+        <button class="btn primary grow" data-action="offline-again">↻ Tekrar Oyna</button>
+        <button class="btn grow" data-action="offline-setup">Ayarları Değiştir</button>
+        <button class="btn ghost grow" data-action="home">Ana Menü</button>
+      </div>`;
+    show('result');
+  },
+  stop(){ cancelAnimationFrame(this.raf); this.running=false; },
+};
+
+function updateStreak(s){
+  const box=$('#streakBox');
+  box.style.visibility = s>=2 ? 'visible':'hidden';
+  $('#streakNum').textContent = s;
+}
+function paintTimer(rem,limit){
+  const C=194.8;
+  const frac = clamp(rem/limit,0,1);
+  const fg=$('#ringFg');
+  fg.style.strokeDashoffset = (C*(1-frac)).toFixed(1);
+  fg.setAttribute('stroke', frac<0.25?'var(--bad)': frac<0.5?'var(--gold)':'var(--accent)');
+  const secs=Math.ceil(rem/1000);
+  const t=$('#tNum');
+  if(t.textContent!=String(secs)){
+    t.textContent=secs;
+    if(secs<=5 && secs>0) Sound.tick();
+  }
+}
+function bindSeg(sel,cb){
+  $$(sel+' button').forEach(b=>{
+    b.onclick=()=>{ $$(sel+' button').forEach(x=>x.classList.toggle('on',x===b)); cb(b.dataset.v); };
+  });
+}
+
+/* =====================================================================
+   6) ÇEVRİMİÇİ  —  ağ katmanı (BroadcastChannel simülasyonu)
+   ===================================================================== */
+const NET = (()=>{
+  let ch=null, listeners=[];
+  try{ ch = ('BroadcastChannel' in window) ? new BroadcastChannel('bqz_net_v1') : null; }catch(e){ ch=null; }
+  if(ch) ch.onmessage = e => listeners.forEach(fn=>fn(e.data));
+  return {
+    ok: !!ch,
+    send(msg){ if(ch) ch.postMessage(msg); },
+    on(fn){ listeners.push(fn); },
+  };
+})();
+const ME = { id:uid(), name:'oyuncu' };
+
+/* ---- Lobby browser: genel odaları keşfet ---- */
+const Lobby = {
+  seen:new Map(), timer:0,
+  start(){
+    $('#lobbyNick').textContent = ME.name;
+    this.seen.clear(); this.paint();
+    NET.send({t:'discover', from:ME.id});
+    clearInterval(this.timer);
+    this.timer=setInterval(()=>{
+      NET.send({t:'discover', from:ME.id});
+      // prune stale
+      const cut=now()-6000;
+      for(const [k,v] of this.seen) if(v.ts<cut) this.seen.delete(k);
+      this.paint();
+    },2000);
+    show('lobby');
+  },
+  stop(){ clearInterval(this.timer); },
+  onAnnounce(a){
+    this.seen.set(a.code,{...a, ts:now()});
+    if($('#sc-lobby').classList.contains('active')) this.paint();
+  },
+  paint(){
+    const list=$('#roomList');
+    const rooms=[...this.seen.values()].filter(r=>!r.isPrivate && r.phase==='lobby');
+    if(!rooms.length){ list.innerHTML='<div class="muted">Açık genel oda yok. Yeni bir tane kurabilirsin.</div>'; return; }
+    list.innerHTML='';
+    rooms.forEach(r=>{
+      const el=document.createElement('div');
+      el.className='room-item';
+      el.innerHTML=`<div><div class="r-name">${esc(r.name)}</div>
+        <div class="r-meta">${catEmoji(r.cat)} ${catLabel(r.cat)} · ${r.count} soru · ${r.players} oyuncu</div></div>
+        <button class="btn" data-join="${r.code}">Katıl</button>`;
+      el.querySelector('button').onclick=()=>Online.join(r.code);
+      list.appendChild(el);
+    });
+  }
+};
+
+/* =====================================================================
+   7) ÇEVRİMİÇİ  —  oda (host yetkili) + istemci
+   ===================================================================== */
+const Online = {
+  room:null,          // istemci görünümü (host'tan gelen snapshot ya da kendi host state'i)
+  isHost:false,
+  botTimers:[],
+  advanceTimer:0,
+  hardEndTimer:0,
+  stateInterval:0,
+  hbInterval:0,
+  lastStateAt:0,
+  myChoice:-1, myAnsweredIdx:null, localReveal:false,
+  raf:0,
+
+  /* ---------- oturuma giriş ---------- */
+  enterLobby(nick){
+    ME.name = (nick||'').trim().slice(0,16) || ('oyuncu'+rnd(999));
+    try{ localStorage.setItem('bqz_name', ME.name); }catch(e){}
+    Lobby.start();
+  },
+
+  /* ---------- HOST: oda kur ---------- */
+  host(isPrivate){
+    this.leave(true);
+    this.isHost=true;
+    const c=code6();
+    this.room={
+      code:c,
+      name: isPrivate ? `${ME.name} — özel oda` : `${ME.name} odası`,
+      isPrivate,
+      hostId: ME.id,
+      cat:'karisik', count:8, diff:'normal',
+      phase:'lobby',           // lobby | question | reveal | ended
+      qIndex:0, questions:[], qStartedAt:0,
+      players:{ [ME.id]:{id:ME.id,name:ME.name,score:0,streak:0,ready:false,isBot:false,seen:now()} },
+      answers:{},              // { qIndex: { pid:{choice,tMs} } }
+      lastDelta:{},            // reveal gösterimi için
+      chat:[],
+    };
+    this._startHostLoops();
+    this.renderRoom();
+    show('room');
+    toast(isPrivate?'Özel oda kuruldu — kodu paylaş':'Genel oda yayında');
+  },
+
+  /* ---------- CLIENT: koda katıl ---------- */
+  join(code){
+    code=(code||'').trim().toUpperCase();
+    if(code.length!==6){ toast('Geçerli bir kod gir'); return; }
+    this.leave(true);
+    this.isHost=false;
+    this.room=null;
+    this._pendingJoin=code;
+    NET.send({t:'join', code, from:ME.id, name:ME.name});
+    this._joinTimeout=setTimeout(()=>{
+      if(!this.room){ toast('Oda bulunamadı ya da yanıt vermedi'); Lobby.start(); }
+    },1600);
+    this._startClientLoops();
+  },
+
+  /* ---------- ortak ağ dinleyici ---------- */
+  handle(m){
+    if(!m||!m.t) return;
+    // Lobby keşfi
+    if(m.t==='discover' && this.isHost && this.room){
+      NET.send({t:'announce', code:this.room.code, name:this.room.name, isPrivate:this.room.isPrivate,
+        cat:this.room.cat, count:this.room.count, players:Object.keys(this.room.players).length,
+        phase:this.room.phase});
+      return;
+    }
+    if(m.t==='announce'){ Lobby.onAnnounce(m); return; }
+
+    /* HOST tarafı istekler */
+    if(this.isHost && this.room && m.code===this.room.code){
+      const R=this.room;
+      if(m.t==='join'){
+        if(R.phase!=='lobby'){ NET.send({t:'joinAck',code:R.code,to:m.from,ok:false,reason:'Yarışma başladı'}); return; }
+        R.players[m.from] ||= {id:m.from,name:m.name||'oyuncu',score:0,streak:0,ready:false,isBot:false,seen:now()};
+        R.players[m.from].name=m.name||R.players[m.from].name;
+        R.players[m.from].seen=now();
+        NET.send({t:'joinAck',code:R.code,to:m.from,ok:true});
+        this._sysChat(`${R.players[m.from].name} odaya katıldı`);
+        this.broadcastState(); this.renderRoom();
+      }
+      else if(m.t==='hb'){ if(R.players[m.from]) R.players[m.from].seen=now(); }
+      else if(m.t==='leave'){
+        if(R.players[m.from]){ this._sysChat(`${R.players[m.from].name} ayrıldı`); delete R.players[m.from]; }
+        this.broadcastState(); this.renderRoom();
+      }
+      else if(m.t==='ready'){
+        if(R.players[m.from]) R.players[m.from].ready=!!m.ready;
+        this.broadcastState(); this.renderRoom();
+      }
+      else if(m.t==='chat'){
+        this._pushChat(R.players[m.from]?.name||'?', m.text);
+      }
+      else if(m.t==='answer'){
+        this._recordAnswer(m.from, m.choice, m.tMs);
+      }
+      return;
+    }
+
+    /* CLIENT tarafı */
+    if(!this.isHost){
+      if(m.t==='joinAck' && m.to===ME.id){
+        clearTimeout(this._joinTimeout);
+        if(!m.ok){ toast(m.reason||'Katılınamadı'); Lobby.start(); return; }
+        // state gelene kadar bekle
+      }
+      else if(m.t==='state' && m.code && (!this._pendingJoin || m.code===this._pendingJoin || (this.room&&m.code===this.room.code))){
+        this._pendingJoin=null;
+        const first=!this.room;
+        this.room=m.room;
+        this.lastStateAt=now();
+        if(first){ show('room'); }
+        this._reactToState(first);
+      }
+      else if(m.t==='roomClosed' && this.room && m.code===this.room.code){
+        toast('Oda kapandı'); this.leave(true); Lobby.start();
+      }
+    }
+  },
+
+  /* ---------- HOST: state yayını ---------- */
+  broadcastState(){
+    if(!this.isHost||!this.room) return;
+    const R=this.room;
+    // istemciye gidecek sade kopya
+    const snap={
+      code:R.code, name:R.name, isPrivate:R.isPrivate, hostId:R.hostId,
+      cat:R.cat, count:R.count, diff:R.diff, phase:R.phase,
+      qIndex:R.qIndex, qStartedAt:R.qStartedAt,
+      question: (R.phase==='question'||R.phase==='reveal') ? {
+        q:R.questions[R.qIndex].q,
+        options:R.questions[R.qIndex].options,
+        cat:R.questions[R.qIndex].cat,
+        answer: R.phase==='reveal' ? R.questions[R.qIndex].answer : null,
+        exp: R.phase==='reveal' ? R.questions[R.qIndex].exp : null,
+      } : null,
+      total:R.questions.length,
+      players:Object.values(R.players).map(p=>({id:p.id,name:p.name,score:p.score,streak:p.streak,ready:p.ready,isBot:p.isBot})),
+      answeredIds: Object.keys(R.answers[R.qIndex]||{}),
+      lastDelta: R.phase==='reveal' ? R.lastDelta : {},
+      chat:R.chat.slice(-40),
+    };
+    NET.send({t:'state', code:R.code, room:snap});
+    // host kendi ekranını da aynı snapshot'la güncelleyebilsin diye:
+    this._hostSnap=snap;
+  },
+
+  _startHostLoops(){
+    clearInterval(this.stateInterval);
+    this.stateInterval=setInterval(()=>{
+      if(!this.isHost||!this.room) return;
+      const R=this.room, cut=now()-9000;
+      let changed=false;
+      for(const id in R.players){
+        if(id===ME.id||R.players[id].isBot) continue;
+        if(R.players[id].seen<cut){ this._sysChat(`${R.players[id].name} bağlantısı koptu`); delete R.players[id]; changed=true; }
+      }
+      if(R.isPrivate===false){
+        NET.send({t:'announce', code:R.code, name:R.name, isPrivate:false, cat:R.cat, count:R.count,
+          players:Object.keys(R.players).length, phase:R.phase});
+      }
+      this.broadcastState();
+      if(changed) this.renderRoom();
+      if(R.phase==='question') this._paintOnlineQuiz();
+    },1500);
+  },
+  _startClientLoops(){
+    clearInterval(this.hbInterval);
+    this.hbInterval=setInterval(()=>{
+      if(this.isHost||!this.room) return;
+      NET.send({t:'hb', code:this.room.code, from:ME.id});
+      if(now()-this.lastStateAt>7000) toast('Bağlantı zayıf — oda sahibine ulaşılamıyor');
+      if(this.room.phase==='question') this._paintOnlineQuiz();
+    },1500);
+  },
+
+  /* ---------- lobby etkileşimleri ---------- */
+  toggleReady(){
+    if(!this.room) return;
+    const meP = this._meInRoom();
+    const nv = !(meP&&meP.ready);
+    if(this.isHost){ this.room.players[ME.id].ready=nv; this.broadcastState(); this.renderRoom(); }
+    else NET.send({t:'ready', code:this.room.code, from:ME.id, ready:nv});
+  },
+  addBot(){
+    if(!this.isHost) return;
+    const names=['Ada','Kaan','Zeynep','Mert','Elif','Deniz','Arda','Ece','Kerem','Naz','Bora','İpek'];
+    const used=Object.values(this.room.players).map(p=>p.name);
+    const pick=shuffle(names).find(n=>!used.includes('Bot '+n))||('B'+rnd(99));
+    const id='bot_'+uid();
+    this.room.players[id]={id,name:'Bot '+pick,score:0,streak:0,ready:true,isBot:true,seen:now()};
+    this.broadcastState(); this.renderRoom();
+  },
+  sendChat(text){
+    text=(text||'').trim().slice(0,120); if(!text||!this.room) return;
+    if(this.isHost) this._pushChat(ME.name,text);
+    else NET.send({t:'chat', code:this.room.code, from:ME.id, text});
+  },
+  _pushChat(name,text){
+    if(!this.isHost) return;
+    this.room.chat.push({name,text,ts:now()});
+    this.broadcastState(); this.renderRoom();
+  },
+  _sysChat(text){ if(this.isHost){ this.room.chat.push({name:'', text, ts:now()}); } },
+
+  /* ---------- HOST: yarışmayı başlat ---------- */
+  hostStart(){
+    if(!this.isHost) return;
+    const R=this.room;
+    const humans=Object.values(R.players).filter(p=>!p.isBot);
+    const notReady=humans.filter(p=>!p.ready);
+    if(notReady.length){ toast(`${notReady.length} kişi henüz hazır değil`); return; }
+    R.questions=buildQuestions(R.cat,R.count);
+    if(!R.questions.length){ toast('Soru havuzu boş'); return; }
+    Object.values(R.players).forEach(p=>{p.score=0;p.streak=0;});
+    R.qIndex=0; R.answers={}; R.lastDelta={};
+    Sound.start();
+    this._hostBeginQuestion();
+  },
+  _hostBeginQuestion(){
+    const R=this.room;
+    R.phase='question'; R.qStartedAt=now(); R.answers[R.qIndex]={};
+    this.myChoice=-1; this.myAnsweredIdx=null; this.localReveal=false;
+    this._renderedQ=R.qIndex; this._renderedPhase='question';
+    this.broadcastState();
+    this._enterQuizScreen();
+    // botları programla
+    this.botTimers.forEach(clearTimeout); this.botTimers=[];
+    const d=DIFF[R.diff], limit=d.time;
+    Object.values(R.players).filter(p=>p.isBot).forEach(bot=>{
+      const delay = clamp(d.botMin + rnd(limit-d.botMin-600), d.botMin, limit-500);
+      const t=setTimeout(()=>{
+        const q=R.questions[R.qIndex];
+        const correct = Math.random() < d.botAcc;
+        let choice = q.answer;
+        if(!correct){ const wrong=[0,1,2,3].filter(i=>i!==q.answer); choice=wrong[rnd(wrong.length)]; }
+        this._recordAnswer(bot.id, choice, delay);
+      }, delay);
+      this.botTimers.push(t);
+    });
+    // sert bitiş
+    clearTimeout(this.hardEndTimer);
+    this.hardEndTimer=setTimeout(()=>{ if(R.phase==='question') this._hostEndQuestion(); }, limit+250);
+  },
+  _recordAnswer(pid,choice,tMs){
+    const R=this.room; if(!R||R.phase!=='question') return;
+    const bag=R.answers[R.qIndex] ||= {};
+    if(bag[pid]!=null) return;
+    const limit=DIFF[R.diff].time;
+    bag[pid]={choice, tMs:clamp(tMs,0,limit)};
+    this.broadcastState();
+    // herkes cevapladıysa erken bitir
+    const total=Object.keys(R.players).length;
+    if(Object.keys(bag).length>=total){
+      clearTimeout(this.hardEndTimer);
+      setTimeout(()=>{ if(R.phase==='question') this._hostEndQuestion(); },350);
+    }
+  },
+  _hostEndQuestion(){
+    const R=this.room; if(R.phase!=='question') return;
+    this.botTimers.forEach(clearTimeout); this.botTimers=[];
+    const q=R.questions[R.qIndex], limit=DIFF[R.diff].time, bag=R.answers[R.qIndex]||{};
+    R.lastDelta={};
+    Object.values(R.players).forEach(p=>{
+      const ans=bag[p.id];
+      const correct = ans && ans.choice===q.answer;
+      const sc = scoreFor(!!correct, ans?ans.tMs:limit, limit, p.streak);
+      if(correct){ p.score+=sc.total; p.streak++; }
+      else { p.streak=0; }
+      R.lastDelta[p.id]={gain:sc.total, correct:!!correct, answered:!!ans};
+    });
+    R.phase='reveal';
+    this.broadcastState();
+    this._enterQuizScreen();
+    clearTimeout(this.advanceTimer);
+    this.advanceTimer=setTimeout(()=>this._hostAdvance(), 4500);
+  },
+  _hostAdvance(){
+    const R=this.room;
+    if(R.qIndex+1>=R.questions.length){
+      R.phase='ended'; this.broadcastState(); this._showOnlineResult();
+      Sound.win(); confetti();
+      return;
+    }
+    R.qIndex++; this._hostBeginQuestion();
+  },
+  hostRestart(){
+    if(!this.isHost) return;
+    const R=this.room;
+    R.phase='lobby'; R.qIndex=0; R.questions=[]; R.answers={}; R.lastDelta={};
+    Object.values(R.players).forEach(p=>{p.score=0;p.streak=0;p.ready=p.isBot;});
+    this.broadcastState(); this.renderRoom(); show('room');
+  },
+
+  /* ---------- CLIENT: state'e tepki ---------- */
+  _reactToState(first){
+    const R=this.room;
+    if(R.phase==='lobby'){
+      if(!$('#sc-room').classList.contains('active')) show('room');
+      this.renderRoom();
+    }
+    else if(R.phase==='question'||R.phase==='reveal'){
+      this._enterQuizScreen();
+      // yeni soruya geçildiyse yerel cevap durumunu sıfırla
+      if(this._renderedQ!==R.qIndex || this._renderedPhase!=='question'){
+        if(R.phase==='question'){ this.myChoice=-1; this.myAnsweredIdx=null; this.localReveal=false; }
+      }
+      this._renderedQ=R.qIndex; this._renderedPhase=R.phase;
+    }
+    else if(R.phase==='ended'){ this._showOnlineResult(); }
+  },
+
+  /* ---------- quiz ekranı (online) ---------- */
+  _enterQuizScreen(){
+    if(!$('#sc-quiz').classList.contains('active')) show('quiz');
+    this._renderOnlineQuestion();
+  },
+  _renderOnlineQuestion(){
+    const R=this.room; if(!R||!R.question && !(this.isHost)) return;
+    // Aynı soru/faz/cevap durumunda butonları yeniden kurma (titremeyi önler);
+    // sadece canlı sıralama + sayaç güncellenir.
+    const key = R.qIndex+':'+R.phase+':'+this.myAnsweredIdx+':'+this.myChoice;
+    if(key===this._qRenderKey){ this._renderSideBoard(); this._paintOnlineQuiz(); return; }
+    this._qRenderKey=key;
+    const Q = this.isHost ? {
+        q:R.questions[R.qIndex].q, options:R.questions[R.qIndex].options, cat:R.questions[R.qIndex].cat,
+        answer: R.phase==='reveal'?R.questions[R.qIndex].answer:null,
+        exp: R.phase==='reveal'?R.questions[R.qIndex].exp:null,
+      } : R.question;
+    const total = this.isHost ? R.questions.length : R.total;
+    $('#quizCat').textContent = `${catEmoji(Q.cat)} ${catLabel(Q.cat)}`;
+    $('#qCounter').textContent = `Soru ${R.qIndex+1} / ${total}`;
+    $('#qProg').style.width = ((R.qIndex + (R.phase==='reveal'?1:0))/total*100)+'%';
+    $('#qText').textContent = Q.q;
+    const meP=this._meInRoom();
+    $('#scoreNum').textContent = meP?meP.score:0;
+    updateStreak(meP?meP.streak:0);
+
+    const revealed = R.phase==='reveal';
+    const wrap=$('#answers'); wrap.innerHTML='';
+    Q.options.forEach((opt,idx)=>{
+      const b=document.createElement('button');
+      b.className='ans '+ANSCLS[idx];
+      b.innerHTML=`<span class="shape">${SHAPES[idx]}</span><span>${esc(opt)}</span>`;
+      if(revealed){
+        b.disabled=true;
+        if(idx===Q.answer) b.classList.add('correct');
+        else if(idx===this.myChoice) b.classList.add('wrong');
+        else b.classList.add('dim');
+      } else {
+        if(this.myAnsweredIdx!=null){
+          b.disabled=true;
+          if(idx===this.myAnsweredIdx) b.style.outline='3px solid #fff';
+          else b.classList.add('dim');
+        } else {
+          b.onclick=()=>this._answer(idx);
+        }
+      }
+      wrap.appendChild(b);
+    });
+
+    // reveal kartı
+    if(revealed){
+      const d=R.lastDelta[ME.id]||{};
+      const txt = d.correct ? `<b>+${d.gain} puan</b>` : (d.answered?'Yanlış':'Cevap yok');
+      $('#revealWrap').innerHTML=`<div class="reveal-card">${txt}. Doğru cevap: <b>${esc(Q.options[Q.answer])}</b><br><span class="muted">${esc(Q.exp||'')}</span></div>`;
+    } else {
+      $('#revealWrap').innerHTML = this.myAnsweredIdx!=null
+        ? `<div class="reveal-card muted">Cevabın alındı — diğer oyuncular bekleniyor…</div>` : '';
+    }
+    $('#quizNav').style.display='none';
+    this._renderSideBoard();
+    this._paintOnlineQuiz();
+  },
+  _paintOnlineQuiz(){
+    const R=this.room; if(!R) return;
+    if(R.phase==='question'){
+      const limit=DIFF[R.diff].time;
+      const rem=Math.max(0, limit-(now()-R.qStartedAt));
+      paintTimer(rem,limit);
+      if(rem<=0 && this.myAnsweredIdx==null && !this.isHost){ /* host süreyi kapatır */ }
+    } else if(R.phase==='reveal'){
+      paintTimer(0, DIFF[R.diff].time);
+    }
+    this._renderSideBoard();
+  },
+  _renderSideBoard(){
+    const R=this.room; if(!R) return;
+    const list = (Array.isArray(R.players)?R.players:Object.values(R.players))
+      .slice().sort((a,b)=>b.score-a.score);
+    const answered = new Set(this.isHost ? Object.keys(R.answers[R.qIndex]||{}) : (R.answeredIds||[]));
+    $('#sideBoardWrap').innerHTML = `
+      <div class="side-board"><h4>Canlı Sıralama</h4>
+      ${list.map((p,i)=>`<div class="sb-row">
+        <span class="dot ${answered.has(p.id)?'answered':''}"></span>
+        <span>${i+1}. ${esc(p.name)}${p.isBot?' 🤖':''}${p.id===ME.id?' (sen)':''}</span>
+        <span class="sb-sc">${p.score}</span></div>`).join('')}
+      </div>`;
+  },
+  _answer(idx){
+    const R=this.room; if(!R||R.phase!=='question'||this.myAnsweredIdx!=null) return;
+    const limit=DIFF[R.diff].time;
+    const tMs=clamp(now()-R.qStartedAt,0,limit);
+    this.myAnsweredIdx=idx; this.myChoice=idx;
+    Sound.tick();
+    if(this.isHost) this._recordAnswer(ME.id, idx, tMs);
+    else NET.send({t:'answer', code:R.code, from:ME.id, choice:idx, tMs});
+    this._renderOnlineQuestion();
+  },
+
+  _meInRoom(){
+    const R=this.room; if(!R) return null;
+    const arr = Array.isArray(R.players)?R.players:Object.values(R.players);
+    return arr.find(p=>p.id===ME.id)||null;
+  },
+
+  /* ---------- oda ekranı render ---------- */
+  renderRoom(){
+    const R=this.room; if(!R) return;
+    const players = Array.isArray(R.players)?R.players:Object.values(R.players);
+    const amHost = this.isHost;
+    $('#roomKind').textContent = R.isPrivate?'🔒 özel oda':'🌐 genel oda';
+    $('#roomCodePill').textContent = 'kod: '+R.code;
+    $('#roomTitle').textContent = R.name;
+    $('#roomHint').textContent = amHost
+      ? 'Ayarları seç, oyuncuların hazır olmasını bekle ve başlat.'
+      : 'Oda sahibinin yarışmayı başlatması bekleniyor. "Hazırım"a bas.';
+    $('#hostSettings').style.display = amHost?'block':'none';
+    $('#addBotBtn').style.display = amHost?'inline-flex':'none';
+    $('#startBtn').style.display = amHost?'flex':'none';
+
+    if(amHost && !this._roomSegBound){
+      this._roomSegBound=true;
+      const g=$('#roomCats'); g.innerHTML='';
+      CATS.forEach(c=>{
+        const b=document.createElement('button');
+        b.className='cat'+(c.key===R.cat?' on':'');
+        b.dataset.k=c.key;
+        b.innerHTML=`<span class="ce">${c.emoji}</span>${c.label}`;
+        b.onclick=()=>{ R.cat=c.key; $$('#roomCats .cat').forEach(x=>x.classList.toggle('on',x.dataset.k===c.key)); this.broadcastState(); };
+        g.appendChild(b);
+      });
+      bindSeg('#roomCount', v=>{ R.count=+v; this.broadcastState(); });
+      bindSeg('#roomDiff',  v=>{ R.diff=v;  this.broadcastState(); });
+    }
+
+    $('#plCount').textContent = players.length;
+    $('#roomPlayers').innerHTML = players.map(p=>`
+      <div class="pl">
+        <span class="av" style="background:${avatarColor(p.name)}">${esc(p.name[0]||'?').toUpperCase()}</span>
+        <span class="nm">${esc(p.name)}${p.isBot?' 🤖':''}${p.id===ME.id?' (sen)':''}</span>
+        <span class="tag ${p.id===R.hostId?'host':(p.ready?'ready':'')}">${p.id===R.hostId?'oda sahibi':(p.ready?'hazır ✓':'bekliyor')}</span>
+      </div>`).join('');
+
+    const log=$('#chatLog');
+    log.innerHTML=(R.chat||[]).map(c=>c.name
+      ? `<div class="c-row"><b>${esc(c.name)}:</b> ${esc(c.text)}</div>`
+      : `<div class="c-row muted">— ${esc(c.text)} —</div>`).join('');
+    log.scrollTop=log.scrollHeight;
+
+    const meP=this._meInRoom();
+    $('#readyBtn').textContent = (meP&&meP.ready)?'Hazır değilim':'Hazırım ✓';
+    $('#readyBtn').classList.toggle('primary', !(meP&&meP.ready));
+  },
+
+  /* ---------- online sonuç ---------- */
+  _showOnlineResult(){
+    const R=this.room; if(!R) return;
+    const players=(Array.isArray(R.players)?R.players:Object.values(R.players)).slice().sort((a,b)=>b.score-a.score);
+    const top=players.slice(0,3);
+    const meRank=players.findIndex(p=>p.id===ME.id)+1;
+    const podHtml = `
+      <div class="podium">
+        ${top[1]?`<div class="pod p2"><div class="who">${esc(top[1].name)}</div><div class="col">🥈<br>${top[1].score}</div></div>`:''}
+        ${top[0]?`<div class="pod p1"><div class="who">${esc(top[0].name)}</div><div class="col">🥇<br>${top[0].score}</div></div>`:''}
+        ${top[2]?`<div class="pod p3"><div class="who">${esc(top[2].name)}</div><div class="col">🥉<br>${top[2].score}</div></div>`:''}
+      </div>`;
+    $('#resultCard').innerHTML = `
+      <h2 class="title" style="text-align:center">Yarışma bitti 🎉</h2>
+      <p class="lead" style="text-align:center">${esc(R.name)} · ${catEmoji(R.cat)} ${catLabel(R.cat)} · ${meRank}. oldun</p>
+      ${podHtml}
+      <div class="final-list">
+        ${players.map((p,i)=>`<div class="pl">
+          <span class="av" style="background:${avatarColor(p.name)}">${i+1}</span>
+          <span class="nm">${esc(p.name)}${p.isBot?' 🤖':''}${p.id===ME.id?' (sen)':''}</span>
+          <span class="tag">${p.score} puan</span></div>`).join('')}
+      </div>
+      <div class="divider"></div>
+      <div class="row">
+        ${this.isHost?'<button class="btn primary grow" data-action="online-restart">↻ Yeni Tur</button>':'<button class="btn grow" data-action="online-back-room">Odaya Dön</button>'}
+        <button class="btn ghost grow" data-action="online-leave">Odadan Çık</button>
+      </div>`;
+    show('result');
+  },
+
+  /* ---------- ayrılma / temizlik ---------- */
+  leave(silent){
+    clearInterval(this.stateInterval); clearInterval(this.hbInterval);
+    clearTimeout(this.advanceTimer); clearTimeout(this.hardEndTimer);
+    clearTimeout(this._joinTimeout);
+    this.botTimers.forEach(clearTimeout); this.botTimers=[];
+    if(this.room){
+      if(this.isHost){ NET.send({t:'roomClosed', code:this.room.code}); }
+      else { NET.send({t:'leave', code:this.room.code, from:ME.id}); }
+    }
+    this.room=null; this.isHost=false; this._roomSegBound=false;
+    this.myChoice=-1; this.myAnsweredIdx=null; this._renderedQ=null; this._renderedPhase=null;
+    if(!silent) Lobby.start();
+  },
+};
+NET.on(m=>Online.handle(m));
+
+/* online quiz timer'ını akıcı tutmak için hafif RAF döngüsü */
+(function onlineTick(){
+  if($('#sc-quiz').classList.contains('active') && Online.room){
+    Online._paintOnlineQuiz();
+  }
+  requestAnimationFrame(onlineTick);
+})();
+
+/* =====================================================================
+   8) Konfeti
+   ===================================================================== */
+function confetti(){
+  const box=document.createElement('div'); box.className='confetti';
+  const cols=['#e2483d','#1368ce','#c98a00','#1f8f3b','#7c3aed'];
+  for(let i=0;i<90;i++){
+    const s=document.createElement('i');
+    s.style.left=Math.random()*100+'vw';
+    s.style.background=cols[rnd(cols.length)];
+    s.style.animationDuration=(2.4+Math.random()*2)+'s';
+    s.style.animationDelay=(Math.random()*.6)+'s';
+    s.style.transform=`rotate(${rnd(360)}deg)`;
+    box.appendChild(s);
+  }
+  document.body.appendChild(box);
+  setTimeout(()=>box.remove(),5200);
+}
+
+/* =====================================================================
+   9) Global tıklama yönlendirme
+   ===================================================================== */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-action]'); if(!el) return;
+  const a=el.dataset.action;
+  switch(a){
+    case 'home': goHome(); break;
+    case 'go-offline': Offline.setup(); break;
+    case 'go-online': {
+      try{ ME.name = localStorage.getItem('bqz_name')||ME.name; }catch(err){}
+      $('#nickInput').value = (ME.name && ME.name!=='oyuncu') ? ME.name : '';
+      show('online-entry');
+      break;
+    }
+    case 'start-offline': Offline.start(); break;
+    case 'offline-again': Offline.start(); break;
+    case 'offline-setup': Offline.setup(); break;
+    case 'next-q': Offline.next(); break;
+
+    case 'online-entry': Lobby.stop(); show('online-entry'); break;
+    case 'enter-lobby': {
+      const v=$('#nickInput').value.trim();
+      if(v.length<2){ toast('En az 2 karakterlik bir ad gir'); break; }
+      Online.enterLobby(v);
+      break;
+    }
+    case 'refresh-rooms': NET.send({t:'discover',from:ME.id}); toast('Yenilendi'); break;
+    case 'create-public': Online.host(false); break;
+    case 'create-private': Online.host(true); break;
+    case 'join-by-code': Online.join($('#joinCode').value); break;
+    case 'toggle-ready': Online.toggleReady(); break;
+    case 'add-bot': Online.addBot(); break;
+    case 'send-chat': { const i=$('#chatInput'); Online.sendChat(i.value); i.value=''; break; }
+    case 'host-start': Online.hostStart(); break;
+    case 'leave-room': Online.leave(false); break;
+    case 'online-restart': Online.hostRestart(); break;
+    case 'online-back-room': show('room'); Online.renderRoom(); break;
+    case 'online-leave': Online.leave(false); break;
+  }
+});
+$('#chatInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ Online.sendChat(e.target.value); e.target.value=''; }});
+$('#joinCode').addEventListener('input',e=>{ e.target.value=e.target.value.toUpperCase(); });
+$('#nickInput').addEventListener('keydown',e=>{ if(e.key==='Enter') $('[data-action="enter-lobby"]').click(); });
+
+/* ilk açılış */
+show('home');
+</script>
+</body>
+</html>

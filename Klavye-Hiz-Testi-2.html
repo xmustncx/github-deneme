@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klavye Hız Testi 2 — Hayvanlar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef1f8;
+    --surface:#ffffff;
+    --surface-2:#f5f7ff;
+    --border:#d7ddee;
+    --text:#232a3d;
+    --text-dim:#586178;
+    --text-faint:#98a1b6;
+    --accent:#ff6b35;
+    --accent-2:#22b8a8;
+    --good:#2f9e5f;
+    --bad:#e4572e;
+    --gold:#f2b705;
+    --shadow:0 2px 6px rgba(28,38,74,.08), 0 20px 44px -22px rgba(28,38,74,.34);
+    --radius:20px;
+    --font-display:'Baloo 2','Fraunces',Georgia,serif;
+    --font-body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'JetBrains Mono',Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#151924;
+      --surface:#1f2431;
+      --surface-2:#272d3c;
+      --border:#39414f;
+      --text:#eceff6;
+      --text-dim:#a8afc2;
+      --text-faint:#6d7587;
+      --accent:#ff875e;
+      --accent-2:#43d6c6;
+      --good:#7ecb92;
+      --bad:#e2695c;
+      --gold:#e7b23f;
+      --shadow:0 2px 6px rgba(0,0,0,.4), 0 22px 48px -22px rgba(0,0,0,.65);
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--font-body);
+    background:
+      radial-gradient(circle at 12% 8%, color-mix(in srgb,var(--accent) 12%,transparent), transparent 42%),
+      radial-gradient(circle at 88% 92%, color-mix(in srgb,var(--accent-2) 14%,transparent), transparent 45%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px 14px;
+    line-height:1.5;
+  }
+  .app{
+    width:100%;max-width:940px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 20px;border-bottom:1px solid var(--border);
+    background:var(--surface-2);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:1.16rem}
+  .brand .logo{font-size:1.4rem}
+  .topright{display:flex;align-items:center;gap:8px}
+  .icon-btn{
+    cursor:pointer;border:1px solid var(--border);background:var(--surface);
+    width:36px;height:36px;border-radius:11px;font-size:1.05rem;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .icon-btn:hover{border-color:var(--accent)}
+  .tier-pill{
+    font-family:var(--font-mono);font-size:.78rem;font-weight:500;
+    color:var(--text-dim);background:var(--surface);
+    border:1px solid var(--border);padding:6px 12px;border-radius:999px;
+  }
+  .screen{padding:26px 22px 30px}
+  .hidden{display:none !important}
+
+  /* ---------- Menu ---------- */
+  h1{font-family:var(--font-display);font-size:2rem;line-height:1.15;margin-bottom:8px}
+  .lede{color:var(--text-dim);max-width:60ch;margin-bottom:22px}
+  .section-label{
+    font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-faint);margin-bottom:10px;
+  }
+  .hint-toggle{
+    display:flex;align-items:center;gap:12px;
+    background:var(--surface-2);border:1.5px solid var(--border);
+    border-radius:14px;padding:12px 14px;margin-bottom:22px;
+  }
+  .hint-toggle .tx{flex:1}
+  .hint-toggle .tx b{display:block;font-size:.98rem}
+  .hint-toggle .tx span{font-size:.82rem;color:var(--text-faint)}
+  .switch{position:relative;width:52px;height:30px;flex:none;cursor:pointer}
+  .switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .switch .slot{position:absolute;inset:0;background:var(--border);border-radius:999px;transition:background .15s}
+  .switch .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .switch input:checked ~ .slot{background:var(--good)}
+  .switch input:checked ~ .knob{left:25px}
+
+  .tier-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:22px}
+  .tier{
+    text-align:left;cursor:pointer;background:var(--surface-2);
+    border:2px solid var(--border);border-radius:16px;padding:13px 14px 12px;
+    transition:border-color .12s,transform .12s,background .12s;
+  }
+  .tier:hover{transform:translateY(-2px)}
+  .tier.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface-2))}
+  .tier .top{display:flex;align-items:center;gap:8px}
+  .tier .em{font-size:1.7rem;line-height:1}
+  .tier .nm{font-family:var(--font-display);font-weight:700;font-size:1.05rem}
+  .tier .sub{font-size:.75rem;color:var(--text-faint);margin-top:4px;font-family:var(--font-mono)}
+  .tier .best{font-size:.74rem;color:var(--gold);font-weight:800;margin-top:6px;font-family:var(--font-mono);min-height:1em}
+
+  .btn{
+    font-family:var(--font-display);font-weight:700;font-size:1.02rem;
+    cursor:pointer;border:none;border-radius:14px;padding:13px 24px;
+    background:var(--accent);color:#fff;transition:filter .12s,transform .12s;
+  }
+  .btn:hover{filter:brightness(1.06)}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.ghost{background:var(--surface-2);color:var(--text);border:2px solid var(--border)}
+  .btn.small{padding:9px 16px;font-size:.9rem;border-radius:11px}
+  .btn.good{background:var(--good)}
+  .btn.bad{background:var(--bad)}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .menu-foot{margin-top:16px;display:flex;align-items:center;gap:12px}
+  .hint{font-size:.8rem;color:var(--text-faint)}
+
+  /* ---------- Race ---------- */
+  .hud{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .stat{background:var(--surface-2);border:1px solid var(--border);border-radius:13px;padding:9px 12px;text-align:center}
+  .stat .k{font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint);font-weight:800}
+  .stat .v{font-family:var(--font-mono);font-weight:700;font-size:1.14rem;margin-top:2px;transition:transform .12s}
+  .stat .v.low{color:var(--bad);animation:lowpulse .5s infinite alternate}
+  @keyframes lowpulse{to{opacity:.5}}
+
+  .card{
+    background:var(--surface-2);border:2px solid var(--border);border-radius:18px;
+    padding:22px 16px 18px;text-align:center;transition:border-color .25s;
+  }
+  .card.good{border-color:var(--good)}
+  .big-emoji{font-size:5.6rem;line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.18))}
+  .big-emoji.pop{animation:pop .3s}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .name-label{
+    font-family:var(--font-display);font-weight:800;font-size:1.9rem;margin-top:8px;
+    letter-spacing:.02em;color:var(--accent);text-transform:lowercase;min-height:1.2em;
+  }
+  .name-label.masked{color:var(--text-faint);letter-spacing:.3em}
+  .letter-guide{
+    font-family:var(--font-mono);font-size:1.6rem;font-weight:700;letter-spacing:.12em;
+    margin:8px 0 14px;min-height:1.4em;
+  }
+  .letter-guide .lg-good{color:var(--good)}
+  .letter-guide .lg-bad{color:var(--bad);text-decoration:underline}
+  .letter-guide .lg-pending{color:var(--text-faint)}
+  .card.shake .letter-guide{animation:shake .2s}
+  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  #inp{
+    width:100%;max-width:420px;font-family:var(--font-mono);font-size:1.35rem;text-align:center;
+    padding:13px 14px;border-radius:12px;border:2px solid var(--border);
+    background:var(--surface);color:var(--text);outline:none;
+  }
+  #inp:focus{border-color:var(--accent)}
+  #inp:disabled{opacity:.5}
+  .nextup{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;font-size:1.5rem;opacity:.75}
+  .nextup .nx-lbl{font-family:var(--font-body);font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);opacity:1}
+  .type-hint{font-size:.8rem;color:var(--text-faint);margin-top:10px}
+  .race-foot{margin-top:14px;display:flex;justify-content:center}
+
+  .countdown{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(3px);z-index:50;
+    font-family:var(--font-display);font-size:5.5rem;font-weight:800;color:var(--accent);
+  }
+
+  /* ---------- Result ---------- */
+  .result{text-align:center}
+  .result h2{font-family:var(--font-display);font-size:2.2rem;margin-bottom:6px}
+  .result .rsub{color:var(--text-dim);margin-bottom:12px}
+  .result .win{color:var(--good)}
+  .result .lose{color:var(--bad)}
+  .stars{font-size:2.4rem;letter-spacing:.15em;margin-bottom:12px;min-height:1.2em}
+  .record-badge{
+    display:inline-block;margin-bottom:16px;padding:6px 16px;border-radius:999px;
+    background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold);
+    font-weight:800;font-size:.92rem;border:2px solid color-mix(in srgb,var(--gold) 45%,transparent);
+  }
+  .rstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:0 auto 22px;max-width:560px}
+  .divider{height:1px;background:var(--border);margin:18px 0}
+  .adjust-note{font-size:.84rem;color:var(--text-faint)}
+  .result .btn-row{justify-content:center}
+
+  .confetti-piece{position:fixed;top:-14px;width:10px;height:14px;z-index:60;border-radius:2px;will-change:transform;animation:confetti-fall linear forwards}
+  @keyframes confetti-fall{to{transform:translateY(110vh) rotate(760deg)}}
+
+  @media (max-width:560px){
+    .hud{grid-template-columns:repeat(2,1fr)}
+    h1{font-size:1.6rem}
+    .result h2{font-size:1.8rem}
+    .countdown{font-size:3.6rem}
+    .big-emoji{font-size:4.4rem}
+    .name-label{font-size:1.5rem}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><span class="logo">🐾</span>Klavye Hız Testi 2</div>
+    <div class="topright">
+      <button class="icon-btn" id="soundBtn" title="Ses aç/kapat">🔊</button>
+      <div class="tier-pill" id="tierPill">Seviye seçilmedi</div>
+    </div>
+  </div>
+
+  <!-- ============ MENU ============ -->
+  <section class="screen" id="menuScreen">
+    <h1>1 dakikada kaç hayvanı yazabilirsin? ⏱️</h1>
+    <p class="lede">Ekranda hayvanlar birer birer belirir, sen adını yazarsın. <b>1 dakikan</b> var.
+       Her seviyenin bir hedefi var — 60 hayvandan 300 hayvana kadar. Bir dakikada hedefe ne kadar
+       yaklaşırsan o kadar çok yıldız kazanırsın. Doğru yazınca puan alırsın; yanlış yazarsan o
+       hayvan yanlış sayılır ve sıradakine geçersin. Süre dolunca skorun çıkar.</p>
+
+    <div class="hint-toggle">
+      <div class="tx">
+        <b>Hayvanın adını göster</b>
+        <span>Açıkken ad her zaman görünür — bilemesen bile bakıp yazabilirsin (önerilir).</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="showNameChk" checked>
+        <span class="slot"></span><span class="knob"></span>
+      </label>
+    </div>
+
+    <div class="section-label">Seviye Seç — her seviyede süre 1 dakika</div>
+    <div class="tier-grid" id="tierGrid"></div>
+
+    <div class="btn-row">
+      <button class="btn" id="startBtn" disabled>Oyunu Başlat</button>
+      <span class="hint" id="menuHint">Devam etmek için bir seviye seç.</span>
+    </div>
+    <div class="menu-foot">
+      <button class="btn ghost small" id="resetBtn">Rekorları Sıfırla</button>
+      <span class="hint" id="resetHint"></span>
+    </div>
+  </section>
+
+  <!-- ============ RACE ============ -->
+  <section class="screen hidden" id="raceScreen">
+    <div class="hud">
+      <div class="stat"><div class="k">Kalan Süre</div><div class="v" id="sTime">1:00</div></div>
+      <div class="stat"><div class="k">Doğru</div><div class="v" id="sDone">0</div></div>
+      <div class="stat"><div class="k">Puan</div><div class="v" id="sScore">0</div></div>
+      <div class="stat"><div class="k">İsabet</div><div class="v" id="sAcc">100%</div></div>
+    </div>
+
+    <div class="card" id="card">
+      <div class="big-emoji" id="bigEmoji">🐶</div>
+      <div class="name-label" id="nameLabel">köpek</div>
+      <div class="letter-guide" id="letterGuide"></div>
+      <input id="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" disabled placeholder="buraya yaz...">
+      <div class="nextup"><span class="nx-lbl">Sıradaki</span><span id="nextUp"></span></div>
+      <div class="type-hint">Adı yaz — doğru olunca kendiliğinden geçer. İstersen <b>boşluk</b> ya da <b>Enter</b>.</div>
+    </div>
+
+    <div class="race-foot">
+      <button class="btn ghost small" id="quitBtn">Menüye Dön</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section class="screen hidden result" id="resultScreen">
+    <h2 id="rTitle">—</h2>
+    <p class="rsub" id="rSub">—</p>
+    <div class="stars" id="rStars"></div>
+    <div id="rRecord" class="record-badge hidden">🏅 Yeni Rekor!</div>
+    <div class="rstats" id="rStats"></div>
+    <div class="btn-row">
+      <button class="btn" id="againBtn">Tekrar Oyna</button>
+      <button class="btn ghost" id="menuBtn">Menüye Dön</button>
+    </div>
+    <div class="divider"></div>
+    <div class="btn-row">
+      <button class="btn" id="adjustBtn">—</button>
+      <span class="adjust-note" id="adjustNote"></span>
+    </div>
+  </section>
+</div>
+
+<div class="countdown hidden" id="countdown">3</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ------------------------------------------------------------------ *
+   *  Data
+   * ------------------------------------------------------------------ */
+  // Süre her seviyede sabit 1 dakika. count = o seviyenin hayvan hedefi (1 dakikada ulaşmaya çalıştığın sayı).
+  const TIME_LIMIT_MS = 60000;
+  const TIERS = [
+    {emoji:'🐌', name:'Salyangoz',  count:60,  sub:'başlangıç'},
+    {emoji:'🐢', name:'Kaplumbağa', count:110, sub:'kolay'},
+    {emoji:'🦆', name:'Ördek',      count:160, sub:'orta'},
+    {emoji:'🐇', name:'Tavşan',     count:210, sub:'zor'},
+    {emoji:'🐎', name:'At',         count:260, sub:'çok zor'},
+    {emoji:'🐆', name:'Çita',       count:300, sub:'usta'}
+  ];
+
+  const ANIMALS = [
+    ['🐶','köpek'],['🐱','kedi'],['🐭','fare'],['🐹','hamster'],['🐰','tavşan'],
+    ['🦊','tilki'],['🐻','ayı'],['🐼','panda'],['🐨','koala'],['🐯','kaplan'],
+    ['🦁','aslan'],['🐮','inek'],['🐷','domuz'],['🐸','kurbağa'],['🐵','maymun'],
+    ['🐔','tavuk'],['🐧','penguen'],['🐦','kuş'],['🦆','ördek'],['🦅','kartal'],
+    ['🦉','baykuş'],['🦇','yarasa'],['🐴','at'],['🐺','kurt'],['🐝','arı'],
+    ['🐛','tırtıl'],['🦋','kelebek'],['🐌','salyangoz'],['🐜','karınca'],['🦗','çekirge'],
+    ['🕷️','örümcek'],['🦂','akrep'],['🐢','kaplumbağa'],['🐍','yılan'],['🦎','kertenkele'],
+    ['🦕','dinozor'],['🐙','ahtapot'],['🦑','kalamar'],['🦐','karides'],['🦀','yengeç'],
+    ['🐠','balık'],['🐬','yunus'],['🐳','balina'],['🐊','timsah'],['🐆','leopar'],
+    ['🦓','zebra'],['🦍','goril'],['🦧','orangutan'],['🐘','fil'],['🦏','gergedan'],
+    ['🐪','deve'],['🦒','zürafa'],['🦘','kanguru'],['🐂','boğa'],['🐑','koyun'],
+    ['🦙','lama'],['🐐','keçi'],['🦌','geyik'],['🐓','horoz'],['🦃','hindi'],
+    ['🦜','papağan'],['🦢','kuğu'],['🦩','flamingo'],['🕊️','güvercin'],['🦝','rakun'],
+    ['🦨','kokarca'],['🦡','porsuk'],['🐀','sıçan'],['🐿️','sincap'],['🦔','kirpi'],
+    ['🦭','fok'],['🦫','kunduz']
+  ].map(a=>({emoji:a[0], name:a[1]}));
+
+  const LS = { sound:'hky2_sound', showName:'hky2_showname', best:'hky2_best_v3' };
+
+  /* ------------------------------------------------------------------ *
+   *  Safe localStorage
+   * ------------------------------------------------------------------ */
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+  let bests = {};
+  try{ bests = JSON.parse(lsGet(LS.best) || '{}') || {}; }catch(e){ bests = {}; }
+  function saveBests(){ lsSet(LS.best, JSON.stringify(bests)); }
+
+  /* ------------------------------------------------------------------ *
+   *  Sound (Web Audio — dosyasız)
+   * ------------------------------------------------------------------ */
+  let actx = null;
+  let soundOn = lsGet(LS.sound) !== '0';
+  function ac(){
+    if(!actx){ try{ actx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ actx = null; } }
+    return actx;
+  }
+  function tone(freq, dur, type, vol, delay){
+    if(!soundOn) return;
+    const c = ac(); if(!c) return;
+    const t0 = c.currentTime + (delay || 0);
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.14, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t0); o.stop(t0 + dur + 0.03);
+  }
+  const sfx = {
+    ok(){ tone(660,0.07,'square',0.05); tone(990,0.10,'square',0.05,0.06); },
+    bad(){ tone(300,0.13,'sine',0.06); },
+    pop(){ tone(540,0.05,'sine',0.05); },
+    tick(){ tone(440,0.09,'sine',0.12); },
+    tickLow(){ tone(300,0.10,'square',0.10); },
+    go(){ tone(880,0.22,'sine',0.16); },
+    timeup(){ [0,0.14,0.28].forEach((d,i)=>tone([440,330,220][i],0.3,'sawtooth',0.12,d)); },
+    win(){ [0,0.12,0.24,0.40].forEach((d,i)=>tone([523,659,784,1047][i],0.24,'triangle',0.15,d)); },
+    lose(){ [0,0.16,0.32].forEach((d,i)=>tone([523,440,349][i],0.26,'triangle',0.12,d)); }
+  };
+
+  /* ------------------------------------------------------------------ *
+   *  Element refs
+   * ------------------------------------------------------------------ */
+  const $ = id => document.getElementById(id);
+  const menuScreen=$('menuScreen'), raceScreen=$('raceScreen'), resultScreen=$('resultScreen');
+  const tierGrid=$('tierGrid'), tierPill=$('tierPill'), startBtn=$('startBtn'), menuHint=$('menuHint');
+  const showNameChk=$('showNameChk'), soundBtn=$('soundBtn'), resetBtn=$('resetBtn'), resetHint=$('resetHint');
+  const inp=$('inp'), bigEmoji=$('bigEmoji'), nameLabel=$('nameLabel'), letterGuide=$('letterGuide'), nextUp=$('nextUp'), card=$('card');
+  const sTime=$('sTime'), sDone=$('sDone'), sScore=$('sScore'), sAcc=$('sAcc');
+  const countdown=$('countdown'), quitBtn=$('quitBtn');
+  const rTitle=$('rTitle'), rSub=$('rSub'), rStars=$('rStars'), rStats=$('rStats'), rRecord=$('rRecord');
+  const againBtn=$('againBtn'), menuBtn=$('menuBtn'), adjustBtn=$('adjustBtn'), adjustNote=$('adjustNote');
+
+  /* ------------------------------------------------------------------ *
+   *  State
+   * ------------------------------------------------------------------ */
+  let selIdx = -1;
+  let showName = lsGet(LS.showName) !== '0';
+  let race = null;
+
+  showNameChk.checked = showName;
+  soundBtn.textContent = soundOn ? '🔊' : '🔇';
+
+  /* ------------------------------------------------------------------ *
+   *  Helpers
+   * ------------------------------------------------------------------ */
+  const norm = s => (s || '').toLocaleLowerCase('tr').trim();
+  function esc(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+  function shuffle(a){
+    for(let i=a.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+  function fmtClock(sec){
+    sec = Math.max(0, Math.round(sec));
+    return Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Menu
+   * ------------------------------------------------------------------ */
+  TIERS.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='tier';
+    b.dataset.i=i;
+    b.innerHTML=`<div class="top"><span class="em">${t.emoji}</span><span class="nm">${t.name}</span></div>`+
+                `<div class="sub">hedef ${t.count} · 1:00</div><div class="best" data-best></div>`;
+    b.addEventListener('click',()=>selectTier(i));
+    tierGrid.appendChild(b);
+  });
+  refreshBests();
+
+  function refreshBests(){
+    tierGrid.querySelectorAll('.tier').forEach(el=>{
+      const rec = bests[el.dataset.i];
+      const slot = el.querySelector('[data-best]');
+      slot.textContent = (rec && rec.score) ? `★ en iyi ${rec.score} puan` : '';
+    });
+  }
+
+  function selectTier(i){
+    selIdx=i;
+    [...tierGrid.children].forEach((c,ci)=>c.classList.toggle('selected',ci===i));
+    startBtn.disabled=false;
+    menuHint.textContent='';
+    updatePill();
+  }
+  function updatePill(){
+    if(selIdx<0){ tierPill.textContent='Seviye seçilmedi'; return; }
+    const t=TIERS[selIdx];
+    tierPill.textContent=`Seviye ${selIdx+1}/${TIERS.length} · ${t.emoji} ${t.name} · hedef ${t.count} · 1 dk`;
+  }
+
+  showNameChk.addEventListener('change',()=>{
+    showName = showNameChk.checked;
+    lsSet(LS.showName, showName ? '1' : '0');
+  });
+
+  soundBtn.addEventListener('click',()=>{
+    soundOn=!soundOn;
+    lsSet(LS.sound, soundOn ? '1' : '0');
+    soundBtn.textContent = soundOn ? '🔊' : '🔇';
+    if(soundOn){ const c=ac(); if(c && c.state==='suspended') c.resume(); sfx.tick(); }
+  });
+
+  resetBtn.addEventListener('click',()=>{
+    if(!confirm('Tüm seviyelerdeki rekorlar silinsin mi?')) return;
+    bests={}; lsDel(LS.best); refreshBests();
+    resetHint.textContent='Rekorlar silindi.';
+    setTimeout(()=>resetHint.textContent='',2500);
+  });
+
+  startBtn.addEventListener('click',()=>{ const c=ac(); if(c && c.state==='suspended') c.resume(); startRace(); });
+  againBtn.addEventListener('click',()=>startRace());
+  menuBtn.addEventListener('click',()=>show('menu'));
+  quitBtn.addEventListener('click',()=>{ if(race) race.running=false; show('menu'); });
+
+  function show(which){
+    menuScreen.classList.toggle('hidden',which!=='menu');
+    raceScreen.classList.toggle('hidden',which!=='race');
+    resultScreen.classList.toggle('hidden',which!=='result');
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Queue + card rendering
+   * ------------------------------------------------------------------ */
+  function buildQueue(finish){
+    let q = shuffle(ANIMALS.slice());
+    while(q.length < finish + 8) q = q.concat(shuffle(ANIMALS.slice()));
+    return q.slice(0, finish + 8);
+  }
+
+  function renderCard(animateEmoji){
+    const cur = race.queue[race.qi];
+    if(bigEmoji.textContent !== cur.emoji || animateEmoji){
+      bigEmoji.textContent = cur.emoji;
+      bigEmoji.classList.remove('pop'); void bigEmoji.offsetWidth; bigEmoji.classList.add('pop');
+    }
+    nameLabel.textContent = race.showName ? cur.name : '• • •';
+    nameLabel.classList.toggle('masked', !race.showName);
+
+    const target = cur.name;
+    const val = norm(inp.value);
+    let html='';
+    for(let i=0;i<target.length;i++){
+      let cls='lg-pending', ch=target[i];
+      if(i<val.length) cls = (val[i]===target[i]) ? 'lg-good' : 'lg-bad';
+      if(!race.showName && cls==='lg-pending') ch='_';
+      html += `<span class="${cls}">${esc(ch)}</span>`;
+    }
+    if(val.length>target.length) html += `<span class="lg-bad">${esc(inp.value.slice(target.length))}</span>`;
+    letterGuide.innerHTML = html;
+
+    nextUp.innerHTML = race.queue.slice(race.qi+1, race.qi+5).map(a=>`<span>${a.emoji}</span>`).join('');
+  }
+
+  function liveScore(){ return Math.max(0, race.correct*10 - race.errors*3); }
+  function updateHud(){
+    sTime.textContent = fmtClock(Math.ceil(race.remainMs/1000));
+    sDone.textContent = race.correct + ' / ' + race.tier.count;
+    sScore.textContent = String(liveScore());
+    const at = race.correct + race.errors;
+    sAcc.textContent = (at>0 ? Math.round(race.correct/at*100) : 100) + '%';
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Game flow
+   * ------------------------------------------------------------------ */
+  function startRace(){
+    updatePill();
+    const tier = TIERS[selIdx];
+    const limitMs = TIME_LIMIT_MS;
+    race = {
+      tier, finish:tier.count, showName, limitMs,
+      queue:buildQueue(tier.count), qi:0,
+      correct:0, errors:0,
+      startTime:0, running:false, ended:false,
+      remainMs:limitMs, elapsedMs:0, lastTickSec:null
+    };
+    show('race');
+    inp.value=''; inp.disabled=true;
+    sTime.classList.remove('low');
+    updateHud();
+    renderCard(true);
+
+    let n=3;
+    countdown.textContent=n;
+    countdown.classList.remove('hidden');
+    sfx.tick();
+    const iv=setInterval(()=>{
+      n--;
+      if(n>0){ countdown.textContent=n; sfx.tick(); }
+      else if(n===0){ countdown.textContent='Başla!'; sfx.go(); }
+      else{ clearInterval(iv); countdown.classList.add('hidden'); beginRun(); }
+    },800);
+  }
+
+  function beginRun(){
+    race.running=true;
+    race.startTime=performance.now();
+    inp.disabled=false;
+    inp.focus();
+    requestAnimationFrame(loop);
+  }
+
+  function loop(now){
+    if(!race || !race.running) return;
+    race.elapsedMs = now - race.startTime;
+    race.remainMs  = Math.max(0, race.limitMs - race.elapsedMs);
+
+    const remainSec = Math.ceil(race.remainMs/1000);
+    if(remainSec !== race.lastTickSec){
+      race.lastTickSec = remainSec;
+      if(remainSec <= 5 && remainSec > 0) sfx.tickLow();
+    }
+    sTime.classList.toggle('low', race.remainMs <= 15000);
+
+    updateHud();
+
+    if(race.remainMs <= 0){ endRace(); return; }
+    requestAnimationFrame(loop);
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Typing
+   * ------------------------------------------------------------------ */
+  inp.addEventListener('keydown',e=>{
+    if(!race||!race.running) return;
+    if(e.key==='Enter'){ e.preventDefault(); tryAccept(false); return; }
+  });
+  inp.addEventListener('input',()=>{
+    if(!race||!race.running) return;
+    if(inp.value.indexOf(' ')!==-1){
+      inp.value = inp.value.replace(/\s+/g,'');
+      tryAccept(false);
+      return;
+    }
+    const cur = race.queue[race.qi];
+    if(!cur) return;
+    if(norm(inp.value) === cur.name){ tryAccept(true); return; }
+    renderCard();
+  });
+
+  function flashGood(){
+    sDone.style.transform='scale(1.25)';
+    setTimeout(()=>{ sDone.style.transform=''; },150);
+    card.classList.remove('good'); void card.offsetWidth; card.classList.add('good');
+    setTimeout(()=>card.classList.remove('good'),260);
+  }
+
+  function refillQueue(){
+    if(race.queue.length - race.qi > 6) return;
+    race.queue = race.queue.concat(shuffle(ANIMALS.slice()));
+  }
+
+  function tryAccept(auto){
+    if(!race||!race.running) return;
+    const cur = race.queue[race.qi];
+    if(!cur) return;
+    const v = norm(inp.value);
+    if(!v) return;
+
+    if(v === cur.name){
+      race.correct++;
+      race.qi++;
+      inp.value='';
+      sfx.ok();
+      flashGood();
+      refillQueue();
+      renderCard(true);
+      sfx.pop();
+    }else if(!auto){
+      // yanlış: bu hayvan yanlış sayılır, sıradakine geç
+      race.errors++;
+      race.qi++;
+      inp.value='';
+      sfx.bad();
+      card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+      refillQueue();
+      renderCard(true);
+    }
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Confetti
+   * ------------------------------------------------------------------ */
+  function confetti(){
+    const colors=['#ff6b35','#22b8a8','#f2b705','#2f9e5f','#4d7cff','#e4572e','#c14dff'];
+    for(let i=0;i<90;i++){
+      const p=document.createElement('div');
+      p.className='confetti-piece';
+      p.style.left=Math.random()*100+'vw';
+      p.style.background=colors[(Math.random()*colors.length)|0];
+      p.style.animationDuration=(1.8+Math.random()*1.6)+'s';
+      p.style.animationDelay=(Math.random()*0.5)+'s';
+      p.style.transform='rotate('+(Math.random()*360)+'deg)';
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),4200);
+    }
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  End / result / records
+   * ------------------------------------------------------------------ */
+  const HIT_MSG=['Harikasın! 🌟','Süpersin! 🎉','Çok hızlısın! ⚡','Bravo! 👏','Şampiyon gibi! 🏆'];
+  const OK_MSG =['Süre bitti — çok iyi gittin! 👏','Neredeyse hedefteydin! 🌟','Güzel tempo! Bir dahakine hedef senindir. 🚀'];
+  const LOW_MSG=['Sorun değil, tekrar dene! 💪','Biraz daha pratik, hedefi yakalarsın! 🌈','İyi denemeydi! Devam et. 🚀'];
+
+  function endRace(){
+    if(!race || race.ended) return;
+    race.ended=true; race.running=false;
+    inp.disabled=true;
+    sTime.classList.remove('low');
+
+    const elapsedSec = race.elapsedMs/1000;
+    const attempts   = race.correct + race.errors;
+    const acc        = attempts>0 ? Math.round(race.correct/attempts*100) : 100;
+    const target     = race.tier.count;
+    const ratio      = race.correct / target;
+    const hitTarget  = race.correct >= target;
+    const score      = liveScore();
+
+    // yıldız: en az 1 (herkes bir yıldız alır), iyi yazana 2, en iyi yazana 3
+    let stars;
+    if(ratio>=0.55 && acc>=80)     stars = 3;
+    else if(ratio>=0.30 && acc>=60) stars = 2;
+    else                            stars = 1;
+
+    // ---- rekor: seviye başına en iyi puan ----
+    const key = String(selIdx);
+    const rec = bests[key] || { score:0, plays:0, hits:0 };
+    rec.plays++;
+    let newRecord=false;
+    if(score > rec.score){ rec.score = score; newRecord = true; }
+    if(hitTarget) rec.hits++;
+    bests[key]=rec;
+    saveBests();
+    refreshBests();
+
+    const goodEnding = hitTarget || stars>=2;
+    if(goodEnding){ sfx.win(); confetti(); } else { sfx.timeup(); }
+
+    show('result');
+    rTitle.textContent = hitTarget ? 'HEDEFİ TUTTURDUN! 🏆'
+                       : (stars>=3 ? 'SÜPER HIZLIYDIN! ⚡' : 'SÜRE DOLDU ⏰');
+    rTitle.className = goodEnding ? 'win' : 'lose';
+    rSub.textContent = hitTarget
+      ? HIT_MSG[(Math.random()*HIT_MSG.length)|0] + ` 1 dakikada ${race.correct} hayvan!`
+      : (stars>=2 ? OK_MSG[(Math.random()*OK_MSG.length)|0] : LOW_MSG[(Math.random()*LOW_MSG.length)|0]);
+    rStars.textContent = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+    rRecord.classList.toggle('hidden', !newRecord);
+
+    rStats.innerHTML='';
+    [
+      ['Doğru Hayvan', String(race.correct)],
+      ['Yanlış Hayvan', String(race.errors)],
+      ['Yazılan Hayvan', String(race.correct + race.errors)],
+      ['Puan', String(score)],
+      ['En İyi Skor', String(rec.score)],
+      ['Süre', elapsedSec.toFixed(0)+' sn']
+    ].forEach(([k,v])=>{
+      const d=document.createElement('div');
+      d.className='stat';
+      d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
+      rStats.appendChild(d);
+    });
+
+    // ---- seviye ayar butonu ----
+    if(hitTarget || stars>=3){
+      const has = selIdx < TIERS.length-1;
+      adjustBtn.className='btn good';
+      adjustBtn.textContent='Sonraki Seviye ▲';
+      adjustBtn.disabled=!has;
+      if(has){
+        adjustBtn.onclick=()=>{ selIdx++; updatePill(); startRace(); };
+        adjustNote.textContent=`Sıradaki: ${TIERS[selIdx+1].emoji} ${TIERS[selIdx+1].name} · hedef ${TIERS[selIdx+1].count}`;
+      }else{
+        adjustBtn.onclick=null;
+        adjustNote.textContent='En zor seviyenin hedefini de tutturdun. Efsanesin! 🎉';
+      }
+    }else{
+      const has = selIdx > 0;
+      adjustBtn.className='btn ghost';
+      adjustBtn.textContent='Önceki Seviye ▼';
+      adjustBtn.disabled=!has;
+      if(has){
+        adjustBtn.onclick=()=>{ selIdx--; updatePill(); startRace(); };
+        adjustNote.textContent=`Sıradaki: ${TIERS[selIdx-1].emoji} ${TIERS[selIdx-1].name} · hedef ${TIERS[selIdx-1].count}`;
+      }else{
+        adjustBtn.onclick=null;
+        adjustNote.textContent='Bu ilk seviye. Biraz daha pratik yap, hedefi yakalayacaksın! 💪';
+      }
+    }
+  }
+
+  // varsayılan seçim: Salyangoz
+  selectTier(0);
+})();
+</script>
+</body>
+</html>

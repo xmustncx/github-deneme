@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Boya Kapmaca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#1b1e30;overflow:hidden;font-family:'Baloo 2',system-ui,sans-serif;color:#fff;user-select:none;-webkit-user-select:none}
+  #app{position:relative;height:100vh;height:100dvh;width:min(100vw,calc(100dvh*0.5625));margin:0 auto;overflow:hidden;background:#2a2e48}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  [hidden]{display:none!important}
+
+  /* HUD */
+  #hud{position:absolute;inset:0;pointer-events:none}
+  #me{position:absolute;left:12px;top:12px;background:rgba(20,22,40,.55);border-radius:14px;padding:6px 12px;line-height:1.05}
+  #mePct{font-size:26px;font-weight:800}
+  #meKills{font-size:14px;opacity:.85}
+  #lb{position:absolute;right:10px;top:10px;min-width:150px;background:rgba(20,22,40,.55);border-radius:14px;padding:6px 10px;font-size:14px}
+  .row{display:flex;align-items:center;gap:6px;padding:1px 0;white-space:nowrap}
+  .row .n{flex:1;overflow:hidden;text-overflow:ellipsis;max-width:92px}
+  .row .d{width:10px;height:10px;border-radius:3px;flex:none}
+  .row .p{font-weight:700;margin-left:6px}
+  .row.mine{color:#ffe066}
+  .row.sep{border-top:1px solid rgba(255,255,255,.2);margin-top:3px;padding-top:3px}
+  #toasts{position:absolute;left:0;right:0;top:78px;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+  .toast{background:rgba(20,22,40,.75);padding:4px 14px;border-radius:999px;font-weight:700;animation:tIn .25s ease-out}
+  @keyframes tIn{from{transform:translateY(-8px);opacity:0}}
+
+  /* screens */
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 16px;text-align:center;background:linear-gradient(180deg,rgba(27,30,48,.55),rgba(27,30,48,.85))}
+  h1{margin:0;font-size:clamp(46px,14vw,64px);line-height:.9;font-weight:800;letter-spacing:.5px;text-shadow:0 5px 0 #0006}
+  h1 span{color:#ffd23f}
+  .best{margin:0;opacity:.9}
+  input{font:inherit;font-size:18px;text-align:center;width:220px;padding:8px 12px;border-radius:12px;border:none;outline:none;background:#fff;color:#222}
+  .skins{display:grid;grid-template-columns:repeat(5,52px);gap:8px}
+  .skin{position:relative;width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font-size:26px;cursor:pointer;box-shadow:inset 0 -6px 0 #0003;border:3px solid transparent}
+  .skin.sel{border-color:#fff;transform:scale(1.08)}
+  .skin.lock{filter:grayscale(1) brightness(.6);cursor:default}
+  .skin .req{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:#0007;border-radius:9px;line-height:1}
+  .skinName{min-height:22px;font-weight:700;opacity:.9}
+  button{font:inherit;cursor:pointer;border:none}
+  .big{font-size:34px;font-weight:800;padding:8px 58px;border-radius:18px;background:#3ddc97;color:#113;box-shadow:0 6px 0 #1f9a64;transition:transform .08s}
+  .big:active{transform:translateY(4px);box-shadow:0 2px 0 #1f9a64}
+  .ghost{font-size:18px;font-weight:700;padding:6px 26px;border-radius:14px;background:rgba(255,255,255,.14);color:#fff}
+  .how{font-size:14px;opacity:.75;max-width:300px;line-height:1.3}
+  #muteBtn{position:absolute;right:12px;top:12px;width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.14);font-size:20px;color:#fff}
+
+  #over .card{background:rgba(20,22,40,.85);border-radius:22px;padding:18px 22px;min-width:260px}
+  #over h2{margin:0;font-size:40px;line-height:1}
+  #cause{opacity:.85;margin:2px 0 10px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stat{background:rgba(255,255,255,.08);border-radius:12px;padding:6px}
+  .stat b{display:block;font-size:26px;line-height:1.1}
+  .stat small{opacity:.75}
+  #newBest{color:#ffd23f;font-weight:800;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="cv"></canvas>
+
+  <div id="hud" hidden>
+    <div id="me"><div id="mePct">0.00%</div><div id="meKills">⚔ 0</div></div>
+    <div id="lb"></div>
+  </div>
+  <div id="toasts"></div>
+
+  <div id="menu" class="screen">
+    <button id="muteBtn" title="Ses">🔊</button>
+    <h1>Boya<br><span>Kapmaca</span></h1>
+    <p class="best">En iyi alanın: <b id="bestTxt">0%</b></p>
+    <input id="nameIn" maxlength="12" placeholder="Adını yaz">
+    <div class="skins" id="skins"></div>
+    <div class="skinName" id="skinName"></div>
+    <button id="playBtn" class="big">OYNA</button>
+    <div class="how">Parmağını kaydır, o yöne gidersin. Evinden çık, iz bırak, eve dön: çevirdiğin yer senin olur. İzine kimse değmesin!</div>
+  </div>
+
+  <div id="over" class="screen" hidden>
+    <div class="card">
+      <h2>Elendin!</h2>
+      <div id="cause"></div>
+      <div class="stats">
+        <div class="stat"><b id="oPct">0%</b><small>Alanın</small></div>
+        <div class="stat"><b id="oRank">#1</b><small>Sıran</small></div>
+        <div class="stat"><b id="oPeak">0%</b><small>En yüksek</small></div>
+        <div class="stat"><b id="oKills">0</b><small>Yok ettiğin</small></div>
+      </div>
+      <div id="newBest" hidden>🏆 Yeni rekor!</div>
+    </div>
+    <button id="againBtn" class="big">Tekrar Oyna</button>
+    <button id="homeBtn" class="ghost">Ana Menü</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ================= Ayarlar ================= */
+const G = 128, C = G / 2, R = 60, CELLS = G * G;
+const SPEED = 5.6;          // hücre / saniye
+const TURN_HUMAN = 11;      // radyan / saniye
+const TURN_BOT = 6.5;
+const VIEW_CELLS = 24;      // oyunda ekran genişliğine sığan hücre
+const BOT_COUNT = 11;
+const TAU = Math.PI * 2;
+
+const PALETTE = ['#ff4d6d','#ff8c42','#ffd23f','#3ddc97','#2ec4b6','#4cc9f0','#4361ee','#9b5de5','#f15bb5','#8ac926','#e63946','#00bbf9','#fb5607','#6a994e'];
+const SKINS = [
+  {name:'Kırmızı Gülen', color:'#ff4d6d', face:'😄', need:0},
+  {name:'Mavi Havalı',   color:'#4cc9f0', face:'😎', need:0},
+  {name:'Yeşil Kurbağa', color:'#3ddc97', face:'🐸', need:0},
+  {name:'Sarı Civciv',   color:'#ffd23f', face:'🐥', need:0},
+  {name:'Mor Uzaylı',    color:'#9b5de5', face:'👽', need:3},
+  {name:'Turuncu Tilki', color:'#ff8c42', face:'🦊', need:6},
+  {name:'Pembe Kedi',    color:'#f15bb5', face:'🐱', need:10},
+  {name:'Lacivert Robot',color:'#4361ee', face:'🤖', need:15},
+  {name:'Turkuaz Hayalet',color:'#2ec4b6',face:'👻', need:22},
+  {name:'Altın Taç',     color:'#fb5607', face:'👑', need:30},
+];
+const BOT_NAMES = ['Kaptan','Zeynep','Tosun','Bulut','Pırıl','Efe','Limon','Şimşek','Nazlı','Kartal','Ceren','Duman','Pofuduk','Ayaz','Yıldız','Bora','Fıstık','Tarçın','Kuzgun','Mercan','Poyraz','Leblebi','Cesur','Deniz','Mavi','Roket','Kumsal','Bıdık','Atlas','Nane'];
+const BOT_FACES = ['😃','😐','😠','🙂','😜','🤨','😺','🐶','🐼','🐯','🐷','🐵','🦁','🐙'];
+
+/* ================= Kayıt ================= */
+const SAVE_KEY = 'boyakapmaca_v1';
+let save = {skin:0, best:0, name:'', muted:false};
+try { Object.assign(save, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch(e){}
+function persist(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch(e){} }
+
+/* ================= Izgara ================= */
+const owner = new Uint8Array(CELLS);   // hücrenin sahibi (0 = boş)
+const trail = new Uint8Array(CELLS);   // hücrede kimin izi var
+const inside = new Uint8Array(CELLS);  // hücre yuvarlak haritanın içinde mi
+let TOTAL = 0;
+for (let y = 0; y < G; y++) for (let x = 0; x < G; x++) {
+  const dx = x + .5 - C, dy = y + .5 - C;
+  if (dx*dx + dy*dy <= R*R) { inside[y*G+x] = 1; TOTAL++; }
+}
+
+// Bölge görüntüsü: her hücre bir piksel, büyütülerek çizilir
+function makeLayer(){ const c = document.createElement('canvas'); c.width = c.height = G; const x = c.getContext('2d'); return {c, x, img: x.createImageData(G, G)}; }
+const terr = makeLayer(), shade = makeLayer();
+let imgDirty = true;
+
+const PAL = [];  // id -> {light, dark}
+function hexRgb(h){ const n = parseInt(h.slice(1), 16); return [n>>16, (n>>8)&255, n&255]; }
+function mix(a, b, t){ return a.map((v,i) => Math.round(v + (b[i]-v)*t)); }
+function rgbStr(a, al=1){ return `rgba(${a[0]},${a[1]},${a[2]},${al})`; }
+function setPalette(id, hex){
+  const base = hexRgb(hex);
+  PAL[id] = {base, light: mix(base, [255,255,255], .3), dark: mix(base, [0,0,0], .35)};
+}
+function setOwner(i, id){
+  owner[i] = id;
+  const o = i * 4, T = terr.img.data, S = shade.img.data;
+  if (id) {
+    const L = PAL[id].light, D = PAL[id].dark;
+    T[o]=L[0]; T[o+1]=L[1]; T[o+2]=L[2]; T[o+3]=255;
+    S[o]=D[0]; S[o+1]=D[1]; S[o+2]=D[2]; S[o+3]=255;
+  } else { T[o+3] = 0; S[o+3] = 0; }
+  imgDirty = true;
+}
+
+/* ================= Oyuncular ================= */
+let players = [], human = null;
+let state = 'menu'; // menu | play | dead
+
+function rand(a, b){ return a + Math.random() * (b - a); }
+function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+function newPlayer(id, isBot){
+  return {id, isBot, name:'', color:'#fff', face:'🙂', alive:false, x:0, y:0, ang:0, tAng:0,
+    cell:-1, trail:[], path:[], lastHome:{x:0,y:0}, count:0, peak:0, kills:0,
+    cx:C, cy:C, respawnT:0, ai:null};
+}
+function usedColors(except){ return players.filter(p => p !== except && (p.alive || !p.isBot)).map(p => p.color); }
+function botIdentity(p){
+  const used = usedColors(p);
+  const free = PALETTE.filter(c => !used.includes(c));
+  p.color = free.length ? pick(free) : pick(PALETTE);
+  const names = players.filter(q => q !== p).map(q => q.name);
+  const fn = BOT_NAMES.filter(n => !names.includes(n));
+  p.name = fn.length ? pick(fn) : pick(BOT_NAMES);
+  p.face = pick(BOT_FACES);
+  setPalette(p.id, p.color);
+  p.ai = {mode:'idle', idle:rand(.2,1), wps:[], tick:0, prevL:0, target:null, home:null, huntCell:-1, huntT:0,
+    aggr:Math.random(), greed:rand(.15,1), caution:rand(.3,1)};
+  p.ai.maxTrail = 22 + p.ai.greed * 55;
+}
+
+function spawn(p){
+  let spot = null;
+  outer:
+  for (let tries = 0; tries < 400; tries++) {
+    const a = Math.random() * TAU, r = Math.sqrt(Math.random()) * (R - 9);
+    const cx = Math.floor(C + Math.cos(a) * r), cy = Math.floor(C + Math.sin(a) * r);
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const i = (cy+dy)*G + cx + dx;
+      if (owner[i] || trail[i]) continue outer;
+    }
+    let md = 1e9;
+    for (const q of players) if (q.alive && q !== p) md = Math.min(md, Math.hypot(q.x - cx, q.y - cy));
+    if (md > 12 || tries > 250) { spot = {cx, cy}; break; }
+  }
+  if (!spot) return false;
+  const {cx, cy} = spot;
+  let n = 0;
+  for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) {
+    if (dx*dx + dy*dy <= 2.7*2.7) { setOwner((cy+dy)*G + cx + dx, p.id); n++; }
+  }
+  Object.assign(p, {x:cx+.5, y:cy+.5, alive:true, cell:cy*G+cx, trail:[], path:[], count:n, peak:n, kills:0, cx:cx+.5, cy:cy+.5});
+  p.ang = p.tAng = Math.random() * TAU;
+  p.lastHome = {x:p.x, y:p.y};
+  return true;
+}
+
+function resetWorld(withHuman){
+  owner.fill(0); trail.fill(0);
+  terr.img.data.fill(0); shade.img.data.fill(0); imgDirty = true;
+  players = []; human = null; particles = []; floaters = [];
+  if (withHuman) {
+    human = newPlayer(1, false);
+    const s = SKINS[save.skin] || SKINS[0];
+    human.name = (save.name || '').trim() || 'Sen';
+    human.color = s.color; human.face = s.face;
+    setPalette(1, s.color);
+    players.push(human);
+    spawn(human);
+    const a = Math.atan2(C - human.y, C - human.x);
+    human.ang = human.tAng = a;
+  }
+  for (let k = 0; k < BOT_COUNT; k++) {
+    const b = newPlayer(players.length + 1, true);
+    players.push(b);
+    botIdentity(b);
+    spawn(b);
+  }
+}
+
+/* ================= Hareket ve kurallar ================= */
+function angDiff(a, b){ let d = (a - b) % TAU; if (d > Math.PI) d -= TAU; if (d < -Math.PI) d += TAU; return d; }
+
+function movePlayer(p, dt){
+  const d = angDiff(p.tAng, p.ang), mt = (p.isBot ? TURN_BOT : TURN_HUMAN) * dt;
+  p.ang = Math.abs(d) <= mt ? p.tAng : p.ang + Math.sign(d) * mt;
+  const dist = SPEED * dt, n = Math.max(1, Math.ceil(dist / .3)), s = dist / n;
+  const cs = Math.cos(p.ang), sn = Math.sin(p.ang);
+  for (let k = 0; k < n; k++) {
+    let nx = p.x + cs * s, ny = p.y + sn * s;
+    const dx = nx - C, dy = ny - C, dd = Math.hypot(dx, dy), lim = R - 1.2;
+    if (dd > lim) { nx = C + dx / dd * lim; ny = C + dy / dd * lim; }  // duvar: kenar boyunca kay
+    p.x = nx; p.y = ny;
+    const i = (ny|0) * G + (nx|0);
+    if (i !== p.cell) { p.cell = i; enterCell(p, i); if (!p.alive) return; }
+  }
+}
+
+function enterCell(p, i){
+  const t = trail[i];
+  let ownTrail = false;
+  if (t === p.id) {
+    const k = p.trail.lastIndexOf(i);
+    if (k < p.trail.length - 3) { kill(p, p, 'self'); return; }   // kendi izine çarptı
+    ownTrail = true;
+  } else if (t) {
+    kill(players[t - 1], p, 'trail');                              // başkasının izine değdi → o ölür
+  }
+  if (owner[i] === p.id) {
+    p.lastHome.x = p.x; p.lastHome.y = p.y;
+    if (p.trail.length) capture(p);
+  } else if (!ownTrail) {
+    if (!p.trail.length) p.path = [{x:p.lastHome.x, y:p.lastHome.y}];
+    trail[i] = p.id; p.trail.push(i);
+    p.path.push({x:p.x, y:p.y});
+  }
+}
+
+const vis = new Uint32Array(CELLS), Q = new Int32Array(CELLS);
+let gen = 0;
+function capture(p){
+  const id = p.id, before = p.count;
+  for (const i of p.trail) { trail[i] = 0; setOwner(i, id); }
+  p.trail.length = 0; p.path.length = 0;
+  // Dışarıdan taşma doldurma: dışarıya ulaşılamayan her hücre çevrilmiştir
+  gen++; let h = 0, t = 0;
+  const push = i => { if (vis[i] !== gen && owner[i] !== id) { vis[i] = gen; Q[t++] = i; } };
+  for (let x = 0; x < G; x++) { push(x); push((G-1)*G + x); }
+  for (let y = 0; y < G; y++) { push(y*G); push(y*G + G - 1); }
+  while (h < t) {
+    const i = Q[h++], x = i % G;
+    if (x > 0) push(i - 1);
+    if (x < G - 1) push(i + 1);
+    if (i >= G) push(i - G);
+    if (i < CELLS - G) push(i + G);
+  }
+  for (let i = 0; i < CELLS; i++) if (inside[i] && owner[i] !== id && vis[i] !== gen) setOwner(i, id);
+  recount(p);
+  if (p === human) {
+    const gain = (p.count - before) / TOTAL * 100;
+    if (gain > 0.004) { floaters.push({x:p.x, y:p.y - 1, text:'+' + gain.toFixed(2) + '%', life:1.1}); sfx('capture'); }
+  }
+}
+
+function recount(capturer){
+  const cnt = new Int32Array(256), sx = new Float64Array(256), sy = new Float64Array(256);
+  for (let i = 0; i < CELLS; i++) { const o = owner[i]; if (o) { cnt[o]++; sx[o] += i % G; sy[o] += (i / G) | 0; } }
+  for (const q of players) {
+    q.count = cnt[q.id];
+    if (q.count) { q.cx = sx[q.id] / q.count + .5; q.cy = sy[q.id] / q.count + .5; }
+    if (q.alive) {
+      q.peak = Math.max(q.peak, q.count);
+      if (q.count === 0 && q !== capturer) kill(q, capturer, 'area');  // bütün alanı alındı
+    }
+  }
+}
+
+function rankOf(p){
+  return players.filter(q => q.alive && q.count > p.count).length + 1;
+}
+
+function kill(victim, killer, cause){
+  if (!victim.alive) return;
+  const rank = rankOf(victim), pct = victim.count / TOTAL * 100;
+  victim.alive = false;
+  for (const i of victim.trail) trail[i] = 0;
+  for (let i = 0; i < CELLS; i++) if (owner[i] === victim.id) setOwner(i, 0);
+  victim.trail = []; victim.path = []; victim.count = 0;
+  burst(victim.x, victim.y, victim.color);
+  if (killer && killer !== victim) killer.kills++;
+
+  if (victim === human) {
+    humanDied(killer, cause, rank, pct);
+  } else {
+    victim.respawnT = rand(2, 4);
+    if (human && state === 'play') {
+      if (killer === human) { toast(`💥 ${victim.name} yok edildi!`); sfx('kill'); }
+    }
+  }
+}
+
+/* ================= Bot yapay zekâsı ================= */
+function cellAt(x, y){ if (x < 0 || y < 0 || x >= G || y >= G) return -1; return (y|0) * G + (x|0); }
+function clampIn(pt, margin){
+  const dx = pt.x - C, dy = pt.y - C, d = Math.hypot(dx, dy), lim = R - margin;
+  if (d > lim) { pt.x = C + dx / d * lim; pt.y = C + dy / d * lim; }
+  return pt;
+}
+function nearestOwned(p){
+  const x0 = p.x|0, y0 = p.y|0;
+  for (let r = 1; r < 50; r++) {
+    let best = null, bd = 1e9;
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
+      const i = cellAt(x0 + dx, y0 + dy);
+      if (i >= 0 && owner[i] === p.id) { const d = dx*dx + dy*dy; if (d < bd) { bd = d; best = {x:x0+dx+.5, y:y0+dy+.5}; } }
+    }
+    if (best) return best;
+  }
+  return {x:p.cx, y:p.cy};
+}
+function plan(p){
+  const ai = p.ai;
+  let base = Math.atan2(p.y - p.cy, p.x - p.cx);
+  if (Math.hypot(p.y - p.cy, p.x - p.cx) < .5) base = Math.random() * TAU;
+  let ang = base + rand(-1, 1);
+  if (Math.hypot(p.x - C, p.y - C) > R - 14) ang = Math.atan2(C - p.y, C - p.x) + rand(-.9, .9);
+  const dx = Math.cos(ang), dy = Math.sin(ang), turn = Math.random() < .5 ? 1 : -1;
+  const px = -dy * turn, py = dx * turn;
+  let e = 0;
+  while (e < 30 && owner[cellAt(p.x + dx*e, p.y + dy*e)] === p.id) e++;
+  const a = rand(3, 5 + ai.greed * 9), b = rand(2.5, 4 + ai.greed * 8);
+  const p1 = clampIn({x:p.x + dx*(e+a), y:p.y + dy*(e+a)}, 4);
+  const p2 = clampIn({x:p1.x + px*b, y:p1.y + py*b}, 4);
+  const p3 = clampIn({x:p2.x - dx*(a+1.5), y:p2.y - dy*(a+1.5)}, 4);
+  const p4 = clampIn({x:p3.x - dx*2, y:p3.y - dy*2}, 4);
+  ai.wps = [p1, p2, p3, p4];
+  ai.mode = 'out';
+}
+function pathClear(p, a){
+  const cs = Math.cos(a), sn = Math.sin(a);
+  for (let d = .7; d <= 2.8; d += .5) {
+    const i = cellAt(p.x + cs*d, p.y + sn*d);
+    if (i < 0 || !inside[i]) return false;
+    if (trail[i] === p.id && p.trail.lastIndexOf(i) < p.trail.length - 3) return false;
+  }
+  return true;
+}
+const AVOID = [0, .45, -.45, .9, -.9, 1.5, -1.5, 2.2, -2.2, 3.0];
+
+function botThink(p, dt){
+  const ai = p.ai, L = p.trail.length;
+  if (ai.prevL > 0 && L === 0) { ai.mode = 'idle'; ai.idle = rand(.25, 1.2); ai.wps = []; }
+  ai.prevL = L;
+  ai.tick -= dt; ai.huntT -= dt;
+
+  if (ai.tick <= 0) {
+    ai.tick = .15;
+    if (L > 0) {
+      // tehlike: bir rakip izime yakın mı?
+      let danger = L > ai.maxTrail;
+      for (const q of players) {
+        if (danger) break;
+        if (!q.alive || q === p) continue;
+        const lim = 2.5 + ai.caution * 5;
+        if (Math.abs(q.x - p.x) > 40 || Math.abs(q.y - p.y) > 40) continue;
+        for (let k = 0; k < L; k += 2) {
+          const i = p.trail[k];
+          if (Math.hypot(q.x - (i % G + .5), q.y - ((i / G | 0) + .5)) < lim) { danger = true; break; }
+        }
+      }
+      if (danger && ai.mode !== 'back' && ai.mode !== 'hunt') ai.mode = 'back';
+      if (ai.mode === 'back') ai.home = nearestOwned(p);
+    }
+    // av: yakında bir rakip izi var mı?
+    if (ai.mode !== 'hunt' && ai.aggr > .35 && L < 16) {
+      let best = -1, bd = 3 + ai.aggr * 5;
+      for (const q of players) {
+        if (!q.alive || q === p || !q.trail.length) continue;
+        for (let k = 0; k < q.trail.length; k++) {
+          const i = q.trail[k], d = Math.hypot(p.x - (i % G + .5), p.y - ((i / G | 0) + .5));
+          if (d < bd) { bd = d; best = i; }
+        }
+      }
+      if (best >= 0) { ai.mode = 'hunt'; ai.huntCell = best; ai.huntT = 1.4; }
+    }
+  }
+
+  let tx, ty;
+  if (ai.mode === 'hunt') {
+    if (ai.huntT <= 0 || !trail[ai.huntCell] || trail[ai.huntCell] === p.id) {
+      ai.mode = L ? 'back' : 'idle'; ai.idle = .3; if (L) ai.home = nearestOwned(p);
+    } else { tx = ai.huntCell % G + .5; ty = (ai.huntCell / G | 0) + .5; }
+  }
+  if (ai.mode === 'idle') {
+    ai.idle -= dt;
+    if (ai.idle <= 0) plan(p);
+    else { tx = p.x + Math.cos(p.ang) * 3; ty = p.y + Math.sin(p.ang) * 3;
+      if (Math.hypot(tx - C, ty - C) > R - 4) { tx = C; ty = C; } }
+  }
+  if (ai.mode === 'out') {
+    while (ai.wps.length && Math.hypot(ai.wps[0].x - p.x, ai.wps[0].y - p.y) < 1.3) ai.wps.shift();
+    if (!ai.wps.length) { if (L) { ai.mode = 'back'; ai.home = nearestOwned(p); } else { ai.mode = 'idle'; ai.idle = .2; } }
+    else { tx = ai.wps[0].x; ty = ai.wps[0].y; }
+  }
+  if (ai.mode === 'back') {
+    if (!L) { ai.mode = 'idle'; ai.idle = .3; }
+    if (!ai.home) ai.home = nearestOwned(p);
+    tx = ai.home.x; ty = ai.home.y;
+  }
+  if (tx === undefined) { tx = C; ty = C; }
+  const want = Math.atan2(ty - p.y, tx - p.x);
+  let chosen = want;
+  for (const o of AVOID) if (pathClear(p, want + o)) { chosen = want + o; break; }
+  p.tAng = chosen;
+}
+
+/* ================= Efektler ================= */
+let particles = [], floaters = [];
+function burst(x, y, color){
+  for (let k = 0; k < 26; k++) {
+    const a = Math.random() * TAU, s = rand(2, 9);
+    particles.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s, life:rand(.4,.9), color, size:rand(.25,.6)});
+  }
+}
+const toastBox = document.getElementById('toasts');
+function toast(text){
+  const d = document.createElement('div'); d.className = 'toast'; d.textContent = text;
+  toastBox.appendChild(d);
+  while (toastBox.children.length > 3) toastBox.firstChild.remove();
+  setTimeout(() => d.remove(), 2200);
+}
+
+let actx = null;
+function sfx(kind){
+  if (save.muted) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.connect(g); g.connect(actx.destination);
+    const set = {capture:['triangle',520,880,.18,.12], kill:['square',300,900,.22,.08], die:['sawtooth',400,80,.5,.12]}[kind];
+    o.type = set[0]; o.frequency.setValueAtTime(set[1], t); o.frequency.exponentialRampToValueAtTime(set[2], t + set[3]);
+    g.gain.setValueAtTime(set[4], t); g.gain.exponentialRampToValueAtTime(.001, t + set[3]);
+    o.start(t); o.stop(t + set[3] + .02);
+  } catch(e){}
+}
+
+/* ================= Çizim ================= */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+function resize(){
+  const r = cv.getBoundingClientRect();
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = r.width; H = r.height;
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+}
+window.addEventListener('resize', resize);
+
+const cam = {x:C, y:C, cells:2*R+10};
+function roundRect(x, y, w, h, r){
+  ctx.beginPath(); ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r); ctx.closePath();
+}
+
+function draw(){
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const cs = W / cam.cells;                       // bir hücre kaç piksel
+  const ox = W/2 - cam.x * cs, oy = H/2 - cam.y * cs;
+  const SX = x => ox + x * cs, SY = y => oy + y * cs;
+
+  ctx.fillStyle = '#2a2e48'; ctx.fillRect(0, 0, W, H);
+  // harita zemini
+  ctx.beginPath(); ctx.arc(SX(C), SY(C), R * cs, 0, TAU);
+  ctx.fillStyle = '#eef0f8'; ctx.fill();
+  if (cs > 9) {   // hafif ızgara
+    ctx.save(); ctx.clip();
+    ctx.strokeStyle = 'rgba(40,50,90,.06)'; ctx.lineWidth = 1; ctx.beginPath();
+    const x0 = Math.max(0, Math.floor(cam.x - W/2/cs)), x1 = Math.min(G, Math.ceil(cam.x + W/2/cs));
+    const y0 = Math.max(0, Math.floor(cam.y - H/2/cs)), y1 = Math.min(G, Math.ceil(cam.y + H/2/cs));
+    for (let x = x0; x <= x1; x++) { ctx.moveTo(SX(x), SY(y0)); ctx.lineTo(SX(x), SY(y1)); }
+    for (let y = y0; y <= y1; y++) { ctx.moveTo(SX(x0), SY(y)); ctx.lineTo(SX(x1), SY(y)); }
+    ctx.stroke(); ctx.restore();
+  }
+  ctx.lineWidth = Math.max(3, cs * .5); ctx.strokeStyle = '#c9cde2';
+  ctx.beginPath(); ctx.arc(SX(C), SY(C), R * cs + ctx.lineWidth/2, 0, TAU); ctx.stroke();
+
+  // bölgeler (gölge + üst yüz)
+  if (imgDirty) { terr.x.putImageData(terr.img, 0, 0); shade.x.putImageData(shade.img, 0, 0); imgDirty = false; }
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(shade.c, SX(0), SY(0) + cs * .32, G * cs, G * cs);
+  ctx.drawImage(terr.c, SX(0), SY(0), G * cs, G * cs);
+
+  // izler
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const p of players) {
+    if (!p.alive || !p.path.length) continue;
+    ctx.beginPath(); ctx.moveTo(SX(p.path[0].x), SY(p.path[0].y));
+    for (let k = 1; k < p.path.length; k++) ctx.lineTo(SX(p.path[k].x), SY(p.path[k].y));
+    ctx.lineTo(SX(p.x), SY(p.y));
+    ctx.strokeStyle = rgbStr(PAL[p.id].base, .55); ctx.lineWidth = Math.max(2, cs * .55); ctx.stroke();
+  }
+
+  // oyuncu kareleri
+  const sz = Math.max(6, cs * 1.25);
+  for (const p of players) {
+    if (!p.alive) continue;
+    const x = SX(p.x) - sz/2, y = SY(p.y) - sz/2;
+    if (x < -sz || y < -sz || x > W + sz || y > H + sz) continue;
+    roundRect(x, y + sz*.18, sz, sz, sz*.22); ctx.fillStyle = rgbStr(PAL[p.id].dark); ctx.fill();
+    roundRect(x, y, sz, sz, sz*.22); ctx.fillStyle = p.color; ctx.fill();
+    if (sz > 14) {
+      ctx.font = `${Math.round(sz*.66)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(p.face, x + sz/2, y + sz/2 + sz*.04);
+    }
+    if (cs > 9) {
+      ctx.font = `700 ${Math.round(Math.max(11, cs*.62))}px "Baloo 2",sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(20,22,40,.7)';
+      ctx.strokeText(p.name, x + sz/2, y - 3);
+      ctx.fillStyle = '#fff'; ctx.fillText(p.name, x + sz/2, y - 3);
+    }
+  }
+
+  for (const q of particles) {
+    ctx.globalAlpha = Math.max(0, q.life / .9);
+    ctx.fillStyle = q.color; const s = q.size * cs;
+    ctx.fillRect(SX(q.x) - s/2, SY(q.y) - s/2, s, s);
+  }
+  ctx.globalAlpha = 1;
+  for (const f of floaters) {
+    ctx.globalAlpha = Math.min(1, f.life * 2);
+    ctx.font = `800 ${Math.round(Math.max(16, cs*.9))}px "Baloo 2",sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(20,22,40,.6)';
+    ctx.strokeText(f.text, SX(f.x), SY(f.y)); ctx.fillStyle = '#ffe066'; ctx.fillText(f.text, SX(f.x), SY(f.y));
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ================= HUD ================= */
+const lbEl = document.getElementById('lb'), mePct = document.getElementById('mePct'), meKills = document.getElementById('meKills');
+const fmt = c => (c / TOTAL * 100).toFixed(2) + '%';
+function esc(s){ return s.replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+function updateHud(){
+  const alive = players.filter(p => p.alive).sort((a, b) => b.count - a.count);
+  let html = '';
+  alive.slice(0, 5).forEach((p, k) => {
+    html += `<div class="row${p === human ? ' mine' : ''}"><span>${k+1}.</span><span class="d" style="background:${p.color}"></span><span class="n">${esc(p.name)}</span><span class="p">${fmt(p.count)}</span></div>`;
+  });
+  if (human && human.alive) {
+    const r = alive.indexOf(human);
+    if (r >= 5) html += `<div class="row mine sep"><span>${r+1}.</span><span class="d" style="background:${human.color}"></span><span class="n">${esc(human.name)}</span><span class="p">${fmt(human.count)}</span></div>`;
+    mePct.textContent = fmt(human.count);
+    meKills.textContent = '⚔ ' + human.kills;
+  }
+  lbEl.innerHTML = html;
+}
+
+/* ================= Ekranlar ================= */
+const $ = id => document.getElementById(id);
+const menuEl = $('menu'), overEl = $('over'), hudEl = $('hud');
+
+function renderSkins(){
+  const box = $('skins'); box.innerHTML = '';
+  SKINS.forEach((s, k) => {
+    const d = document.createElement('div');
+    const locked = save.best < s.need;
+    d.className = 'skin' + (k === save.skin ? ' sel' : '') + (locked ? ' lock' : '');
+    d.style.background = s.color;
+    d.textContent = s.face;
+    if (locked) { const q = document.createElement('div'); q.className = 'req'; q.textContent = '🔒 ' + s.need + '%'; d.appendChild(q); }
+    d.onclick = () => {
+      if (locked) { $('skinName').textContent = `Açmak için bir oyunda %${s.need} alana ulaş`; return; }
+      save.skin = k; persist(); renderSkins();
+    };
+    box.appendChild(d);
+  });
+  if (save.best >= (SKINS[save.skin] || SKINS[0]).need) $('skinName').textContent = (SKINS[save.skin] || SKINS[0]).name;
+  $('bestTxt').textContent = save.best.toFixed(2) + '%';
+}
+
+function startGame(){
+  save.name = $('nameIn').value.trim(); persist();
+  if (save.best < (SKINS[save.skin] || SKINS[0]).need) save.skin = 0;
+  resetWorld(true);
+  state = 'play';
+  menuEl.hidden = true; overEl.hidden = true; hudEl.hidden = false;
+  toastBox.innerHTML = '';
+  cam.x = human.x; cam.y = human.y;
+  updateHud();
+}
+function goMenu(){
+  state = 'menu';
+  resetWorld(false);
+  overEl.hidden = true; hudEl.hidden = true; menuEl.hidden = false;
+  renderSkins();
+}
+let deathTimer = 0;
+function humanDied(killer, cause, rank, pct){
+  state = 'dead';
+  sfx('die');
+  const peak = human.peak / TOTAL * 100;
+  const causes = {
+    self:  'Kendi izine çarptın.',
+    trail: killer ? `${killer.name} izine değdi.` : 'Biri izine değdi.',
+    area:  killer ? `${killer.name} bütün alanını aldı.` : 'Bütün alanını kaybettin.',
+  };
+  $('cause').textContent = causes[cause] || '';
+  $('oPct').textContent = pct.toFixed(2) + '%';
+  $('oRank').textContent = '#' + rank;
+  $('oPeak').textContent = peak.toFixed(2) + '%';
+  $('oKills').textContent = human.kills;
+  const isBest = peak > save.best + 1e-9;
+  $('newBest').hidden = !isBest;
+  if (isBest) { save.best = peak; persist(); }
+  deathTimer = .9;
+}
+
+$('playBtn').onclick = () => { sfx('capture'); startGame(); };
+$('againBtn').onclick = startGame;
+$('homeBtn').onclick = goMenu;
+$('nameIn').value = save.name || '';
+$('muteBtn').onclick = () => { save.muted = !save.muted; persist(); $('muteBtn').textContent = save.muted ? '🔇' : '🔊'; };
+$('muteBtn').textContent = save.muted ? '🔇' : '🔊';
+
+/* ================= Kontroller ================= */
+let anchor = null;
+cv.addEventListener('pointerdown', e => {
+  anchor = {x:e.clientX, y:e.clientY};
+  try { cv.setPointerCapture(e.pointerId); } catch(_){}
+});
+cv.addEventListener('pointermove', e => {
+  if (!anchor || state !== 'play') return;
+  const dx = e.clientX - anchor.x, dy = e.clientY - anchor.y, len = Math.hypot(dx, dy);
+  if (len > 8) {
+    human.tAng = Math.atan2(dy, dx);
+    if (len > 30) { anchor.x = e.clientX - dx / len * 30; anchor.y = e.clientY - dy / len * 30; }
+  }
+});
+['pointerup','pointercancel'].forEach(ev => cv.addEventListener(ev, () => anchor = null));
+const keys = {};
+window.addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  if (state === 'play') {
+    let x = 0, y = 0;
+    if (keys['arrowleft'] || keys['a']) x--;
+    if (keys['arrowright'] || keys['d']) x++;
+    if (keys['arrowup'] || keys['w']) y--;
+    if (keys['arrowdown'] || keys['s']) y++;
+    if (x || y) { human.tAng = Math.atan2(y, x); e.preventDefault(); }
+  } else if (e.key === 'Enter' && document.activeElement !== $('nameIn')) {
+    if (!menuEl.hidden) startGame(); else if (!overEl.hidden) startGame();
+  }
+});
+window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+/* ================= Döngü ================= */
+let hudT = 0;
+function update(dt){
+  for (const p of players) {
+    if (p.alive) {
+      if (p.isBot) botThink(p, dt);
+      if (p.isBot || state === 'play') movePlayer(p, dt);
+    } else if (p.isBot) {
+      p.respawnT -= dt;
+      if (p.respawnT <= 0) { botIdentity(p); if (!spawn(p)) p.respawnT = 1; }
+    }
+  }
+  for (const q of particles) { q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= .9; q.vy *= .9; q.life -= dt; }
+  particles = particles.filter(q => q.life > 0);
+  for (const f of floaters) { f.y -= dt * 1.2; f.life -= dt; }
+  floaters = floaters.filter(f => f.life > 0);
+
+  // kamera
+  const target = (state === 'play' || state === 'dead') && human ? {x:human.x, y:human.y, cells:state === 'dead' ? VIEW_CELLS*1.25 : VIEW_CELLS}
+                                                               : {x:C, y:C, cells:2*R + 10};
+  const k = 1 - Math.exp(-dt * (state === 'play' ? 10 : 2));
+  cam.x += (target.x - cam.x) * k; cam.y += (target.y - cam.y) * k; cam.cells += (target.cells - cam.cells) * k;
+
+  if (state === 'dead' && deathTimer > 0) {
+    deathTimer -= dt;
+    if (deathTimer <= 0) { overEl.hidden = false; hudEl.hidden = true; }
+  }
+  hudT -= dt;
+  if (hudT <= 0 && state === 'play') { hudT = .25; updateHud(); }
+}
+
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+
+resize();
+goMenu();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

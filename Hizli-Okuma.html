@@ -1,0 +1,1230 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hızlı Okuma Atölyesi</title>
+<meta name="description" content="Altı egzersizle okuma hızını ölç ve geliştir: hızlı gösterim, Schulte tablosu, göz sıçraması, öbek genişletme, anlama testi ve kelime tanıma.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#08090c; --ink-2:#0e1015; --panel:#13161d; --panel-2:#191d26;
+  --line:#252a35; --line-soft:#1c212a;
+  --txt:#eef0f4; --txt-2:#98a0b0; --txt-3:#626b7c;
+  --accent:#35d6c0; --accent-2:#ff5f3d; --gold:#f0b429;
+  --good:#46c07a; --bad:#e2574c;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --r:14px; --r-s:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--txt);font-family:var(--body);line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select,textarea{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+::selection{background:var(--accent);color:#04211d}
+
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dim{color:var(--txt-2)} .faint{color:var(--txt-3)}
+.hidden{display:none !important}
+
+/* ---------- üst ---------- */
+.top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--ink) 86%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-soft)}
+.top__in{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:-.02em;flex:none}
+.brand i{font-style:normal;color:var(--accent)}
+.brand svg{width:26px;height:26px}
+.top__spacer{margin-left:auto}
+.streak{font-family:var(--mono);font-size:.76rem;color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 34%,transparent);background:color-mix(in srgb,var(--gold) 10%,transparent);padding:5px 11px;border-radius:999px;white-space:nowrap}
+
+/* ---------- sekmeler ---------- */
+.tabs{display:flex;gap:4px;overflow-x:auto;padding:14px 0 0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  display:flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer;
+  border:1px solid transparent;background:transparent;color:var(--txt-2);
+  padding:9px 15px;border-radius:var(--r-s);font-size:.89rem;font-weight:500;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.tab:hover{background:var(--panel);color:var(--txt)}
+.tab.on{background:var(--panel-2);border-color:var(--line);color:var(--txt);font-weight:600}
+.tab em{font-style:normal;font-size:1.05rem}
+
+/* ---------- panel ---------- */
+.panel{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--r);padding:24px}
+.panel+.panel{margin-top:16px}
+.mode{padding:22px 0 60px}
+.mode__head{margin-bottom:18px}
+.mode__head h2{font-family:var(--display);font-size:1.45rem;letter-spacing:-.025em;margin-bottom:6px}
+.mode__head p{color:var(--txt-2);font-size:.92rem;max-width:70ch}
+
+.ctrls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:18px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--txt-3)}
+.fld select,.fld input[type=number]{
+  background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r-s);
+  padding:9px 11px;font-size:.9rem;outline:none;min-width:110px;
+}
+.fld select:focus,.fld input:focus{border-color:var(--accent)}
+.fld input[type=range]{width:190px;accent-color:var(--accent)}
+.seg{display:inline-flex;gap:3px;background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r-s);padding:3px}
+.seg button{border:0;background:transparent;color:var(--txt-2);cursor:pointer;font-size:.83rem;font-weight:500;padding:7px 13px;border-radius:7px;white-space:nowrap}
+.seg button.on{background:var(--panel-2);color:var(--txt);font-weight:600}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--display);font-weight:600;font-size:.9rem;
+  padding:10px 20px;border-radius:var(--r-s);border:1px solid transparent;
+  background:var(--accent);color:#04211d;cursor:pointer;white-space:nowrap;
+  transition:filter .15s,transform .1s;
+}
+.btn:hover{filter:brightness(1.08)} .btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn--ghost{background:transparent;border-color:var(--line);color:var(--txt)}
+.btn--ghost:hover{background:var(--panel-2);filter:none}
+.btn--warm{background:var(--accent-2);color:#fff}
+.btn--sm{padding:8px 14px;font-size:.83rem}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* ---------- istatistik ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+.stat{background:var(--panel);padding:15px 17px}
+.stat__v{font-family:var(--mono);font-weight:700;font-size:1.5rem;letter-spacing:-.02em}
+.stat__k{font-size:.67rem;letter-spacing:.09em;text-transform:uppercase;color:var(--txt-3);margin-top:3px;font-weight:600}
+.stat--a .stat__v{color:var(--accent)} .stat--b .stat__v{color:var(--accent-2)} .stat--g .stat__v{color:var(--gold)}
+
+/* ---------- 1. hızlı gösterim (RSVP) ---------- */
+.rsvp{
+  background:var(--ink-2);border:1px solid var(--line-soft);border-radius:var(--r);
+  height:230px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+}
+.rsvp::before,.rsvp::after{content:'';position:absolute;left:50%;transform:translateX(-50%);width:2px;height:22px;background:var(--line)}
+.rsvp::before{top:52px} .rsvp::after{bottom:52px}
+.rsvp__word{font-family:var(--mono);font-size:clamp(1.5rem,5.2vw,2.9rem);font-weight:500;letter-spacing:-.01em;text-align:center;padding:0 16px;line-height:1.25}
+.rsvp__word .pivot{color:var(--accent-2)}
+.bar{height:4px;background:var(--line-soft);border-radius:99px;overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .12s linear}
+
+/* ---------- 2. Schulte ---------- */
+.schulte{display:grid;gap:6px;margin:0 auto;max-width:520px;touch-action:manipulation}
+.sq{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  background:var(--ink-2);border:1px solid var(--line-soft);border-radius:9px;
+  font-family:var(--mono);font-weight:600;cursor:pointer;user-select:none;
+  transition:background .12s,border-color .12s,transform .08s;
+}
+.sq:hover{border-color:var(--line)}
+.sq.done{background:color-mix(in srgb,var(--good) 22%,var(--ink-2));border-color:color-mix(in srgb,var(--good) 45%,transparent);color:var(--good)}
+.sq.miss{background:color-mix(in srgb,var(--bad) 26%,var(--ink-2));border-color:var(--bad)}
+.schulte__dot{width:11px;height:11px;border-radius:50%;background:var(--accent-2);margin:14px auto 0;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-2) 22%,transparent)}
+
+/* ---------- 3. göz sıçraması ---------- */
+.sacc{
+  background:var(--ink-2);border:1px solid var(--line-soft);border-radius:var(--r);
+  height:210px;display:flex;flex-direction:column;justify-content:center;gap:26px;padding:20px;position:relative;
+}
+.sacc__row{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:clamp(.95rem,2.6vw,1.35rem)}
+.sacc__row span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sacc__row .off{opacity:.12}
+.sacc__mid{color:var(--accent-2);flex:none;padding:0 12px;opacity:.5}
+
+/* ---------- 4. öbek genişletme ---------- */
+.chunk{
+  background:var(--ink-2);border:1px solid var(--line-soft);border-radius:var(--r);
+  padding:26px 24px;font-size:clamp(1rem,2.5vw,1.22rem);line-height:2.1;min-height:220px;
+}
+.chunk b{font-weight:400;background:color-mix(in srgb,var(--accent) 26%,transparent);border-radius:5px;padding:2px 3px;box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 40%,transparent)}
+.chunk .past{color:var(--txt-3)} .chunk .future{color:var(--txt-2)}
+
+/* ---------- 5. anlama testi ---------- */
+.read{
+  background:var(--ink-2);border:1px solid var(--line-soft);border-radius:var(--r);
+  padding:26px 28px;font-size:1.05rem;line-height:1.9;max-height:56vh;overflow:auto;
+}
+.read p{margin-bottom:14px}
+.quiz{display:flex;flex-direction:column;gap:16px}
+.q{background:var(--ink-2);border:1px solid var(--line-soft);border-radius:var(--r);padding:18px 20px}
+.q__t{font-weight:600;margin-bottom:11px;font-size:.97rem}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:.92rem;transition:background .12s}
+.opt:hover{background:var(--panel-2)}
+.opt input{margin-top:4px;accent-color:var(--accent);flex:none}
+.opt.ok{background:color-mix(in srgb,var(--good) 16%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--good) 42%,transparent)}
+.opt.no{background:color-mix(in srgb,var(--bad) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 42%,transparent)}
+
+/* ---------- 6. kelime tanıma ---------- */
+.flash{
+  background:var(--ink-2);border:1px solid var(--line-soft);border-radius:var(--r);
+  height:190px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:clamp(1.4rem,4.6vw,2.3rem);font-weight:500;letter-spacing:.01em;
+}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:16px}
+.choice{
+  background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r-s);
+  padding:14px 12px;font-family:var(--mono);font-size:1rem;cursor:pointer;text-align:center;
+  transition:background .12s,border-color .12s;
+}
+.choice:hover{border-color:var(--accent)}
+.choice.ok{background:color-mix(in srgb,var(--good) 22%,transparent);border-color:var(--good)}
+.choice.no{background:color-mix(in srgb,var(--bad) 22%,transparent);border-color:var(--bad)}
+
+/* ---------- sonuç ---------- */
+.result{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-top:16px}
+.result h3{font-family:var(--display);font-size:1.15rem;margin-bottom:4px}
+.result .note{color:var(--txt-2);font-size:.9rem;margin-bottom:16px}
+.badge{display:inline-block;font-family:var(--mono);font-size:.74rem;padding:4px 11px;border-radius:999px;margin-left:8px}
+.badge--rec{color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 42%,transparent);background:color-mix(in srgb,var(--gold) 12%,transparent)}
+
+.hist{display:flex;flex-direction:column;gap:6px}
+.hist__row{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;background:var(--ink-2);border:1px solid var(--line-soft);border-radius:9px;padding:10px 14px;font-size:.86rem}
+.empty{text-align:center;padding:34px 18px;color:var(--txt-3);font-size:.9rem;border:1px dashed var(--line);border-radius:var(--r)}
+
+.tip{display:flex;gap:10px;background:color-mix(in srgb,var(--accent) 8%,var(--panel));border:1px solid color-mix(in srgb,var(--accent) 26%,transparent);border-radius:var(--r);padding:14px 16px;font-size:.88rem;color:var(--txt-2);margin-top:16px}
+.tip b{color:var(--accent);font-weight:600;flex:none}
+
+.foot{border-top:1px solid var(--line-soft);padding:26px 0 40px;margin-top:30px;color:var(--txt-3);font-size:.82rem}
+
+@media (max-width:620px){
+  .wrap{padding:0 14px}
+  .panel{padding:18px}
+  .ctrls{gap:10px}
+  .fld input[type=range]{width:150px}
+  .read{padding:20px}
+  .rsvp{height:190px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top__in">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#13161d"/>
+        <path d="M7 11h18M7 16h13M7 21h8" stroke="#35d6c0" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="24.5" cy="21" r="3.2" fill="none" stroke="#ff5f3d" stroke-width="2"/>
+      </svg>
+      <span>Hızlı<i>Okuma</i></span>
+    </div>
+    <div class="top__spacer"></div>
+    <span class="streak" id="streakPill">—</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="tabs" id="tabs" role="tablist">
+    <button class="tab on" data-mode="rsvp" role="tab"><em>⚡</em>Hızlı Gösterim</button>
+    <button class="tab" data-mode="schulte" role="tab"><em>▦</em>Schulte Tablosu</button>
+    <button class="tab" data-mode="sacc" role="tab"><em>👁</em>Göz Sıçraması</button>
+    <button class="tab" data-mode="chunk" role="tab"><em>▬</em>Öbek Genişletme</button>
+    <button class="tab" data-mode="comp" role="tab"><em>📖</em>Anlama Testi</button>
+    <button class="tab" data-mode="flash" role="tab"><em>✦</em>Kelime Tanıma</button>
+    <button class="tab" data-mode="prog" role="tab"><em>📊</em>İlerleme</button>
+  </nav>
+</div>
+
+<main class="wrap">
+
+<!-- ================= 1. HIZLI GÖSTERİM ================= -->
+<section class="mode" id="m-rsvp">
+  <div class="mode__head">
+    <h2>Hızlı Gösterim</h2>
+    <p>Kelimeler tek noktada sırayla belirir. Gözün satır üzerinde gezinmediği için içinden
+       okuma alışkanlığı kırılır. Rahat takip ettiğin hızda başla, her turda 25–50 kelime artır.</p>
+  </div>
+
+  <div class="panel">
+    <div class="ctrls">
+      <div class="fld">
+        <label for="rsvpSpeed">Hız — <span class="mono" id="rsvpSpeedVal">300</span> kelime/dk</label>
+        <input type="range" id="rsvpSpeed" min="100" max="1000" step="25" value="300">
+      </div>
+      <div class="fld">
+        <label>Öbek boyu</label>
+        <div class="seg" id="rsvpChunk">
+          <button class="on" data-n="1">1</button><button data-n="2">2</button>
+          <button data-n="3">3</button><button data-n="4">4</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label for="rsvpText">Metin</label>
+        <select id="rsvpText"></select>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="rsvpPlay">Başlat</button>
+        <button class="btn btn--ghost" id="rsvpReset">Baştan</button>
+      </div>
+    </div>
+
+    <div class="rsvp"><div class="rsvp__word" id="rsvpWord">hazır olduğunda başlat</div></div>
+    <div class="bar"><i id="rsvpBar"></i></div>
+
+    <div class="stats" style="margin-top:16px">
+      <div class="stat stat--a"><div class="stat__v" id="rsvpWpm">300</div><div class="stat__k">Kelime/dk</div></div>
+      <div class="stat"><div class="stat__v" id="rsvpPos">0 / 0</div><div class="stat__k">İlerleme</div></div>
+      <div class="stat stat--g"><div class="stat__v" id="rsvpLeft">—</div><div class="stat__k">Kalan süre</div></div>
+      <div class="stat stat--b"><div class="stat__v" id="rsvpBest">—</div><div class="stat__k">En yüksek hızın</div></div>
+    </div>
+
+    <div class="tip"><b>İpucu</b><span>Kırmızı harf gözünü sabitleyeceğin noktadır. Ona bak, kelimeyi
+      çevresel görüşle oku. Dudağını ve iç sesini susturmaya çalış.</span></div>
+  </div>
+</section>
+
+<!-- ================= 2. SCHULTE ================= -->
+<section class="mode hidden" id="m-schulte">
+  <div class="mode__head">
+    <h2>Schulte Tablosu</h2>
+    <p>Ortadaki noktaya bak, gözünü oynatmadan sayıları 1'den başlayarak sırayla bul ve tıkla.
+       Bu egzersiz görüş alanını genişletir; satırı tek bakışta kavramanın temeli budur.</p>
+  </div>
+
+  <div class="panel">
+    <div class="ctrls">
+      <div class="fld">
+        <label>Boyut</label>
+        <div class="seg" id="schSize">
+          <button data-n="3">3 × 3</button><button class="on" data-n="5">5 × 5</button>
+          <button data-n="7">7 × 7</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label>Zorluk</label>
+        <div class="seg" id="schMode">
+          <button class="on" data-m="plain">Düz</button>
+          <button data-m="color">Renkli</button>
+          <button data-m="shuffle">Kaydıran</button>
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn" id="schStart">Başlat</button></div>
+    </div>
+
+    <div class="stats" style="margin-bottom:16px">
+      <div class="stat stat--a"><div class="stat__v mono" id="schTime">0.0</div><div class="stat__k">Saniye</div></div>
+      <div class="stat"><div class="stat__v" id="schNext">—</div><div class="stat__k">Sıradaki</div></div>
+      <div class="stat stat--b"><div class="stat__v" id="schErr">0</div><div class="stat__k">Hata</div></div>
+      <div class="stat stat--g"><div class="stat__v mono" id="schBest">—</div><div class="stat__k">Rekorun</div></div>
+    </div>
+
+    <div class="schulte" id="schGrid"></div>
+    <div class="schulte__dot" aria-hidden="true"></div>
+    <div id="schResult"></div>
+  </div>
+</section>
+
+<!-- ================= 3. GÖZ SIÇRAMASI ================= -->
+<section class="mode hidden" id="m-sacc">
+  <div class="mode__head">
+    <h2>Göz Sıçraması</h2>
+    <p>Kelimeler satırın iki ucunda belirir, ortaya bakmaya devam et. Gözün satır boyunca
+       kaç kere durduğunu azaltmayı öğretir. Açıklık arttıkça görüş alanın genişler.</p>
+  </div>
+
+  <div class="panel">
+    <div class="ctrls">
+      <div class="fld">
+        <label for="saccSpeed">Tempo — <span class="mono" id="saccSpeedVal">700</span> ms</label>
+        <input type="range" id="saccSpeed" min="200" max="1500" step="50" value="700">
+      </div>
+      <div class="fld">
+        <label>Açıklık</label>
+        <div class="seg" id="saccWidth">
+          <button data-w="40">Dar</button><button class="on" data-w="70">Orta</button><button data-w="100">Geniş</button>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="saccPlay">Başlat</button>
+        <button class="btn btn--ghost" id="saccStop">Durdur</button>
+      </div>
+    </div>
+
+    <div class="sacc" id="saccBox">
+      <div class="sacc__row"><span id="sc0L">—</span><span class="sacc__mid">•</span><span id="sc0R">—</span></div>
+      <div class="sacc__row"><span id="sc1L">—</span><span class="sacc__mid">•</span><span id="sc1R">—</span></div>
+      <div class="sacc__row"><span id="sc2L">—</span><span class="sacc__mid">•</span><span id="sc2R">—</span></div>
+    </div>
+
+    <div class="tip"><b>Kural</b><span>Başını çevirme, gözünü de ortadaki noktadan ayırma.
+      Kelimeleri okuduğunu fark etmesen bile beyin onları alır; hedef bunu alışkanlık yapmak.</span></div>
+  </div>
+</section>
+
+<!-- ================= 4. ÖBEK GENİŞLETME ================= -->
+<section class="mode hidden" id="m-chunk">
+  <div class="mode__head">
+    <h2>Öbek Genişletme</h2>
+    <p>Metin üzerinde vurgulanan blok ilerler. Bloğun tamamını tek bakışta almaya çalış,
+       kelime kelime okuma. Blok genişledikçe okuma hızın kelime değil öbek temposuna geçer.</p>
+  </div>
+
+  <div class="panel">
+    <div class="ctrls">
+      <div class="fld">
+        <label for="chSpeed">Tempo — <span class="mono" id="chSpeedVal">450</span> kelime/dk</label>
+        <input type="range" id="chSpeed" min="150" max="1200" step="25" value="450">
+      </div>
+      <div class="fld">
+        <label>Öbek genişliği</label>
+        <div class="seg" id="chWidth">
+          <button data-n="2">2</button><button class="on" data-n="3">3</button>
+          <button data-n="4">4</button><button data-n="5">5</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label for="chText">Metin</label>
+        <select id="chText"></select>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="chPlay">Başlat</button>
+        <button class="btn btn--ghost" id="chReset">Baştan</button>
+      </div>
+    </div>
+
+    <div class="chunk" id="chBox">Metni seç ve başlat.</div>
+    <div class="bar"><i id="chBar"></i></div>
+  </div>
+</section>
+
+<!-- ================= 5. ANLAMA TESTİ ================= -->
+<section class="mode hidden" id="m-comp">
+  <div class="mode__head">
+    <h2>Anlama Testi</h2>
+    <p>Asıl ölçü ham hız değil, <strong>etkin okuma hızı</strong>: hızını anlama yüzdenle çarparız.
+       Metni kendi temponda oku, bitince soruları cevapla.</p>
+  </div>
+
+  <div class="panel" id="compIntro">
+    <div class="ctrls">
+      <div class="fld">
+        <label for="compText">Metin</label>
+        <select id="compText"></select>
+      </div>
+      <div class="btn-row"><button class="btn" id="compStart">Okumaya başla</button></div>
+    </div>
+    <p class="faint" style="font-size:.86rem">Süre, "Okumaya başla" dediğin anda işlemeye başlar ve
+       "Bitirdim" dediğinde durur. Metne geri dönemezsin, bu yüzden acele etme.</p>
+  </div>
+
+  <div class="panel hidden" id="compReading">
+    <div class="btn-row" style="margin-bottom:16px">
+      <span class="stat__v mono" id="compTimer" style="font-size:1.4rem;color:var(--accent)">0.0 sn</span>
+      <span class="faint" id="compMeta"></span>
+      <span style="margin-left:auto"></span>
+      <button class="btn btn--warm" id="compDone">Bitirdim</button>
+    </div>
+    <div class="read" id="compBody"></div>
+  </div>
+
+  <div class="panel hidden" id="compQuiz">
+    <h3 style="font-family:var(--display);font-size:1.15rem;margin-bottom:4px">Sorular</h3>
+    <p class="dim" style="font-size:.9rem;margin-bottom:18px">Metne dönemezsin. Hatırladığın kadarıyla cevapla.</p>
+    <div class="quiz" id="quizList"></div>
+    <div class="btn-row" style="margin-top:18px"><button class="btn" id="quizSubmit">Cevapları gönder</button></div>
+  </div>
+
+  <div id="compResult"></div>
+</section>
+
+<!-- ================= 6. KELİME TANIMA ================= -->
+<section class="mode hidden" id="m-flash">
+  <div class="mode__head">
+    <h2>Kelime Tanıma</h2>
+    <p>Kelime çok kısa süre görünür, sonra kaybolur. Hangisini gördüğünü seç.
+       Doğru bildikçe süre kısalır, yanılınca uzar — kendi eşiğini bulur.</p>
+  </div>
+
+  <div class="panel">
+    <div class="ctrls">
+      <div class="fld">
+        <label>Kelime uzunluğu</label>
+        <div class="seg" id="flLen">
+          <button class="on" data-l="short">Kısa</button>
+          <button data-l="mid">Orta</button>
+          <button data-l="long">Uzun</button>
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn" id="flStart">Başlat</button></div>
+    </div>
+
+    <div class="stats" style="margin-bottom:16px">
+      <div class="stat stat--a"><div class="stat__v mono" id="flMs">120</div><div class="stat__k">Gösterim (ms)</div></div>
+      <div class="stat"><div class="stat__v" id="flRound">0 / 15</div><div class="stat__k">Tur</div></div>
+      <div class="stat stat--b"><div class="stat__v" id="flAcc">100%</div><div class="stat__k">İsabet</div></div>
+      <div class="stat stat--g"><div class="stat__v mono" id="flBest">—</div><div class="stat__k">En düşük eşiğin</div></div>
+    </div>
+
+    <div class="flash" id="flBox">Başlat'a bas, ekrana odaklan.</div>
+    <div class="choices hidden" id="flChoices"></div>
+    <div id="flResult"></div>
+  </div>
+</section>
+
+<!-- ================= 7. İLERLEME ================= -->
+<section class="mode hidden" id="m-prog">
+  <div class="mode__head">
+    <h2>İlerleme</h2>
+    <p>Bütün kayıtlar bu cihazın tarayıcısında tutulur, hiçbir yere gönderilmez.</p>
+  </div>
+
+  <div class="panel">
+    <div class="stats">
+      <div class="stat stat--a"><div class="stat__v" id="pgWpm">—</div><div class="stat__k">En iyi okuma hızı</div></div>
+      <div class="stat stat--b"><div class="stat__v" id="pgEff">—</div><div class="stat__k">En iyi etkin hız</div></div>
+      <div class="stat stat--g"><div class="stat__v mono" id="pgSch">—</div><div class="stat__k">Schulte rekoru</div></div>
+      <div class="stat"><div class="stat__v" id="pgSes">0</div><div class="stat__k">Toplam seans</div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3 style="font-family:var(--display);font-size:1.1rem;margin-bottom:14px">Son çalışmalar</h3>
+    <div id="histWrap"></div>
+  </div>
+
+  <div class="panel">
+    <h3 style="font-family:var(--display);font-size:1.1rem;margin-bottom:6px">Kayıtlar</h3>
+    <p class="dim" style="font-size:.88rem;margin-bottom:14px">Sıfırlarsan bütün rekorlar ve geçmiş silinir, geri alınamaz.</p>
+    <button class="btn btn--ghost btn--sm" id="wipe">Kayıtları sıfırla</button>
+    <span class="faint" id="wipeNote" style="margin-left:10px;font-size:.85rem"></span>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot"><div class="wrap">
+  Hızlı Okuma Atölyesi — altı egzersiz, tek dosya. Kayıtlar yalnızca bu tarayıcıda saklanır.
+</div></footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ==================================================================
+   METİNLER
+   Her metin: { t: başlık, body: [paragraf...], q: [soru...] }
+   Sorular yalnızca Anlama Testi'nde kullanılır.
+   ================================================================== */
+var TEXTS = [
+{
+  t:'Kâğıdın yolculuğu',
+  body:[
+    'Kâğıt bugün o kadar sıradan ki, bir zamanlar devlet sırrı olduğunu düşünmek zor. İlk üretimi iki bin yıl önce Çin\'de yapıldı. Dut ağacının kabuğu, kenevir lifi ve eski balık ağları suda dövülüp lapa hâline getiriliyor, ince bir elekle çekilip kurutuluyordu. Sonuç, bambu levhalardan çok daha hafif ve ipekten çok daha ucuz bir yazı yüzeyiydi.',
+    'Yöntem yüzyıllarca Çin sınırları içinde kaldı. Sekizinci yüzyılda Semerkant yakınlarındaki bir çatışmanın ardından esir alınan zanaatkârlar tekniği Orta Asya\'ya taşıdı. Oradan Bağdat\'a, Şam\'a, Kahire\'ye ve nihayet Endülüs üzerinden Avrupa\'ya geçti. Her durakta yerel malzemeye uyarlandı: Çin dut kabuğu kullanırken, Araplar keten paçavrayı tercih etti.',
+    'Avrupa\'ya vardığında kâğıt hâlâ pahalıydı, çünkü hammaddesi eski kumaştı ve kumaş kıymetliydi. Şehirlerde paçavra toplayıcıları vardı; kâğıt fabrikaları bu toplayıcılara bağımlıydı. On dokuzuncu yüzyılda odun hamurundan kâğıt yapılmaya başlanınca fiyat düştü, gazete sıradan insanın alabileceği bir şey hâline geldi.',
+    'Ucuzlamanın bedeli dayanıklılık oldu. Odun hamuru asit içerir ve zamanla kendi kendini yer. Bugün kütüphanelerde en çok bozulan kitaplar ortaçağdan kalanlar değil, yirminci yüzyılın ilk yarısında basılanlardır. Beş yüz yıllık bir cilt sapasağlam dururken seksen yıllık bir roman parmaklar arasında dağılabilir.'
+  ],
+  q:[
+    { t:'Kâğıt ilk olarak nerede üretildi?', o:['Mısır','Çin','Endülüs','Bağdat'], a:1 },
+    { t:'Teknik Orta Asya\'ya nasıl yayıldı?', o:['Ticaret anlaşmasıyla','Bir çatışmada esir alınan zanaatkârlar aracılığıyla','Bir kitap çevirisiyle','Deniz yoluyla'], a:1 },
+    { t:'Araplar kâğıt yapımında hangi hammaddeyi tercih etti?', o:['Dut kabuğu','Bambu','Keten paçavra','Odun hamuru'], a:2 },
+    { t:'Kâğıdın ucuzlamasını sağlayan gelişme neydi?', o:['Odun hamurunun kullanılması','Matbaanın icadı','Paçavra toplayıcılığı','Elek tekniğinin gelişmesi'], a:0 },
+    { t:'Metne göre bugün kütüphanelerde en çok hangi kitaplar bozuluyor?', o:['Ortaçağdan kalanlar','Yirminci yüzyılın ilk yarısında basılanlar','El yazmaları','Endülüs\'te basılanlar'], a:1 }
+  ]
+},
+{
+  t:'Bal arısının dansı',
+  body:[
+    'Bir bal arısı zengin bir çiçek tarlası bulduğunda kovana döner ve peteğin dikey yüzeyinde küçük bir tur atar. Bu tur rastgele değildir. Arı önce düz bir hat boyunca yürür, bu sırada karnını hızla sağa sola titretir, sonra bir yay çizerek başlangıç noktasına döner ve aynı şeyi tekrarlar. Uzaktan bakıldığında yatık bir sekiz rakamına benzer.',
+    'Düz hattın yönü yiyeceğin yönünü söyler. Ama arı gökyüzünü değil peteği kullandığı için bir çeviri yapar: yukarı doğru yürümek "güneşe doğru uç" demektir. Hat dikeyle otuz derecelik açı yapıyorsa, yiyecek güneşin otuz derece solunda ya da sağındadır. Titreşimin süresi ise mesafeyi verir; her ek saniye yaklaşık bir kilometre demektir.',
+    'İşin şaşırtıcı yanı, güneşin gökyüzünde sürekli hareket etmesidir. Kovanda saatlerce bekleyen bir arı dansını buna göre düzeltir; içinde güneşin yerini süren bir saat vardır. Karanlık kovanda, gökyüzünü göremeden yapar bunu.',
+    'Dansı izleyen arılar peteğin yüzeyine dokunarak titreşimi hisseder; görmezler, duyarlar. Sonra çıkıp tarif edilen noktaya giderler ve çoğu zaman bulurlar. Bu, insan dışında bilinen en ayrıntılı sembolik iletişim örneklerinden biridir: burada değil, orada olan bir şey hakkında konuşmak.'
+  ],
+  q:[
+    { t:'Arının dansı hangi şekle benzetiliyor?', o:['Daireye','Yatık sekize','Üçgene','Spirale'], a:1 },
+    { t:'Dansta yukarı doğru yürümek ne anlama gelir?', o:['Kovana dön','Güneşe doğru uç','Tehlike var','Su bul'], a:1 },
+    { t:'Mesafe bilgisi neyle verilir?', o:['Yürüyüşün açısıyla','Turun sayısıyla','Titreşimin süresiyle','Kanat sesiyle'], a:2 },
+    { t:'Arı saatlerce bekledikten sonra dansını neden düzeltir?', o:['Yorulduğu için','Güneş gökyüzünde hareket ettiği için','Kovan kalabalıklaştığı için','Yiyecek azaldığı için'], a:1 },
+    { t:'İzleyen arılar dansı nasıl algılar?', o:['Görerek','Kokuyla','Peteğe dokunup titreşimi hissederek','Sesi duyarak'], a:2 }
+  ]
+},
+{
+  t:'Bir liman şehrinin hafızası',
+  body:[
+    'Liman şehirleri başka şehirlere benzemez. Nüfusları kendi doğumlarıyla değil gelenlerle büyür, bu yüzden kimlikleri de sabit kalmaz. Bir nesil içinde sokakta konuşulan diller değişebilir, lokantaların mutfağı başkalaşabilir, mahalle adları yeni sahiplerinin ağzında başka türlü söylenmeye başlayabilir.',
+    'Bu değişkenlik uzun süre bir zayıflık sanıldı. Oysa ticaretin kendisi yabancıyla iş yapabilme becerisine dayanır ve liman şehirleri bu beceriyi kurumsallaştırdı. Ortak ölçü birimleri, sigortacılık, senet, kambiyo, tahkim usulü — bunların çoğu limanlarda, birbirinin hukukunu tanımayan tüccarlar birbirine güvenmek zorunda kaldığı için doğdu.',
+    'Limanın hafızası da farklı çalışır. İç bölgelerdeki şehirler geçmişlerini binalarında saklar; limanlar ise kelimelerde saklar. Denizcilikten kalma sözcükler, mutfaktaki tarifler, bir hamal argosu, bir çocuk oyununun adı — bunlar hangi gemilerin hangi yüzyılda uğradığını, taş yapılardan daha güvenilir anlatır.',
+    'Bugün konteyner gemileri limanı şehirden uzağa taşıdı. Yükleme artık insan eliyle değil vinçle yapılıyor, mürettebat karaya inmeden yola devam ediyor. Şehir hâlâ orada ama denizle arasındaki gündelik bağ inceldi. Limanın bıraktığı kelimeler ise kalmaya devam ediyor; çoğu insan onları kullanırken nereden geldiğini bilmiyor.'
+  ],
+  q:[
+    { t:'Liman şehirlerinin nüfusu nasıl büyür?', o:['Kendi doğumlarıyla','Gelenlerle','Devlet politikasıyla','Tarımla'], a:1 },
+    { t:'Metne göre sigortacılık ve senet gibi kurumlar neden limanlarda doğdu?', o:['Devlet zorunlu kıldığı için','Tüccarlar birbirinin hukukunu tanımadan güvenmek zorunda kaldığı için','Limanlar zengin olduğu için','Gemiler sık battığı için'], a:1 },
+    { t:'Liman şehirleri geçmişini nerede saklar?', o:['Binalarında','Kelimelerde','Müzelerde','Arşivlerde'], a:1 },
+    { t:'Konteyner gemileri neyi değiştirdi?', o:['Limanı şehirden uzağa taşıdı','Ticareti bitirdi','Dilleri birleştirdi','Limanları büyüttü'], a:0 },
+    { t:'Yazının sonunda hangi şey kalmaya devam ediyor?', o:['Vinçler','Mürettebat','Limanın bıraktığı kelimeler','Eski binalar'], a:2 }
+  ]
+},
+{
+  t:'Uykunun iki yüzü',
+  body:[
+    'Uyku tek parça bir dinlenme değil, birbirinden çok farklı iki hâlin dönüşümlü tekrarıdır. Derin uykuda beyin dalgaları yavaşlar, kalp atışı düşer, beden neredeyse hareketsizdir. Hızlı göz hareketi evresinde ise beyin uyanıkken olduğu kadar hareketlidir, gözler kapaklar altında koşar, ama kaslar geçici olarak felçtir. Rüyaların çoğu bu ikinci evrede görülür.',
+    'İki evrenin işlevi de farklıdır. Derin uyku daha çok bedenle ilgilenir: doku onarımı, bağışıklık, büyüme hormonu. Hızlı göz hareketi evresi ise gün içinde öğrenilenleri işler; yeni bilgiyi eskisiyle bağlar, duygusal yükünü azaltır. Kötü bir günün ertesi sabah daha katlanılır görünmesinin sebeplerinden biri budur.',
+    'Bir gece boyunca bu iki evre yaklaşık doksan dakikalık döngüler hâlinde beş altı kez tekrarlanır, ama oranları sabit kalmaz. Gecenin ilk yarısında derin uyku ağır basar, sabaha doğru hızlı göz hareketi evresi uzar. Bu yüzden erken yatıp geç kalkmakla geç yatıp geç kalkmak aynı şey değildir; ikisinde de altı saat uyusanız farklı şeylerden mahrum kalırsınız.',
+    'Kaybedilen uyku tam olarak geri alınamaz. Hafta içi biriken açığı hafta sonu kapatmak kısmen işe yarar, çünkü beden önce derin uykuyu telafi eder, hızlı göz hareketi evresini ise ancak kalan yerde sıkıştırır. Hafızaya ve duyguya dokunan kısım, yani en çok ihtiyaç duyulan kısım, çoğu zaman eksik kalır.'
+  ],
+  q:[
+    { t:'Hızlı göz hareketi evresinde kaslar ne durumdadır?', o:['Kasılı','Geçici olarak felç','Titrek','Normal'], a:1 },
+    { t:'Derin uyku ağırlıklı olarak neyle ilgilenir?', o:['Öğrenmeyle','Bedenle: onarım, bağışıklık, büyüme','Rüyalarla','Duygularla'], a:1 },
+    { t:'Bir döngü yaklaşık ne kadar sürer?', o:['30 dakika','60 dakika','90 dakika','120 dakika'], a:2 },
+    { t:'Gecenin ilk yarısında hangi evre ağır basar?', o:['Derin uyku','Hızlı göz hareketi','İkisi eşit','Değişkendir'], a:0 },
+    { t:'Uyku açığı hafta sonu kapatılmaya çalışılırsa ne olur?', o:['Tamamen telafi edilir','Beden önce derin uykuyu telafi eder, diğeri eksik kalır','Hiçbir şey telafi edilmez','Sadece hızlı göz hareketi telafi edilir'], a:1 }
+  ]
+},
+{
+  t:'Haritanın yalanı',
+  body:[
+    'Her harita yalan söyler, çünkü küreyi düzleme sermek matematiksel olarak imkânsızdır. Bir portakal kabuğunu yırtmadan masaya yapıştıramazsınız; yeryüzü için de durum aynıdır. Harita yapımcısı bu yüzden neyi koruyacağını seçmek zorundadır: alanı mı, açıyı mı, mesafeyi mi. Üçünü birden koruyan bir harita yoktur.',
+    'Okullarda en çok görülen izdüşüm açıları korur. Bu, denizcilik için son derece kullanışlıdır; haritada çizdiğiniz düz çizgi gerçekte sabit pusula yönüdür. Ama bedeli alanların bozulmasıdır ve bozulma kutuplara doğru katlanarak artar. Ekvatora yakın ülkeler olduğundan küçük, kuzeydekiler devasa görünür.',
+    'Sonuç, nesillerin zihninde çarpık bir dünya oldu. Afrika bu haritada Grönland ile aynı boyda durur; oysa gerçekte Afrika on dört kat büyüktür. Bu bir komplo değil, bir tercihin uzun vadeli yan etkisidir: denizcilik için tasarlanmış bir araç, coğrafya dersinde dünya tasviri olarak kullanılmıştır.',
+    'Alanı doğru veren izdüşümler de var, ama onlar da şekilleri eziyor; kıtalar tanıdık görüntüsünü kaybediyor. Doğru soru hangi haritanın doğru olduğu değil, elinizdeki haritanın neyi feda ettiğidir. Her araç gibi harita da bir soruya cevap vermek için yapılmıştır ve başka sorulara sorulduğunda yanıltır.'
+  ],
+  q:[
+    { t:'Neden her harita "yalan söyler"?', o:['Ölçekler yanlış olduğu için','Küreyi düzleme sermek imkânsız olduğu için','Eski verilerle yapıldığı için','Sınırlar değiştiği için'], a:1 },
+    { t:'Okullarda en çok görülen izdüşüm neyi korur?', o:['Alanı','Mesafeyi','Açıları','Şekilleri'], a:2 },
+    { t:'Bu izdüşümde bozulma nerede en fazladır?', o:['Ekvatorda','Kutuplara doğru','Okyanuslarda','Çöllerde'], a:1 },
+    { t:'Afrika gerçekte Grönland\'dan kaç kat büyüktür?', o:['Üç','Yedi','On dört','Yirmi'], a:2 },
+    { t:'Metne göre sorulması gereken doğru soru nedir?', o:['Hangi harita doğrudur','Harita neyi feda etmiştir','Haritayı kim yapmıştır','Harita ne zaman çizilmiştir'], a:1 }
+  ]
+},
+{
+  t:'Sessizliğin fiyatı',
+  body:[
+    'Şehirde tam sessizlik diye bir şey yoktur. Gece yarısı bile bir buzdolabının uğultusu, uzaktan bir motor, duvarın içinden geçen su sesi vardır. Kulak bunlara alışır ve artık duymaz; ama alışmak duymamak demek değildir. Beden arka planda sürekli bir uyanıklık hâlinde kalır, kalp atışı ve stres hormonları hafifçe yüksek seyreder.',
+    'Gürültünün etkisi üzerine yapılan uzun süreli izlemeler, ana yollara yakın oturanlarda uyku kalitesinin düştüğünü ve kalp damar sorunlarının bir miktar arttığını gösteriyor. İlginç olan, insanların kendilerini gürültüden rahatsız hissetmediklerini söylediği durumlarda da ölçümlerin benzer çıkması. Yani alışmak, korunmak anlamına gelmiyor.',
+    'Sessizliğin kendisi de pasif bir boşluk değil. Beyin, dış uyaran azaldığında farklı bir ağı devreye sokar; dağınık düşünme, hatırlama ve plan kurma bu ağda olur. Yürüyüşte ya da duşta aklına gelen çözümler tesadüf değildir, o ağın çalışmasının sonucudur.',
+    'Bu yüzden sessizlik giderek bir lüks hâline geliyor. Sessiz bir oda, sessiz bir sokak, hatta sessiz bir saat artık ücretsiz elde edilen bir şey değil. Kulaklık takarak elde edilen sessizlik ise başka bir şey: dış sesi kesiyor ama yerine yenisini koyuyor. Gerçek sessizliğe ulaşmak için bugün çoğu insanın şehirden çıkması gerekiyor.'
+  ],
+  q:[
+    { t:'Kulağın seslere alışması ne anlama gelmez?', o:['Duymamak','Rahatlamak','Uyum sağlamak','Dinlenmek'], a:0 },
+    { t:'Ana yollara yakın oturanlarda ne gözlemleniyor?', o:['Uyku kalitesinin düşmesi','İşitme kaybı','Daha iyi konsantrasyon','Hiçbir değişiklik'], a:0 },
+    { t:'İzlemelerin ilginç bulgusu nedir?', o:['Gürültü sadece geceleri etkili','Rahatsız olmadığını söyleyenlerde de ölçümler benzer','Kadınlar daha çok etkileniyor','Etki üç yılda geçiyor'], a:1 },
+    { t:'Dış uyaran azalınca beyinde ne olur?', o:['Tamamen dinlenir','Farklı bir ağ devreye girer','Hafıza zayıflar','Uykuya geçer'], a:1 },
+    { t:'Kulaklıkla elde edilen sessizlik için ne söyleniyor?', o:['Gerçek sessizlikle aynıdır','Dış sesi kesip yerine yenisini koyar','Daha sağlıklıdır','Hiç işe yaramaz'], a:1 }
+  ]
+}
+];
+
+/* Kelime tanıma havuzu */
+var WORDS = {
+  short:['ev','göz','kuş','dal','taş','buz','kar','yol','kır','not','saat','deniz','kalem','sabah','bulut','çiçek','kapı','masa','tuz','ışık','kum','dağ','göl','ateş'],
+  mid:['pencere','sandalye','yolculuk','anahtar','kütüphane','bahçıvan','denizci','rüzgârlı','defterim','kaplumbağa','uçurtma','gözlükçü','merdiven','kelebek','karanlık','sessizlik'],
+  long:['bilgisayarcılık','kararlaştırılmış','yapılandırılması','olağanüstülüğü','sorumluluklarımız','değerlendirmeler','uluslararasılaşma','bağımsızlaştırmak','anlaşılabilirliği','gerçekleştirilmesi']
+};
+
+/* ==================================================================
+   DEPO
+   ================================================================== */
+var KEY = 'hizliOkuma_v1';
+var DEF = {
+  v:1, bestWpm:0, bestEff:0, bestSchulte:null, bestFlashMs:null,
+  sessions:0, history:[], lastDay:'', streak:0
+};
+function lsGet(){ try{ return localStorage.getItem(KEY); }catch(e){ return null; } }
+function lsSet(v){ try{ localStorage.setItem(KEY, v); }catch(e){} }
+var D = (function(){
+  try{
+    var raw = lsGet();
+    if(!raw) return JSON.parse(JSON.stringify(DEF));
+    var p = JSON.parse(raw), m = JSON.parse(JSON.stringify(DEF));
+    Object.keys(m).forEach(function(k){ if(p[k] !== undefined) m[k] = p[k]; });
+    if(!Array.isArray(m.history)) m.history = [];
+    return m;
+  }catch(e){ return JSON.parse(JSON.stringify(DEF)); }
+})();
+function save(){ lsSet(JSON.stringify(D)); }
+function dayKey(d){ d = d || new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
+function bumpStreak(){
+  var today = dayKey();
+  if(D.lastDay === today) return;
+  var y = new Date(); y.setDate(y.getDate()-1);
+  D.streak = (D.lastDay === dayKey(y)) ? (D.streak||0)+1 : 1;
+  D.lastDay = today;
+}
+
+/** Bir çalışmayı kaydeder. type: egzersiz adı, score: ana sayı, unit: birimi */
+function logSession(type, score, unit, extra){
+  bumpStreak();
+  D.sessions = (D.sessions||0) + 1;
+  D.history.unshift({ type:type, score:score, unit:unit, extra:extra||'', ts:Date.now() });
+  if(D.history.length > 60) D.history.length = 60;
+  save();
+  paintStreak();
+}
+
+function paintStreak(){
+  var s = D.streak || 0;
+  $('streakPill').textContent = s > 0 ? ('🔥 ' + s + ' gün üst üste') : 'ilk çalışman';
+}
+
+/* ==================================================================
+   YARDIMCILAR
+   ================================================================== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+  return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]; }); }
+function words(text){ return text.split(/\s+/).filter(Boolean); }
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=(Math.random()*(i+1))|0; var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function pick(a){ return a[(Math.random()*a.length)|0]; }
+function fullText(t){ return t.body.join(' '); }
+
+/* Metin seçicileri doldur */
+['rsvpText','chText','compText'].forEach(function(id){
+  var sel = $(id);
+  TEXTS.forEach(function(t,i){
+    var o = document.createElement('option');
+    o.value = i; o.textContent = t.t + ' · ' + words(fullText(t)).length + ' kelime';
+    sel.appendChild(o);
+  });
+});
+
+/* ==================================================================
+   SEKME GEÇİŞİ
+   ================================================================== */
+var MODES = ['rsvp','schulte','sacc','chunk','comp','flash','prog'];
+$('tabs').addEventListener('click', function(e){
+  var b = e.target.closest('.tab'); if(!b) return;
+  stopAll();
+  var m = b.dataset.mode;
+  [].forEach.call($('tabs').children, function(x){ x.classList.toggle('on', x === b); });
+  MODES.forEach(function(x){ $('m-'+x).classList.toggle('hidden', x !== m); });
+  if(m === 'prog') paintProgress();
+});
+
+function stopAll(){ rsvpStop(); saccStop(); chStop(); }
+
+/* ==================================================================
+   1. HIZLI GÖSTERİM (RSVP)
+   ================================================================== */
+var rsvp = { list:[], i:0, timer:null, playing:false, chunk:1, wpm:300 };
+
+$('rsvpSpeed').addEventListener('input', function(){
+  rsvp.wpm = +this.value;
+  $('rsvpSpeedVal').textContent = rsvp.wpm;
+  $('rsvpWpm').textContent = rsvp.wpm;
+  if(rsvp.playing){ rsvpStop(); rsvpStart(); }
+  rsvpPaintLeft();
+});
+$('rsvpChunk').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); });
+  rsvp.chunk = +b.dataset.n;
+  rsvpBuild();
+});
+$('rsvpText').addEventListener('change', rsvpBuild);
+$('rsvpPlay').addEventListener('click', function(){ rsvp.playing ? rsvpStop() : rsvpStart(); });
+$('rsvpReset').addEventListener('click', function(){ rsvpStop(); rsvp.i = 0; rsvpBuild(); });
+
+function rsvpBuild(){
+  var t = TEXTS[+$('rsvpText').value];
+  var w = words(fullText(t));
+  rsvp.list = [];
+  for(var i=0;i<w.length;i+=rsvp.chunk) rsvp.list.push(w.slice(i, i+rsvp.chunk).join(' '));
+  if(rsvp.i >= rsvp.list.length) rsvp.i = 0;
+  rsvpPaint();
+}
+
+/** Gözün sabitleneceği harfi bulur (optimal recognition point). */
+function pivotHtml(s){
+  var core = s.split(' ')[0];
+  var p = core.length <= 1 ? 0 : core.length <= 5 ? 1 : core.length <= 9 ? 2 : 3;
+  var idx = s.indexOf(core);
+  return esc(s.slice(0, idx+p)) + '<span class="pivot">' + esc(s.charAt(idx+p)) + '</span>' + esc(s.slice(idx+p+1));
+}
+
+function rsvpPaint(){
+  var total = rsvp.list.length;
+  $('rsvpPos').textContent = rsvp.i + ' / ' + total;
+  $('rsvpBar').style.width = total ? ((rsvp.i/total)*100).toFixed(1)+'%' : '0%';
+  rsvpPaintLeft();
+}
+function rsvpPaintLeft(){
+  var left = rsvp.list.length - rsvp.i;
+  if(left <= 0 || !rsvp.wpm){ $('rsvpLeft').textContent = '—'; return; }
+  var sec = Math.round(left * rsvp.chunk / rsvp.wpm * 60);
+  $('rsvpLeft').textContent = Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
+}
+
+function rsvpStart(){
+  if(!rsvp.list.length) rsvpBuild();
+  if(rsvp.i >= rsvp.list.length) rsvp.i = 0;
+  rsvp.playing = true;
+  $('rsvpPlay').textContent = 'Duraklat';
+  var step = 60000 / rsvp.wpm * rsvp.chunk;
+  rsvp.timer = setInterval(function(){
+    if(rsvp.i >= rsvp.list.length){ rsvpFinish(); return; }
+    var s = rsvp.list[rsvp.i++];
+    $('rsvpWord').innerHTML = pivotHtml(s);
+    rsvpPaint();
+  }, step);
+}
+function rsvpStop(){
+  clearInterval(rsvp.timer); rsvp.timer = null; rsvp.playing = false;
+  var b = $('rsvpPlay'); if(b) b.textContent = 'Başlat';
+}
+function rsvpFinish(){
+  rsvpStop();
+  $('rsvpWord').textContent = 'bitti';
+  var rec = rsvp.wpm > (D.bestWpm||0);
+  if(rec){ D.bestWpm = rsvp.wpm; }
+  logSession('Hızlı Gösterim', rsvp.wpm, 'kelime/dk', rsvp.chunk + ' kelimelik öbek');
+  $('rsvpBest').textContent = D.bestWpm || '—';
+  rsvp.i = 0;
+}
+
+$('rsvpBest').textContent = D.bestWpm || '—';
+rsvpBuild();
+
+/* ==================================================================
+   2. SCHULTE TABLOSU
+   ================================================================== */
+var sch = { n:5, mode:'plain', next:1, err:0, t0:0, timer:null, running:false, shuffleTimer:null };
+var SCH_COLORS = ['#35d6c0','#ff5f3d','#f0b429','#8b7cff','#46c07a'];
+
+$('schSize').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); });
+  sch.n = +b.dataset.n;
+  paintSchBest();
+});
+$('schMode').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); });
+  sch.mode = b.dataset.m;
+});
+$('schStart').addEventListener('click', schStart);
+
+function schKey(){ return sch.n + 'x' + sch.n; }
+function paintSchBest(){
+  var b = D.bestSchulte && D.bestSchulte[schKey()];
+  $('schBest').textContent = b ? b.toFixed(1) + ' sn' : '—';
+}
+
+function schStart(){
+  schStop();
+  var total = sch.n * sch.n;
+  var nums = shuffle(Array.from({length:total}, function(_,i){ return i+1; }));
+  var g = $('schGrid');
+  g.style.gridTemplateColumns = 'repeat(' + sch.n + ', 1fr)';
+  g.style.fontSize = sch.n >= 7 ? '.95rem' : sch.n >= 5 ? '1.15rem' : '1.5rem';
+  g.innerHTML = nums.map(function(v){
+    var c = sch.mode === 'color' ? ';color:' + SCH_COLORS[v % SCH_COLORS.length] : '';
+    return '<div class="sq" data-v="' + v + '" style="' + c.slice(1) + '">' + v + '</div>';
+  }).join('');
+
+  sch.next = 1; sch.err = 0; sch.running = true; sch.t0 = performance.now();
+  $('schNext').textContent = '1';
+  $('schErr').textContent = '0';
+  $('schResult').innerHTML = '';
+  $('schStart').textContent = 'Yeniden';
+
+  sch.timer = setInterval(function(){
+    $('schTime').textContent = ((performance.now() - sch.t0)/1000).toFixed(1);
+  }, 100);
+
+  if(sch.mode === 'shuffle'){
+    sch.shuffleTimer = setInterval(function(){
+      var left = [].filter.call(g.children, function(c){ return !c.classList.contains('done'); });
+      var vals = shuffle(left.map(function(c){ return c.dataset.v; }));
+      left.forEach(function(c,i){
+        c.dataset.v = vals[i]; c.textContent = vals[i];
+        if(sch.mode === 'color') c.style.color = SCH_COLORS[vals[i] % SCH_COLORS.length];
+      });
+    }, 2600);
+  }
+}
+function schStop(){
+  clearInterval(sch.timer); clearInterval(sch.shuffleTimer);
+  sch.timer = sch.shuffleTimer = null; sch.running = false;
+}
+
+$('schGrid').addEventListener('click', function(e){
+  var c = e.target.closest('.sq'); if(!c || !sch.running) return;
+  if(+c.dataset.v === sch.next){
+    c.classList.add('done');
+    sch.next++;
+    $('schNext').textContent = sch.next > sch.n*sch.n ? '✓' : sch.next;
+    if(sch.next > sch.n*sch.n) schFinish();
+  }else{
+    sch.err++;
+    $('schErr').textContent = sch.err;
+    c.classList.add('miss');
+    setTimeout(function(){ c.classList.remove('miss'); }, 220);
+  }
+});
+
+function schFinish(){
+  var sec = (performance.now() - sch.t0)/1000;
+  schStop();
+  $('schTime').textContent = sec.toFixed(1);
+  $('schStart').textContent = 'Başlat';
+
+  D.bestSchulte = D.bestSchulte || {};
+  var k = schKey(), prev = D.bestSchulte[k];
+  var rec = !prev || sec < prev;
+  if(rec) D.bestSchulte[k] = sec;
+  logSession('Schulte ' + k, +sec.toFixed(1), 'sn', sch.err + ' hata');
+  paintSchBest();
+
+  $('schResult').innerHTML =
+    '<div class="result"><h3>' + sec.toFixed(1) + ' saniye' +
+    (rec ? '<span class="badge badge--rec">yeni rekor</span>' : '') + '</h3>' +
+    '<p class="note">' + sch.n + '×' + sch.n + ' tablo, ' + sch.err + ' hata. ' +
+    schComment(sec, sch.n) + '</p></div>';
+}
+function schComment(sec, n){
+  var per = sec / (n*n);
+  if(per < 0.5) return 'Çok iyi — görüş alanın geniş çalışıyor, bir üst boyuta geç.';
+  if(per < 0.9) return 'İyi tempo. Gözünü ortada tutmayı başarabiliyorsan doğru yoldasın.';
+  return 'Acele etme; süreden önce gözünü merkezde tutmayı oturt, hız sonra gelir.';
+}
+paintSchBest();
+
+/* ==================================================================
+   3. GÖZ SIÇRAMASI
+   ================================================================== */
+var sacc = { timer:null, ms:700, w:70, pool:[] };
+
+$('saccSpeed').addEventListener('input', function(){
+  sacc.ms = +this.value; $('saccSpeedVal').textContent = sacc.ms;
+  if(sacc.timer){ saccStop(); saccStart(); }
+});
+$('saccWidth').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); });
+  sacc.w = +b.dataset.w;
+  applySaccWidth();
+});
+$('saccPlay').addEventListener('click', function(){ sacc.timer ? saccStop() : saccStart(); });
+$('saccStop').addEventListener('click', saccStop);
+
+function applySaccWidth(){
+  $('saccBox').style.maxWidth = sacc.w === 40 ? '460px' : sacc.w === 70 ? '720px' : '100%';
+  $('saccBox').style.margin = '0 auto';
+}
+applySaccWidth();
+
+function saccStart(){
+  if(!sacc.pool.length){
+    var all = [];
+    TEXTS.forEach(function(t){ all = all.concat(words(fullText(t))); });
+    sacc.pool = all.filter(function(w){ return w.length > 2 && w.length < 12; })
+                   .map(function(w){ return w.replace(/[^\wçğıöşüÇĞİÖŞÜ]/gi,''); })
+                   .filter(Boolean);
+  }
+  $('saccPlay').textContent = 'Duraklat';
+  var row = 0, n = 0;
+  sacc.timer = setInterval(function(){
+    for(var r=0;r<3;r++){
+      $('sc'+r+'L').classList.toggle('off', r !== row);
+      $('sc'+r+'R').classList.toggle('off', r !== row);
+    }
+    $('sc'+row+'L').textContent = pick(sacc.pool);
+    $('sc'+row+'R').textContent = pick(sacc.pool);
+    row = (row+1) % 3;
+    n++;
+    if(n === 60){ saccStop(); logSession('Göz Sıçraması', sacc.ms, 'ms tempo', sacc.w === 40 ? 'dar' : sacc.w === 70 ? 'orta' : 'geniş'); }
+  }, sacc.ms);
+}
+function saccStop(){
+  clearInterval(sacc.timer); sacc.timer = null;
+  var b = $('saccPlay'); if(b) b.textContent = 'Başlat';
+}
+
+/* ==================================================================
+   4. ÖBEK GENİŞLETME
+   ================================================================== */
+var ch = { w:[], i:0, n:3, wpm:450, timer:null };
+
+$('chSpeed').addEventListener('input', function(){
+  ch.wpm = +this.value; $('chSpeedVal').textContent = ch.wpm;
+  if(ch.timer){ chStop(); chStart(); }
+});
+$('chWidth').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); });
+  ch.n = +b.dataset.n; chPaint();
+});
+$('chText').addEventListener('change', function(){ ch.i = 0; chBuild(); });
+$('chPlay').addEventListener('click', function(){ ch.timer ? chStop() : chStart(); });
+$('chReset').addEventListener('click', function(){ chStop(); ch.i = 0; chPaint(); });
+
+function chBuild(){ ch.w = words(fullText(TEXTS[+$('chText').value])); chPaint(); }
+function chPaint(){
+  var out = [], i;
+  for(i=0;i<ch.w.length;i++){
+    var cls = i < ch.i ? 'past' : (i < ch.i + ch.n ? '' : 'future');
+    if(i === ch.i) out.push('<b>');
+    out.push(cls ? '<span class="'+cls+'">'+esc(ch.w[i])+'</span>' : esc(ch.w[i]));
+    if(i === ch.i + ch.n - 1) out.push('</b>');
+    out.push(' ');
+  }
+  if(ch.i + ch.n > ch.w.length) out.push('</b>');
+  $('chBox').innerHTML = out.join('');
+  $('chBar').style.width = ch.w.length ? ((ch.i/ch.w.length)*100).toFixed(1)+'%' : '0%';
+}
+function chStart(){
+  if(!ch.w.length) chBuild();
+  if(ch.i >= ch.w.length) ch.i = 0;
+  $('chPlay').textContent = 'Duraklat';
+  ch.timer = setInterval(function(){
+    ch.i += ch.n;
+    if(ch.i >= ch.w.length){
+      chStop(); ch.i = 0; chPaint();
+      logSession('Öbek Genişletme', ch.wpm, 'kelime/dk', ch.n + ' kelimelik öbek');
+      return;
+    }
+    chPaint();
+  }, 60000 / ch.wpm * ch.n);
+}
+function chStop(){
+  clearInterval(ch.timer); ch.timer = null;
+  var b = $('chPlay'); if(b) b.textContent = 'Başlat';
+}
+chBuild();
+
+/* ==================================================================
+   5. ANLAMA TESTİ
+   ================================================================== */
+var comp = { t:null, t0:0, timer:null, sec:0, wcount:0 };
+
+$('compStart').addEventListener('click', function(){
+  comp.t = TEXTS[+$('compText').value];
+  comp.wcount = words(fullText(comp.t)).length;
+  $('compBody').innerHTML = '<h3 style="font-family:var(--display);font-size:1.3rem;margin-bottom:14px">' +
+    esc(comp.t.t) + '</h3>' + comp.t.body.map(function(p){ return '<p>'+esc(p)+'</p>'; }).join('');
+  $('compBody').scrollTop = 0;
+  $('compMeta').textContent = comp.wcount + ' kelime';
+  $('compIntro').classList.add('hidden');
+  $('compQuiz').classList.add('hidden');
+  $('compResult').innerHTML = '';
+  $('compReading').classList.remove('hidden');
+  comp.t0 = performance.now();
+  comp.timer = setInterval(function(){
+    $('compTimer').textContent = ((performance.now()-comp.t0)/1000).toFixed(1) + ' sn';
+  }, 100);
+});
+
+$('compDone').addEventListener('click', function(){
+  var sec = (performance.now() - comp.t0)/1000;
+  // Kazara çift tıklamada 0 saniyelik "okuma" olmasın.
+  if(sec < 4){
+    alert('Metni okumaya daha yeni başladın. Bitirdiğinde tekrar bas.');
+    return;
+  }
+  clearInterval(comp.timer);
+  comp.sec = sec;
+  $('compReading').classList.add('hidden');
+  $('quizList').innerHTML = comp.t.q.map(function(q, qi){
+    return '<div class="q"><div class="q__t">' + (qi+1) + '. ' + esc(q.t) + '</div>' +
+      q.o.map(function(o, oi){
+        return '<label class="opt" data-q="'+qi+'" data-o="'+oi+'">' +
+               '<input type="radio" name="q'+qi+'" value="'+oi+'"><span>'+esc(o)+'</span></label>';
+      }).join('') + '</div>';
+  }).join('');
+  $('compQuiz').classList.remove('hidden');
+  $('compQuiz').scrollIntoView({ behavior:'smooth', block:'start' });
+});
+
+$('quizSubmit').addEventListener('click', function(){
+  var correct = 0;
+  comp.t.q.forEach(function(q, qi){
+    var picked = document.querySelector('input[name="q'+qi+'"]:checked');
+    var pv = picked ? +picked.value : -1;
+    if(pv === q.a) correct++;
+    [].forEach.call(document.querySelectorAll('.opt[data-q="'+qi+'"]'), function(el){
+      var oi = +el.dataset.o;
+      if(oi === q.a) el.classList.add('ok');
+      else if(oi === pv) el.classList.add('no');
+    });
+  });
+
+  var total = comp.t.q.length;
+  var pct = Math.round(correct/total*100);
+  var wpm = Math.round(comp.wcount / (comp.sec/60));
+  var eff = Math.round(wpm * pct/100);
+
+  // 1500 kelime/dk üstü insan okuması değil — metni atlamış demektir.
+  // Böyle bir tur kayda geçer ama rekor sayılmaz.
+  var sane = wpm <= 1500;
+  var recE = sane && eff > (D.bestEff||0);
+  if(sane && wpm > (D.bestWpm||0)) D.bestWpm = wpm;
+  if(recE) D.bestEff = eff;
+  logSession('Anlama Testi', eff, 'etkin kelime/dk', wpm + ' ham · %' + pct + ' anlama');
+
+  this.disabled = true;
+  $('compResult').innerHTML =
+    '<div class="result">' +
+      '<h3>Etkin okuma hızın: ' + eff + ' kelime/dk' + (recE ? '<span class="badge badge--rec">yeni rekor</span>' : '') + '</h3>' +
+      '<p class="note">Ham hız ' + wpm + ' kelime/dk, anlama %' + pct + ' (' + correct + '/' + total + '). ' +
+        'Etkin hız ikisinin çarpımıdır — hızlanıp anlamayı düşürmek sayıyı yükseltmez.</p>' +
+      '<div class="stats">' +
+        '<div class="stat stat--a"><div class="stat__v">' + wpm + '</div><div class="stat__k">Ham hız</div></div>' +
+        '<div class="stat stat--b"><div class="stat__v">%' + pct + '</div><div class="stat__k">Anlama</div></div>' +
+        '<div class="stat stat--g"><div class="stat__v">' + eff + '</div><div class="stat__k">Etkin hız</div></div>' +
+        '<div class="stat"><div class="stat__v mono">' + comp.sec.toFixed(1) + '</div><div class="stat__k">Saniye</div></div>' +
+      '</div>' +
+      '<p class="note" style="margin:16px 0 0">' +
+        (sane ? compComment(wpm, pct)
+              : 'Bu hız gerçek bir okumaya ait olamaz, o yüzden rekor olarak kaydedilmedi. ' +
+                'Metni baştan sona okuyup öyle bitir.') + '</p>' +
+      '<div class="btn-row" style="margin-top:16px">' +
+        '<button class="btn" id="compAgain">Başka metin</button></div>' +
+    '</div>';
+  $('compAgain').addEventListener('click', function(){
+    $('compQuiz').classList.add('hidden');
+    $('compResult').innerHTML = '';
+    $('quizSubmit').disabled = false;
+    $('compIntro').classList.remove('hidden');
+    var s = $('compText');
+    s.selectedIndex = (s.selectedIndex + 1) % s.options.length;
+  });
+});
+
+function compComment(wpm, pct){
+  if(pct < 60) return 'Anlama düşük. Bir sonraki turda biraz yavaşla; hız anlamayı geçince sayı düşer.';
+  if(wpm < 180) return 'Okuma hızın ortalamanın altında. Hızlı Gösterim ve Öbek Genişletme egzersizleriyle başla.';
+  if(wpm < 280) return 'Ortalama bir hızdasın. Öbek genişliğini artırarak burayı hızlıca aşabilirsin.';
+  if(wpm < 450) return 'Ortalamanın üstündesin. Schulte tablosunu 7×7\'ye çıkarıp görüş alanını zorla.';
+  return 'Yüksek hız — anlama da yüksek kaldığı sürece bu tempoyu koru.';
+}
+
+/* ==================================================================
+   6. KELİME TANIMA
+   ================================================================== */
+var fl = { ms:120, round:0, total:15, ok:0, len:'short', word:'', waiting:false, minMs:null };
+
+$('flLen').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); });
+  fl.len = b.dataset.l;
+});
+$('flStart').addEventListener('click', flStart);
+
+function flStart(){
+  fl.ms = 120; fl.round = 0; fl.ok = 0; fl.minMs = null;
+  $('flResult').innerHTML = '';
+  $('flStart').textContent = 'Yeniden';
+  flNext();
+}
+
+function flNext(){
+  if(fl.round >= fl.total){ flFinish(); return; }
+  fl.round++;
+  $('flRound').textContent = fl.round + ' / ' + fl.total;
+  $('flMs').textContent = fl.ms;
+  $('flChoices').classList.add('hidden');
+  $('flChoices').innerHTML = '';
+  fl.waiting = true;
+
+  var box = $('flBox');
+  box.textContent = '+';
+  setTimeout(function(){
+    fl.word = pick(WORDS[fl.len]);
+    box.textContent = fl.word;
+    setTimeout(function(){
+      box.textContent = '?';
+      flShowChoices();
+    }, fl.ms);
+  }, 550);
+}
+
+function flShowChoices(){
+  var pool = WORDS[fl.len].filter(function(w){ return w !== fl.word; });
+  var opts = shuffle(shuffle(pool).slice(0,3).concat([fl.word]));
+  $('flChoices').innerHTML = opts.map(function(w){
+    return '<div class="choice" data-w="'+esc(w)+'">'+esc(w)+'</div>';
+  }).join('');
+  $('flChoices').classList.remove('hidden');
+}
+
+$('flChoices').addEventListener('click', function(e){
+  var c = e.target.closest('.choice'); if(!c || !fl.waiting) return;
+  fl.waiting = false;
+  var right = c.dataset.w === fl.word;
+  [].forEach.call(this.children, function(x){
+    if(x.dataset.w === fl.word) x.classList.add('ok');
+    else if(x === c) x.classList.add('no');
+  });
+  if(right){
+    fl.ok++;
+    if(fl.minMs === null || fl.ms < fl.minMs) fl.minMs = fl.ms;
+    fl.ms = Math.max(20, fl.ms - 12);     // doğruysa zorlaştır
+  }else{
+    fl.ms = Math.min(400, fl.ms + 24);    // yanlışsa kolaylaştır
+  }
+  $('flAcc').textContent = Math.round(fl.ok/fl.round*100) + '%';
+  setTimeout(flNext, 620);
+});
+
+function flFinish(){
+  $('flBox').textContent = 'bitti';
+  $('flStart').textContent = 'Başlat';
+  var acc = Math.round(fl.ok/fl.total*100);
+  var thr = fl.minMs === null ? null : fl.minMs;
+  var rec = thr !== null && (D.bestFlashMs === null || D.bestFlashMs === undefined || thr < D.bestFlashMs);
+  if(rec) D.bestFlashMs = thr;
+  logSession('Kelime Tanıma', thr || 0, 'ms eşik', '%' + acc + ' isabet');
+  paintFlBest();
+  $('flResult').innerHTML =
+    '<div class="result"><h3>Eşiğin: ' + (thr !== null ? thr + ' ms' : 'ölçülemedi') +
+    (rec ? '<span class="badge badge--rec">yeni rekor</span>' : '') + '</h3>' +
+    '<p class="note">' + fl.ok + '/' + fl.total + ' doğru (%' + acc + '). ' +
+    'Eşik, doğru bildiğin en kısa gösterim süresidir; düştükçe tanıma hızın artıyor demektir.</p></div>';
+}
+function paintFlBest(){
+  $('flBest').textContent = (D.bestFlashMs || D.bestFlashMs === 0) ? D.bestFlashMs + ' ms' : '—';
+}
+paintFlBest();
+
+/* ==================================================================
+   7. İLERLEME
+   ================================================================== */
+function paintProgress(){
+  $('pgWpm').textContent = D.bestWpm ? D.bestWpm + ' kdk' : '—';
+  $('pgEff').textContent = D.bestEff ? D.bestEff + ' kdk' : '—';
+  var bs = D.bestSchulte || {};
+  var keys = Object.keys(bs);
+  $('pgSch').textContent = keys.length
+    ? keys.map(function(k){ return k + ': ' + bs[k].toFixed(1) + 's'; }).join('  ')
+    : '—';
+  $('pgSes').textContent = D.sessions || 0;
+
+  if(!D.history.length){
+    $('histWrap').innerHTML = '<div class="empty">Henüz çalışma kaydı yok. Bir egzersiz bitirdiğinde burada görünecek.</div>';
+    return;
+  }
+  $('histWrap').innerHTML = '<div class="hist">' + D.history.slice(0,25).map(function(h){
+    var d = new Date(h.ts);
+    return '<div class="hist__row">' +
+      '<span>' + esc(h.type) + (h.extra ? ' <span class="faint">· ' + esc(h.extra) + '</span>' : '') + '</span>' +
+      '<span class="faint mono" style="font-size:.76rem">' +
+        d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'}) + ' ' +
+        d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}) + '</span>' +
+      '<strong class="mono" style="color:var(--accent)">' + h.score +
+        ' <span class="faint" style="font-size:.7rem">' + esc(h.unit) + '</span></strong>' +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+$('wipe').addEventListener('click', function(){
+  if(!confirm('Bütün rekorlar ve çalışma geçmişi silinsin mi? Bu işlem geri alınamaz.')) return;
+  D = JSON.parse(JSON.stringify(DEF));
+  save();
+  paintProgress(); paintStreak(); paintSchBest(); paintFlBest();
+  $('rsvpBest').textContent = '—';
+  $('wipeNote').textContent = 'Kayıtlar silindi.';
+  setTimeout(function(){ $('wipeNote').textContent = ''; }, 2600);
+});
+
+/* ==================================================================
+   BAŞLANGIÇ
+   ================================================================== */
+paintStreak();
+window.addEventListener('beforeunload', stopAll);
+
+})();
+</script>
+</body>
+</html>

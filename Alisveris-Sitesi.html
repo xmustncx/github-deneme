@@ -1,0 +1,2389 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trenda — Alışveriş</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+/* ============================== TOKENS ============================== */
+:root{
+  --bg:#f4f4f6; --surface:#ffffff; --surface-2:#fafafb; --surface-3:#f1f1f4;
+  --text:#1c1c22; --muted:#6b6b78; --faint:#9a9aa6; --border:#e6e6ec;
+  --accent:#f27a1a; --accent-2:#ff9838; --accent-ink:#fff; --accent-soft:#fff2e6;
+  --green:#1aab68; --green-soft:#e5f7ef; --red:#e8404a; --red-soft:#fdeced;
+  --blue:#2f6fed; --star:#ffb400; --purple:#7b57e0;
+  --radius:14px; --radius-s:10px; --radius-l:20px;
+  --shadow:0 1px 2px rgba(20,20,40,.04), 0 8px 24px rgba(20,20,40,.06);
+  --shadow-lg:0 12px 48px rgba(20,20,40,.16);
+  --head:'Fraunces',Georgia,serif; --sans:'Manrope',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --maxw:1200px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0f13; --surface:#181820; --surface-2:#1e1e28; --surface-3:#23232f;
+    --text:#ececf2; --muted:#9b9baa; --faint:#6f6f80; --border:#2c2c39;
+    --accent:#ff8c33; --accent-2:#ffa457; --accent-ink:#1a1205; --accent-soft:#33240f;
+    --green:#31c07f; --green-soft:#14311f; --red:#ff5b64; --red-soft:#3a1417;
+    --blue:#5a8bff; --star:#ffc23d; --purple:#a184f0;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+    --shadow-lg:0 16px 56px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f0f13; --surface:#181820; --surface-2:#1e1e28; --surface-3:#23232f;
+  --text:#ececf2; --muted:#9b9baa; --faint:#6f6f80; --border:#2c2c39;
+  --accent:#ff8c33; --accent-2:#ffa457; --accent-ink:#1a1205; --accent-soft:#33240f;
+  --green:#31c07f; --green-soft:#14311f; --red:#ff5b64; --red-soft:#3a1417;
+  --blue:#5a8bff; --star:#ffc23d; --purple:#a184f0;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  --shadow-lg:0 16px 56px rgba(0,0,0,.55);
+}
+
+/* ============================== BASE ============================== */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--sans);
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  padding-bottom:64px;
+}
+@media(min-width:860px){ body{padding-bottom:0} }
+a{color:inherit; text-decoration:none}
+img{max-width:100%; display:block}
+button,input,select,textarea{font:inherit; color:inherit}
+h1,h2,h3,h4{margin:0; font-family:var(--head); font-weight:600; letter-spacing:-.01em}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px}
+.muted{color:var(--muted)}
+.faint{color:var(--faint)}
+.center{text-align:center}
+.row{display:flex; gap:12px; align-items:center}
+.row.wrap{flex-wrap:wrap}
+.spread{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.grow{flex:1}
+.hide{display:none !important}
+.pill{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; background:var(--surface-3); color:var(--muted)}
+.pill.green{background:var(--green-soft); color:var(--green)}
+.pill.red{background:var(--red-soft); color:var(--red)}
+.pill.accent{background:var(--accent-soft); color:var(--accent)}
+.divider{height:1px; background:var(--border); margin:18px 0}
+
+/* ============================== BUTTONS ============================== */
+.btn{
+  --b:var(--accent);
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:11px 18px; border-radius:var(--radius-s); border:1px solid transparent;
+  background:var(--b); color:var(--accent-ink); font-weight:700; cursor:pointer;
+  transition:transform .06s ease, filter .15s ease, background .15s ease; white-space:nowrap;
+}
+.btn:active{transform:translateY(1px)}
+.btn:hover{filter:brightness(1.05)}
+.btn.block{width:100%}
+.btn.lg{padding:14px 22px; font-size:16px}
+.btn.sm{padding:7px 12px; font-size:13px; border-radius:8px}
+.btn.ghost{background:transparent; color:var(--text); border-color:var(--border)}
+.btn.ghost:hover{background:var(--surface-3); filter:none}
+.btn.soft{background:var(--accent-soft); color:var(--accent)}
+.btn.dark{background:var(--text); color:var(--surface)}
+.btn.green{background:var(--green); color:#fff}
+.btn.red{background:var(--red); color:#fff}
+.btn.line{background:transparent; border-color:var(--accent); color:var(--accent)}
+.btn[disabled]{opacity:.5; cursor:not-allowed}
+.iconbtn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; border-radius:50%; border:1px solid var(--border);
+  background:var(--surface); cursor:pointer; font-size:18px; transition:background .15s;
+}
+.iconbtn:hover{background:var(--surface-3)}
+.link{color:var(--accent); font-weight:700; cursor:pointer}
+.link:hover{text-decoration:underline}
+
+/* ============================== FORMS ============================== */
+.field{display:flex; flex-direction:column; gap:6px; margin-bottom:14px}
+.field label{font-size:13px; font-weight:700; color:var(--muted)}
+.input,.select,textarea.input{
+  width:100%; padding:11px 13px; border-radius:var(--radius-s);
+  border:1px solid var(--border); background:var(--surface); outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.input:focus,.select:focus,textarea.input:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+textarea.input{resize:vertical; min-height:90px}
+.checkline{display:flex; align-items:center; gap:9px; padding:6px 0; cursor:pointer; font-size:14px}
+.checkline input{width:17px; height:17px; accent-color:var(--accent)}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:0 14px}
+@media(max-width:560px){ .grid2{grid-template-columns:1fr} }
+
+/* ============================== HEADER ============================== */
+.topbar{background:var(--text); color:var(--surface); font-size:12.5px}
+.topbar .wrap{display:flex; justify-content:space-between; align-items:center; height:34px; gap:16px}
+.topbar a{opacity:.85} .topbar a:hover{opacity:1}
+.topbar .sep{opacity:.3}
+header.site{position:sticky; top:0; z-index:50; background:var(--surface); border-bottom:1px solid var(--border)}
+.headmain{display:flex; align-items:center; gap:20px; padding:14px 0}
+.logo{font-family:var(--head); font-weight:700; font-size:27px; color:var(--accent); letter-spacing:-.02em; cursor:pointer; flex-shrink:0}
+.logo b{color:var(--text)}
+.searchbox{flex:1; position:relative; max-width:640px}
+.searchbox input{
+  width:100%; padding:12px 44px 12px 16px; border-radius:999px;
+  border:1.5px solid var(--border); background:var(--surface-2); outline:none;
+}
+.searchbox input:focus{border-color:var(--accent); background:var(--surface)}
+.searchbox .sbtn{position:absolute; right:5px; top:5px; width:38px; height:38px; border:0; border-radius:50%; background:var(--accent); color:#fff; cursor:pointer; font-size:16px}
+.suggest{
+  position:absolute; top:52px; left:0; right:0; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-lg);
+  overflow:hidden; z-index:60;
+}
+.suggest .s-item{display:flex; align-items:center; gap:10px; padding:10px 14px; cursor:pointer}
+.suggest .s-item:hover{background:var(--surface-3)}
+.suggest .s-head{padding:8px 14px; font-size:11px; font-weight:800; letter-spacing:.08em; color:var(--faint); text-transform:uppercase}
+.headacts{display:flex; align-items:center; gap:6px; flex-shrink:0}
+.headact{display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 10px; border-radius:10px; cursor:pointer; font-size:11px; font-weight:700; color:var(--muted); position:relative}
+.headact:hover{background:var(--surface-3); color:var(--text)}
+.headact .ic{font-size:19px}
+.badge-count{position:absolute; top:2px; right:4px; min-width:17px; height:17px; padding:0 4px; border-radius:999px; background:var(--accent); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center}
+nav.cats{border-top:1px solid var(--border); background:var(--surface)}
+nav.cats .wrap{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none}
+nav.cats .wrap::-webkit-scrollbar{display:none}
+nav.cats a{padding:11px 12px; font-size:13.5px; font-weight:700; color:var(--muted); white-space:nowrap; border-bottom:2px solid transparent}
+nav.cats a:hover{color:var(--text)}
+nav.cats a.on{color:var(--accent); border-bottom-color:var(--accent)}
+nav.cats a.hot{color:var(--red)}
+
+/* ============================== HERO / SECTIONS ============================== */
+main{padding:20px 0 60px}
+.section{margin:34px 0}
+.section-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:14px; gap:12px}
+.section-head h2{font-size:22px}
+.section-head .sub{color:var(--muted); font-size:13px}
+.hero{display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-top:6px}
+@media(max-width:800px){ .hero{grid-template-columns:1fr} }
+.slides{position:relative; border-radius:var(--radius-l); overflow:hidden; min-height:280px; box-shadow:var(--shadow)}
+.slide{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; gap:12px; padding:40px; color:#fff; opacity:0; transition:opacity .6s ease; pointer-events:none}
+.slide.on{opacity:1; pointer-events:auto}
+.slide h3{font-size:32px; color:#fff; max-width:70%}
+.slide p{max-width:60%; font-weight:500; opacity:.95}
+.slide .emoji{position:absolute; right:24px; bottom:8px; font-size:120px; opacity:.9; filter:drop-shadow(0 8px 16px rgba(0,0,0,.25))}
+.slide .btn{align-self:flex-start; background:#fff; color:#111}
+.sldots{position:absolute; bottom:14px; left:40px; display:flex; gap:7px; z-index:3}
+.sldots button{width:9px; height:9px; border-radius:50%; border:0; background:rgba(255,255,255,.5); cursor:pointer}
+.sldots button.on{background:#fff; width:22px; border-radius:5px}
+.herostack{display:flex; flex-direction:column; gap:14px}
+.herocard{flex:1; border-radius:var(--radius-l); padding:22px; color:#fff; display:flex; flex-direction:column; justify-content:space-between; min-height:133px; box-shadow:var(--shadow); position:relative; overflow:hidden}
+.herocard .e{position:absolute; right:12px; bottom:-6px; font-size:66px; opacity:.85}
+.herocard h4{font-size:18px; color:#fff}
+.herocard span{font-weight:800; font-size:13px}
+
+/* category chips grid */
+.catgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px}
+.catcell{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 8px; text-align:center; cursor:pointer; transition:transform .1s, box-shadow .15s}
+.catcell:hover{transform:translateY(-3px); box-shadow:var(--shadow)}
+.catcell .e{font-size:30px}
+.catcell div{font-size:12px; font-weight:700; margin-top:6px}
+
+/* brand strip */
+.brandstrip{display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none}
+.brandstrip::-webkit-scrollbar{display:none}
+.brandchip{flex-shrink:0; padding:10px 16px; border:1px solid var(--border); border-radius:999px; background:var(--surface); font-weight:800; font-size:13px; cursor:pointer}
+.brandchip:hover{border-color:var(--accent); color:var(--accent)}
+
+/* ============================== PRODUCT CARD ============================== */
+.pgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px}
+.pgrid.wide{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.pcard{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:transform .12s, box-shadow .18s; position:relative}
+.pcard:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg)}
+.pcard .photo{position:relative; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; font-size:74px}
+.pcard .fav{position:absolute; top:8px; right:8px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.92); border:0; cursor:pointer; font-size:17px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.12); z-index:2}
+.pcard .fav.on{color:var(--red)}
+.pcard .tags{position:absolute; top:8px; left:8px; display:flex; flex-direction:column; gap:4px; align-items:flex-start}
+.tag{font-size:10.5px; font-weight:800; padding:3px 7px; border-radius:6px; background:var(--text); color:var(--surface)}
+.tag.disc{background:var(--red); color:#fff}
+.tag.new{background:var(--green); color:#fff}
+.tag.best{background:var(--purple); color:#fff}
+.pcard .body{padding:10px 12px 12px; display:flex; flex-direction:column; gap:4px; flex:1}
+.pcard .brand{font-size:11px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.03em}
+.pcard .name{font-size:13px; line-height:1.35; font-weight:500; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:35px}
+.stars{display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--muted)}
+.stars .s{color:var(--star); letter-spacing:-1px}
+.pcard .pricerow{margin-top:auto; display:flex; align-items:baseline; gap:7px; flex-wrap:wrap}
+.price{font-size:17px; font-weight:800}
+.price.big{font-size:26px}
+.oldprice{font-size:12px; color:var(--faint); text-decoration:line-through}
+.discpct{font-size:12px; font-weight:800; color:var(--green)}
+.pcard .ship{font-size:11px; font-weight:700; color:var(--green)}
+.pcard .addmini{margin-top:8px}
+.emptybox{background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius); padding:48px 20px; text-align:center; color:var(--muted)}
+.emptybox .e{font-size:48px}
+
+/* countdown */
+.countdown{display:inline-flex; gap:5px; align-items:center; font-weight:800}
+.countdown b{background:var(--text); color:var(--surface); padding:3px 7px; border-radius:6px; font-variant-numeric:tabular-nums; font-size:13px}
+
+/* ============================== LISTING PAGE ============================== */
+.listing{display:grid; grid-template-columns:230px 1fr; gap:22px; align-items:start}
+@media(max-width:860px){ .listing{grid-template-columns:1fr} .filters{display:none} .filters.open{display:block; position:fixed; inset:0; z-index:80; overflow:auto; background:var(--surface); padding:16px} }
+.filters{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:4px 14px 14px; position:sticky; top:150px}
+.fgroup{border-bottom:1px solid var(--border); padding:14px 0}
+.fgroup:last-child{border-bottom:0}
+.fgroup h4{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:8px; font-family:var(--sans); font-weight:800}
+.pricein{display:flex; gap:8px; align-items:center}
+.pricein input{width:100%; padding:8px; border:1px solid var(--border); border-radius:8px; background:var(--surface-2)}
+.toolbar{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap}
+.toolbar .count{font-weight:700}
+.chips{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
+.chips .chip{background:var(--accent-soft); color:var(--accent); padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; cursor:pointer}
+.chips .chip::after{content:' ✕'}
+.pager{display:flex; gap:6px; justify-content:center; margin-top:26px; flex-wrap:wrap}
+.pager button{min-width:38px; height:38px; border:1px solid var(--border); background:var(--surface); border-radius:9px; cursor:pointer; font-weight:700}
+.pager button.on{background:var(--accent); color:#fff; border-color:var(--accent)}
+
+/* ============================== PRODUCT DETAIL ============================== */
+.pdp{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 300px; gap:26px; align-items:start}
+@media(max-width:980px){ .pdp{grid-template-columns:1fr} }
+.gallery .main{aspect-ratio:1/1; border:1px solid var(--border); border-radius:var(--radius-l); overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:160px; background:var(--surface)}
+.gallery .thumbs{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+.gallery .thumbs button{width:64px; height:64px; border-radius:10px; border:2px solid var(--border); background:var(--surface); font-size:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden}
+.gallery .thumbs button.on{border-color:var(--accent)}
+.pdp .info h1{font-size:22px; line-height:1.3; margin:6px 0 8px}
+.pdp .sellerline{font-size:13px}
+.pdp .sellerline b{color:var(--accent)}
+.optrow{margin:16px 0}
+.optrow .lab{font-size:13px; font-weight:800; margin-bottom:7px}
+.optchips{display:flex; gap:8px; flex-wrap:wrap}
+.optchip{padding:8px 14px; border:1.5px solid var(--border); border-radius:10px; background:var(--surface); cursor:pointer; font-weight:700; font-size:13px}
+.optchip.on{border-color:var(--accent); background:var(--accent-soft); color:var(--accent)}
+.optchip.off{opacity:.4; text-decoration:line-through; cursor:not-allowed}
+.buybox{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; position:sticky; top:150px; display:flex; flex-direction:column; gap:12px}
+.qtystep{display:inline-flex; align-items:center; border:1px solid var(--border); border-radius:10px; overflow:hidden}
+.qtystep button{width:38px; height:40px; border:0; background:var(--surface-3); font-size:18px; cursor:pointer}
+.qtystep span{min-width:44px; text-align:center; font-weight:800}
+.trust{display:flex; flex-direction:column; gap:8px; font-size:12.5px; color:var(--muted)}
+.trust div{display:flex; gap:8px; align-items:center}
+.tabs{display:flex; gap:4px; border-bottom:1px solid var(--border); margin:30px 0 18px; overflow-x:auto}
+.tabs button{padding:12px 16px; border:0; background:transparent; font-weight:800; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap}
+.tabs button.on{color:var(--accent); border-bottom-color:var(--accent)}
+.spectable{width:100%; border-collapse:collapse}
+.spectable td{padding:10px 12px; border-bottom:1px solid var(--border); font-size:14px}
+.spectable td:first-child{color:var(--muted); font-weight:700; width:40%}
+.revsum{display:grid; grid-template-columns:180px 1fr; gap:24px; align-items:center; margin-bottom:20px}
+@media(max-width:600px){ .revsum{grid-template-columns:1fr} }
+.bigrate{text-align:center}
+.bigrate .n{font-size:44px; font-weight:800; font-family:var(--head)}
+.rbar{display:flex; align-items:center; gap:8px; font-size:12px; margin:3px 0}
+.rbar .track{flex:1; height:8px; background:var(--surface-3); border-radius:99px; overflow:hidden}
+.rbar .fill{height:100%; background:var(--star)}
+.review{border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px}
+.review .top{display:flex; justify-content:space-between; gap:10px; margin-bottom:6px}
+.review .who{font-weight:800; font-size:13px}
+
+/* ============================== CART / CHECKOUT ============================== */
+.cartlayout{display:grid; grid-template-columns:1fr 340px; gap:22px; align-items:start}
+@media(max-width:860px){ .cartlayout{grid-template-columns:1fr} }
+.cartrow{display:grid; grid-template-columns:90px 1fr auto; gap:14px; padding:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); margin-bottom:12px}
+.cartrow .th{width:90px; height:90px; border-radius:10px; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:44px}
+.cartrow .rt{text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end}
+.summary{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; position:sticky; top:150px}
+.summary .line{display:flex; justify-content:space-between; margin:9px 0; font-size:14px}
+.summary .line.total{font-size:19px; font-weight:800; border-top:1px solid var(--border); padding-top:12px; margin-top:12px}
+.couponrow{display:flex; gap:8px; margin:12px 0}
+.couponrow input{flex:1; padding:10px; border:1px dashed var(--border); border-radius:9px; background:var(--surface-2)}
+.freeship{background:var(--green-soft); color:var(--green); border-radius:10px; padding:10px 12px; font-size:12.5px; font-weight:700; margin-bottom:12px}
+.freeship .track{height:6px; background:rgba(0,0,0,.08); border-radius:99px; margin-top:6px; overflow:hidden}
+.freeship .fill{height:100%; background:var(--green)}
+.stepper{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+.stepper .st{display:flex; align-items:center; gap:8px; font-weight:800; color:var(--faint); font-size:13px}
+.stepper .st .n{width:24px; height:24px; border-radius:50%; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:12px}
+.stepper .st.on{color:var(--text)} .stepper .st.on .n{background:var(--accent); color:#fff}
+.stepper .st.done .n{background:var(--green); color:#fff}
+.addrcard{border:1.5px solid var(--border); border-radius:var(--radius); padding:14px; cursor:pointer; margin-bottom:10px; position:relative}
+.addrcard.on{border-color:var(--accent); background:var(--accent-soft)}
+.addrcard .name{font-weight:800}
+.payopt{border:1.5px solid var(--border); border-radius:var(--radius); padding:14px; cursor:pointer; margin-bottom:10px}
+.payopt.on{border-color:var(--accent)}
+.cardface{background:linear-gradient(135deg,#2b2b3a,#4a4a63); color:#fff; border-radius:16px; padding:20px; margin:12px 0; font-family:var(--sans)}
+.cardface .num{font-size:19px; letter-spacing:2px; margin:18px 0 12px; font-variant-numeric:tabular-nums}
+.deliv{border:1.5px solid var(--border); border-radius:var(--radius); padding:12px 14px; cursor:pointer; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center}
+.deliv.on{border-color:var(--accent); background:var(--accent-soft)}
+
+/* order success + timeline */
+.success{text-align:center; padding:40px 20px}
+.success .big{font-size:60px}
+.timeline{display:flex; flex-direction:column; gap:0; margin:20px 0}
+.tl{display:grid; grid-template-columns:30px 1fr; gap:12px; padding-bottom:18px; position:relative}
+.tl::before{content:''; position:absolute; left:14px; top:24px; bottom:-2px; width:2px; background:var(--border)}
+.tl:last-child::before{display:none}
+.tl .dot{width:30px; height:30px; border-radius:50%; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:14px; z-index:1}
+.tl.done .dot{background:var(--green); color:#fff}
+.tl.cur .dot{background:var(--accent); color:#fff}
+.tl .lab{font-weight:800; font-size:14px}
+.tl .at{font-size:12px; color:var(--muted)}
+
+/* ============================== ACCOUNT ============================== */
+.acct{display:grid; grid-template-columns:220px 1fr; gap:22px; align-items:start}
+@media(max-width:800px){ .acct{grid-template-columns:1fr} }
+.acctnav{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; position:sticky; top:150px}
+.acctnav a{display:flex; gap:10px; padding:12px 16px; font-weight:700; font-size:14px; cursor:pointer; border-left:3px solid transparent}
+.acctnav a:hover{background:var(--surface-3)}
+.acctnav a.on{background:var(--accent-soft); color:var(--accent); border-left-color:var(--accent)}
+.orderrow{border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); margin-bottom:14px; overflow:hidden}
+.orderrow .oh{background:var(--surface-2); padding:12px 16px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; font-size:13px}
+.orderrow .ob{padding:14px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+.orderrow .mini{display:flex; gap:6px}
+.orderrow .mini span{width:46px; height:46px; border-radius:8px; background:var(--surface-3); display:flex; align-items:center; justify-content:center; font-size:24px}
+
+/* ============================== STORE PAGE ============================== */
+.storehero{border-radius:var(--radius-l); padding:28px; color:#fff; display:flex; gap:18px; align-items:center; box-shadow:var(--shadow); margin-bottom:20px; position:relative; overflow:hidden}
+.storehero .logo-badge{width:76px; height:76px; border-radius:20px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:40px; flex-shrink:0}
+.storehero h1{color:#fff; font-size:24px}
+
+/* ============================== MODAL / DRAWER / TOAST ============================== */
+.overlay{position:fixed; inset:0; background:rgba(10,10,20,.55); z-index:100; display:flex; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(2px)}
+.modal{background:var(--surface); border-radius:var(--radius-l); width:100%; max-width:460px; max-height:90vh; overflow:auto; box-shadow:var(--shadow-lg)}
+.modal.lg{max-width:720px}
+.modal .mh{display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--surface)}
+.modal .mh h3{font-size:18px}
+.modal .mb{padding:20px}
+.drawer{position:fixed; top:0; right:0; bottom:0; width:100%; max-width:420px; background:var(--surface); z-index:100; box-shadow:var(--shadow-lg); display:flex; flex-direction:column; animation:slidein .25s ease}
+@keyframes slidein{from{transform:translateX(100%)}}
+.drawer .dh{padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center}
+.drawer .dbody{flex:1; overflow:auto; padding:16px 20px}
+.drawer .dfoot{border-top:1px solid var(--border); padding:16px 20px}
+#toasts{position:fixed; left:50%; bottom:80px; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none}
+.toast{background:var(--text); color:var(--surface); padding:11px 18px; border-radius:999px; font-weight:700; font-size:13px; box-shadow:var(--shadow-lg); animation:pop .3s ease}
+.toast.ok{background:var(--green); color:#fff}
+.toast.err{background:var(--red); color:#fff}
+@keyframes pop{from{opacity:0; transform:translateY(10px)}}
+
+/* ============================== MOBILE NAV ============================== */
+.mobnav{position:fixed; left:0; right:0; bottom:0; height:60px; background:var(--surface); border-top:1px solid var(--border); display:flex; z-index:70}
+@media(min-width:860px){ .mobnav{display:none} }
+.mobnav a{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-size:10px; font-weight:700; color:var(--muted); position:relative}
+.mobnav a.on{color:var(--accent)}
+.mobnav a .ic{font-size:19px}
+
+/* ============================== ADMIN ============================== */
+.admin{display:grid; grid-template-columns:220px 1fr; min-height:100vh}
+@media(max-width:860px){ .admin{grid-template-columns:1fr} .adminside{position:fixed; z-index:90; transform:translateX(-100%); transition:transform .2s} .adminside.open{transform:none} }
+.adminside{background:var(--text); color:#cfcfe0; padding:16px 12px; display:flex; flex-direction:column; gap:2px}
+.adminside .brand{font-family:var(--head); font-weight:700; font-size:20px; color:#fff; padding:8px 10px 16px}
+.adminside a{padding:10px 12px; border-radius:9px; font-weight:700; font-size:13.5px; cursor:pointer; display:flex; gap:9px; align-items:center; color:#cfcfe0}
+.adminside a:hover{background:rgba(255,255,255,.08); color:#fff}
+.adminside a.on{background:var(--accent); color:#fff}
+.adminside .sp{flex:1}
+.adminmain{background:var(--bg); padding:20px; overflow:auto}
+.admintop{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:12px; flex-wrap:wrap}
+.admintop h1{font-size:22px}
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:20px}
+.kpi{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px}
+.kpi .k{font-size:12px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.04em}
+.kpi .v{font-size:26px; font-weight:800; margin:6px 0 2px; font-family:var(--head)}
+.kpi .d{font-size:12px; font-weight:700}
+.kpi .d.up{color:var(--green)} .kpi .d.down{color:var(--red)}
+.panel{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:18px}
+.panel h3{font-size:16px; margin-bottom:12px}
+table.data{width:100%; border-collapse:collapse; font-size:13.5px}
+table.data th{text-align:left; padding:10px 12px; border-bottom:2px solid var(--border); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); white-space:nowrap}
+table.data td{padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:middle}
+table.data tr:hover td{background:var(--surface-2)}
+.tablewrap{overflow-x:auto}
+.st-badge{padding:3px 9px; border-radius:999px; font-size:11px; font-weight:800; display:inline-block; white-space:nowrap}
+.adminbar{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center}
+.adminbar .input,.adminbar .select{width:auto; min-width:180px}
+.chart{display:flex; align-items:flex-end; gap:6px; height:160px; padding-top:10px}
+.chart .bar{flex:1; background:var(--accent); border-radius:5px 5px 0 0; min-height:3px; position:relative; transition:height .3s}
+.chart .bar:hover{background:var(--accent-2)}
+.miniof{font-size:12px; color:var(--muted)}
+.imgpick{display:flex; gap:8px; flex-wrap:wrap}
+.imgpick .opt{width:44px; height:44px; border:2px solid var(--border); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer}
+.imgpick .opt.on{border-color:var(--accent)}
+.kvrow{display:grid; grid-template-columns:1fr 1fr 34px; gap:8px; margin-bottom:8px}
+.ph-img{width:100%; height:100%; object-fit:cover; display:block}
+.pcard .photo{overflow:hidden}
+.cartrow .th{overflow:hidden}
+.storehero .logo-badge{overflow:hidden}
+.imguploader{display:flex; gap:8px; flex-wrap:wrap}
+.imgtile{position:relative; width:78px; height:78px; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:var(--surface-3); flex-shrink:0}
+.imgtile img{width:100%; height:100%; object-fit:cover}
+.imgtile img.broken{opacity:.15}
+.imgtile .x,.imgtile .mv{position:absolute; border:0; cursor:pointer; font-size:10px; width:19px; height:19px; border-radius:50%; background:rgba(0,0,0,.62); color:#fff; display:flex; align-items:center; justify-content:center; padding:0}
+.imgtile .x{top:3px; right:3px}
+.imgtile .mv{bottom:3px; left:3px}
+.imgtile .kapak{position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.55); color:#fff; font-size:9px; font-weight:800; text-align:center; padding:1px 0}
+.imgtile.add{display:flex; align-items:center; justify-content:center}
+.imgtile.add button{border:0; background:transparent; cursor:pointer; font-size:11px; font-weight:800; color:var(--muted); padding:4px; text-align:center; line-height:1.3}
+.login-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; background:var(--bg)}
+.login-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-l); padding:30px; width:100%; max-width:380px; box-shadow:var(--shadow)}
+
+footer.site{background:var(--surface); border-top:1px solid var(--border); margin-top:40px; padding:34px 0 90px}
+@media(min-width:860px){ footer.site{padding-bottom:34px} }
+.footcols{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:24px}
+.footcols h5{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 10px}
+.footcols a{display:block; padding:4px 0; font-size:13px; color:var(--muted)}
+.footcols a:hover{color:var(--accent)}
+.footbot{margin-top:24px; padding-top:18px; border-top:1px solid var(--border); font-size:12px; color:var(--faint); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="modal-host"></div>
+<div id="toasts"></div>
+<script>
+"use strict";
+/* ================================================================
+   TRENDA — tek dosya e-ticaret + yönetim paneli
+   Bölümler: utils · seed · DB · state · router · layout ·
+   storefront sayfaları · admin · init
+   ================================================================ */
+/* ===================== UTILS ===================== */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+function h(tag, attrs, ...kids){
+  const e=document.createElement(tag); attrs=attrs||{};
+  for(const k in attrs){
+    const v=attrs[k]; if(v==null||v===false) continue;
+    if(k==='class') e.className=v;
+    else if(k==='html') e.innerHTML=v;
+    else if(k==='style'&&typeof v==='object') Object.assign(e.style,v);
+    else if(k==='dataset') Object.assign(e.dataset,v);
+    else if(k.slice(0,2)==='on'&&typeof v==='function') e.addEventListener(k.slice(2).toLowerCase(),v);
+    else e.setAttribute(k,v);
+  }
+  const add=c=>{ if(c==null||c===false||c==='') return;
+    if(Array.isArray(c)){c.forEach(add);return;}
+    e.appendChild(c.nodeType?c:document.createTextNode(String(c))); };
+  kids.forEach(add); return e;
+}
+const uid = (p='id')=> p+'_'+Math.random().toString(36).slice(2,9);
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const money = n => (Number(n)||0).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺';
+const num = n => (Number(n)||0).toLocaleString('tr-TR');
+const slugify = s => (s||'').toString().toLowerCase()
+  .replace(/ç/g,'c').replace(/ğ/g,'g').replace(/ı/g,'i').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ü/g,'u')
+  .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const now = ()=>Date.now();
+const DAY = 86400000;
+function fmtDate(ts){ const d=new Date(ts); return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'}); }
+function fmtDateTime(ts){ const d=new Date(ts); return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
+function relDate(ts){ const diff=now()-ts; if(diff<60000)return'az önce'; if(diff<3600000)return Math.floor(diff/60000)+' dk önce';
+  if(diff<DAY)return Math.floor(diff/3600000)+' saat önce'; if(diff<7*DAY)return Math.floor(diff/DAY)+' gün önce'; return fmtDate(ts); }
+function starStr(r){ const f=Math.round(r); return '★★★★★'.slice(0,f)+'☆☆☆☆☆'.slice(0,5-f); }
+function stars(r,cnt){ return h('span',{class:'stars'}, h('span',{class:'s'}, starStr(r)), cnt!=null?h('span',{}, ' ('+num(cnt)+')'):null); }
+function toast(msg,type){ const t=h('div',{class:'toast '+(type||'')},msg); $('#toasts').appendChild(t);
+  setTimeout(()=>{ t.style.transition='opacity .3s,transform .3s'; t.style.opacity='0'; t.style.transform='translateY(8px)'; setTimeout(()=>t.remove(),300); }, 2200); }
+function pick(arr,seed){ return arr[Math.abs(hashCode(String(seed)))%arr.length]; }
+function hashCode(s){ let x=0; for(let i=0;i<s.length;i++){ x=(x<<5)-x+s.charCodeAt(i); x|=0; } return x; }
+function rand(seed){ let x=Math.sin(hashCode(String(seed)))*10000; return x-Math.floor(x); }
+function debounce(fn,ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; }
+
+/* ürün "fotoğrafı": her zaman çalışan SVG data-URI (emoji + degrade) */
+function photoDataURI(emoji,cA,cB,label){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'>
+    <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0' stop-color='${cA}'/><stop offset='1' stop-color='${cB}'/></linearGradient>
+      <radialGradient id='v' cx='.5' cy='.4' r='.7'><stop offset='0' stop-color='#ffffff' stop-opacity='.35'/><stop offset='1' stop-color='#ffffff' stop-opacity='0'/></radialGradient></defs>
+    <rect width='600' height='600' fill='url(#g)'/><rect width='600' height='600' fill='url(#v)'/>
+    <text x='300' y='330' font-size='260' text-anchor='middle' dominant-baseline='middle'>${emoji}</text>
+    ${label?`<text x='300' y='545' font-size='30' fill='#ffffff' fill-opacity='.85' text-anchor='middle' font-family='Manrope,sans-serif' font-weight='700'>${label}</text>`:''}
+  </svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+function photoStyle(p){ return { background:`linear-gradient(135deg,${p.cA||'#8a8a99'},${p.cB||'#55555f'})` }; }
+/* --- gerçek fotoğraf / ikon (fallback) --- */
+function pImg(p){ return (p && Array.isArray(p.images) && p.images[0]) || null; }
+function fillPhoto(box, src, emoji){
+  box.textContent='';
+  if(src){
+    box.style.fontSize='0';
+    const img=h('img',{class:'ph-img', src, alt:emoji||'', loading:'lazy'});
+    img.addEventListener('error',()=>{ img.remove(); box.style.fontSize=''; box.appendChild(document.createTextNode(emoji||'📦')); });
+    box.appendChild(img);
+  } else {
+    box.style.fontSize='';
+    box.appendChild(document.createTextNode(emoji||'📦'));
+  }
+  return box;
+}
+function thumbBox(size, src, emoji, cA, cB){
+  const b=h('div',{style:{width:size+'px',height:size+'px',borderRadius:'8px',overflow:'hidden',display:'flex',
+    alignItems:'center',justifyContent:'center',fontSize:Math.round(size*0.5)+'px',flexShrink:0,
+    background:`linear-gradient(135deg,${cA||'#8a8a99'},${cB||'#55555f'})`}});
+  return fillPhoto(b, src, emoji);
+}
+/* dosyadan görsel oku + tarayıcı deposuna sığması için küçült */
+function readImageResized(file, maxDim, cb){
+  const rd=new FileReader();
+  rd.onerror=()=>cb(null);
+  rd.onload=()=>{
+    const img=new Image();
+    img.onerror=()=>cb(rd.result);
+    img.onload=()=>{
+      let w=img.naturalWidth||img.width, hh=img.naturalHeight||img.height;
+      const scale=Math.min(1, maxDim/Math.max(w,hh||1));
+      w=Math.max(1,Math.round(w*scale)); hh=Math.max(1,Math.round(hh*scale));
+      try{
+        const cv=document.createElement('canvas'); cv.width=w; cv.height=hh;
+        cv.getContext('2d').drawImage(img,0,0,w,hh);
+        cb(cv.toDataURL('image/jpeg',0.82));
+      }catch(e){ cb(rd.result); }
+    };
+    img.src=rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+/* admin görsel yükleme aracı — list dizisini yerinde düzenler */
+function imageEditor(list, onChange){
+  const host=h('div',{class:'imgeditor'});
+  function draw(){
+    host.textContent='';
+    const grid=h('div',{class:'imguploader'});
+    list.forEach((src,i)=>{
+      const tile=h('div',{class:'imgtile'});
+      const im=h('img',{src}); im.addEventListener('error',()=>im.classList.add('broken'));
+      tile.append(im,
+        h('button',{class:'x',title:'Kaldır',onClick:()=>{ list.splice(i,1); draw(); onChange&&onChange(); }},'✕'),
+        i>0? h('button',{class:'mv',title:'Öne al',onClick:()=>{ const t=list[i-1]; list[i-1]=list[i]; list[i]=t; draw(); onChange&&onChange(); }},'◀') : (i===0?h('span',{class:'kapak'},'Kapak'):null));
+      grid.appendChild(tile);
+    });
+    const fileInput=h('input',{type:'file',accept:'image/*',multiple:true,style:{display:'none'},
+      onChange:e=>{ const files=[...e.target.files]; if(!files.length) return; let pending=files.length;
+        files.forEach(f=>readImageResized(f,900,out=>{ if(out) list.push(out); if(--pending===0){ draw(); onChange&&onChange(); } })); e.target.value=''; }});
+    grid.appendChild(h('div',{class:'imgtile add'}, h('button',{onClick:()=>fileInput.click()},'📁 Dosya seç'), fileInput));
+    host.appendChild(grid);
+    const urlI=h('input',{class:'input',placeholder:'veya görsel bağlantısı yapıştır: https://...'});
+    host.appendChild(h('div',{class:'row',style:{gap:'8px',marginTop:'8px'}}, urlI,
+      h('button',{class:'btn sm ghost',onClick:()=>{ const v=urlI.value.trim(); if(v){ list.push(v); urlI.value=''; draw(); onChange&&onChange(); } }},'Bağlantı Ekle')));
+    host.appendChild(h('p',{class:'faint',style:{fontSize:'11px',margin:'6px 0 0'}},'Fotoğraf yoksa ikon + renk gösterilir. İlk fotoğraf kapak olur. Çok sayıda büyük dosya tarayıcı depolamasını doldurabilir — mümkünse sunucudaki görsellerin bağlantısını kullanın.'));
+  }
+  draw();
+  return host;
+}
+function firstName(u){ const n=((u&&u.name)||'').trim(); return n? n.split(/\s+/)[0] : 'Profilim'; }
+function bannerBg(b){
+  if(b && b.image) return `linear-gradient(120deg,${b.cA}d9,${b.cB}b3), url("${(''+b.image).replace(/"/g,'%22')}") center/cover no-repeat`;
+  return `linear-gradient(120deg,${b.cA},${b.cB})`;
+}
+
+/* ===================== SEED DATA ===================== */
+const SEED_CATEGORIES = [
+  {slug:'kadin',        name:'Kadın',            emoji:'👗'},
+  {slug:'erkek',        name:'Erkek',            emoji:'👔'},
+  {slug:'ayakkabi',     name:'Ayakkabı & Çanta', emoji:'👟'},
+  {slug:'elektronik',   name:'Elektronik',       emoji:'📱'},
+  {slug:'ev-yasam',     name:'Ev & Yaşam',       emoji:'🛋️'},
+  {slug:'kozmetik',     name:'Kozmetik',         emoji:'💄'},
+  {slug:'anne-cocuk',   name:'Anne & Çocuk',     emoji:'🧸'},
+  {slug:'supermarket',  name:'Süpermarket',      emoji:'🛒'},
+  {slug:'spor',         name:'Spor & Outdoor',   emoji:'🏋️'},
+  {slug:'kitap-hobi',   name:'Kitap & Hobi',     emoji:'📚'},
+  {slug:'beyaz-esya',   name:'Beyaz Eşya',       emoji:'🧊'},
+];
+const SEED_SELLERS = [
+  {id:'s1', name:'TeknoDünya',        emoji:'🖥️', cA:'#3a7bd5', cB:'#00d2ff', rating:4.7, followers:184200, since:2016, desc:'Elektronik ve teknoloji ürünlerinde Türkiye’nin güvenilir adresi. Aynı gün kargo, 2 yıl garanti.'},
+  {id:'s2', name:'ModaEvi',           emoji:'👗', cA:'#e96443', cB:'#904e95', rating:4.5, followers:96450,  since:2018, desc:'Kadın & erkek giyimde yeni sezon trendleri. Ücretsiz iade, hızlı teslimat.'},
+  {id:'s3', name:'Adım Adım Ayakkabı', emoji:'👟', cA:'#f7971e', cB:'#ffd200', rating:4.6, followers:54210,  since:2017, desc:'Orijinal spor ve klasik ayakkabı. 30 gün koşulsuz iade.'},
+  {id:'s4', name:'EvDekor Home',      emoji:'🛋️', cA:'#11998e', cB:'#38ef7d', rating:4.4, followers:41880,  since:2019, desc:'Ev tekstili, mobilya ve dekorasyon. El yapımı ve seçkin ürünler.'},
+  {id:'s5', name:'Güzellik Noktası',  emoji:'💄', cA:'#ee9ca7', cB:'#ffdde1', rating:4.8, followers:73900,  since:2015, desc:'Orijinal kozmetik ve kişisel bakım. Dermatolog onaylı seçkiler.'},
+  {id:'s6', name:'MiniMini Bebek',    emoji:'🧸', cA:'#fbc2eb', cB:'#a6c1ee', rating:4.7, followers:38650,  since:2018, desc:'Anne & bebek ürünleri. Güvenlik sertifikalı, testli ürünler.'},
+  {id:'s7', name:'Market Express',    emoji:'🛒', cA:'#f2994a', cB:'#f2c94c', rating:4.3, followers:120300, since:2020, desc:'Gıda ve temel ihtiyaçlar kapında. Son kullanma tarihi garantili.'},
+  {id:'s8', name:'Sporcu Deposu',     emoji:'🏋️', cA:'#2193b0', cB:'#6dd5ed', rating:4.6, followers:29470,  since:2019, desc:'Fitness, outdoor ve takım sporları ekipmanları.'},
+  {id:'s9', name:'Kitap Kurdu',       emoji:'📚', cA:'#654ea3', cB:'#eaafc8', rating:4.9, followers:61200,  since:2014, desc:'Yayınevi anlaşmalı kitaplar, kırtasiye ve hobi ürünleri.'},
+];
+// [name, brand, catSlug, sellerId, price, oldPrice, rating, reviews, stock, emoji, cA, cB, tags(csv)]
+const SEED_ROWS = [
+  ['Kablosuz Kulaklık Pro ANC','SoundMax','elektronik','s1',1799.90,2499.90,4.6,1284,42,'🎧','#232526','#414345','best'],
+  ['Akıllı Telefon 128GB','Nexora','elektronik','s1',18499.00,21999.00,4.7,3921,17,'📱','#0f2027','#2c5364','best,new'],
+  ['15.6" Full HD Dizüstü Bilgisayar','Nexora','elektronik','s1',24999.00,28999.00,4.5,742,9,'💻','#141e30','#243b55',''],
+  ['Akıllı Saat Spor Serisi','SoundMax','elektronik','s1',2299.90,3199.90,4.4,1560,63,'⌚','#000428','#004e92','disc'],
+  ['10.1" Tablet WiFi 64GB','Nexora','elektronik','s1',5499.00,6499.00,4.3,388,25,'📱','#1c1c3c','#4a4a8a',''],
+  ['4K Ultra HD 55" Televizyon','VistaView','elektronik','s1',16999.00,19999.00,4.6,512,6,'📺','#0b486b','#f56217',''],
+  ['Aynasız Fotoğraf Makinesi','OptiLens','elektronik','s1',21999.00,null,4.8,204,4,'📷','#3a1c71','#d76d77','new'],
+  ['Bluetooth Hoparlör Su Geçirmez','SoundMax','elektronik','s1',899.90,1299.90,4.5,2210,88,'🔊','#232526','#5b6467','disc'],
+  ['Oyuncu Klavye RGB Mekanik','KeyForce','elektronik','s1',1299.90,1799.90,4.7,940,34,'⌨️','#16222a','#3a6073',''],
+  ['Kablosuz Şarj Standı 15W','Nexora','elektronik','s1',349.90,499.90,4.2,670,120,'🔌','#0f2027','#203a43','disc'],
+
+  ['Kadın Midi Elbise Çiçekli','ModaEvi','kadin','s2',549.90,899.90,4.4,832,55,'👗','#e96443','#904e95','disc'],
+  ['Oversize Basic Tişört','ModaEvi','kadin','s2',199.90,299.90,4.3,1904,210,'👚','#ff9a9e','#fad0c4',''],
+  ['Kadın Trençkot Bej','Aurélie','kadin','s2',1249.90,1899.90,4.6,244,18,'🧥','#c79081','#dfa579','disc,new'],
+  ['Yüksek Bel Jean Pantolon','DenimCo','kadin','s2',449.90,649.90,4.5,3120,140,'👖','#485563','#29323c',''],
+  ['Triko Kazak Yumuşak Dokulu','ModaEvi','kadin','s2',379.90,null,4.4,512,72,'🧶','#ede574','#e1f5c4','new'],
+  ['Erkek Slim Fit Gömlek','Aurélie','erkek','s2',329.90,499.90,4.5,1420,95,'👔','#2c3e50','#4ca1af','disc'],
+  ['Erkek Polo Tişört Pamuk','ModaEvi','erkek','s2',249.90,349.90,4.4,2210,160,'👕','#457fca','#5691c8',''],
+  ['Erkek Chino Pantolon','DenimCo','erkek','s2',399.90,559.90,4.3,880,110,'👖','#3a6073','#16222a','disc'],
+  ['Erkek Şişme Mont Kapüşonlu','NordPeak','erkek','s2',1099.90,1599.90,4.7,640,28,'🧥','#0575e6','#021b79','best'],
+  ['Erkek Kışlık Kazak','Aurélie','erkek','s2',449.90,null,4.5,301,60,'🧶','#603813','#b29f94',''],
+
+  ['Erkek Spor Ayakkabı Hafif','StrideOn','ayakkabi','s3',1199.90,1799.90,4.6,4210,75,'👟','#f7971e','#ffd200','best,disc'],
+  ['Kadın Sneaker Retro','StrideOn','ayakkabi','s3',999.90,1399.90,4.5,2870,90,'👟','#ff6a00','#ee0979','disc'],
+  ['Deri Klasik Ayakkabı','Cordoba','ayakkabi','s3',1499.90,1999.90,4.7,540,22,'👞','#3e5151','#decba4',''],
+  ['Kadın Topuklu Ayakkabı','Aurélie','ayakkabi','s3',699.90,999.90,4.2,410,40,'👠','#c94b4b','#4b134f','disc'],
+  ['Su Geçirmez Trekking Bot','NordPeak','ayakkabi','s3',1799.90,2399.90,4.8,690,30,'🥾','#134e5e','#71b280','new'],
+  ['Sırt Çantası 25L Şehir','UrbanPack','ayakkabi','s3',549.90,799.90,4.6,1520,120,'🎒','#232526','#414345','disc'],
+  ['Kadın Omuz Çantası Deri','Aurélie','ayakkabi','s3',899.90,1299.90,4.4,330,26,'👜','#42275a','#734b6d',''],
+  ['Terlik Ortopedik Ev','ComfyStep','ayakkabi','s3',199.90,299.90,4.3,980,300,'🩴','#ff9966','#ff5e62','disc'],
+
+  ['3+2+1 Köşe Koltuk Takımı','EvDekor','ev-yasam','s4',34999.00,42999.00,4.5,142,3,'🛋️','#11998e','#38ef7d','disc'],
+  ['Modern Zemin Lambası','LumoDesign','ev-yasam','s4',799.90,1199.90,4.4,410,35,'💡','#f7b733','#fc4a1a','disc'],
+  ['Yıkanabilir Halı 160x230','EvDekor','ev-yasam','s4',1299.90,1899.90,4.6,720,18,'🧶','#c9d6ff','#e2e2e2',''],
+  ['6 Kişilik Yemek Takımı 24 Parça','Porselen Sanat','ev-yasam','s4',1499.90,2199.90,4.7,360,24,'🍽️','#8e9eab','#eef2f3','best'],
+  ['Çift Kişilik Nevresim Takımı','EvDekor','ev-yasam','s4',699.90,999.90,4.5,1240,80,'🛏️','#a8caba','#5d4157','disc'],
+  ['Aroma Difüzör + 3 Yağ','LumoDesign','ev-yasam','s4',449.90,649.90,4.4,890,110,'🕯️','#3a7bd5','#3a6073','disc'],
+  ['Akıllı LED Ampul E27 (2li)','LumoDesign','ev-yasam','s4',299.90,null,4.3,540,200,'💡','#fceabb','#f8b500','new'],
+  ['Bambu Mutfak Organizeri','EvDekor','ev-yasam','s4',349.90,499.90,4.6,470,95,'🧺','#dce35b','#45b649','disc'],
+
+  ['Mat Ruj Uzun Kalıcı','Lumière','kozmetik','s5',179.90,249.90,4.5,3400,140,'💄','#ee9ca7','#ffdde1','best,disc'],
+  ['Kadın Parfüm EDP 50ml','Lumière','kozmetik','s5',699.90,999.90,4.7,1210,55,'🌸','#da22ff','#9733ee','disc'],
+  ['C Vitamini Aydınlatıcı Serum','DermaPure','kozmetik','s5',329.90,449.90,4.6,2870,90,'🧴','#56ab2f','#a8e063','disc'],
+  ['Nemlendirici Yüz Kremi SPF30','DermaPure','kozmetik','s5',249.90,null,4.5,1640,120,'🧴','#43cea2','#185a9d','new'],
+  ['Saç Kurutma Makinesi İyonik','GlowTech','kozmetik','s5',899.90,1299.90,4.4,760,40,'💨','#ff416c','#ff4b2b','disc'],
+  ['Makyaj Fırça Seti 12li','Lumière','kozmetik','s5',299.90,449.90,4.3,980,150,'🖌️','#c94b4b','#4b134f','disc'],
+  ['Erkek Bakım Seti Sakal','DermaPure','kozmetik','s5',349.90,499.90,4.6,540,70,'🧔','#232526','#414345',''],
+
+  ['Ahşap Eğitici Blok Seti 100 Parça','MiniMini','anne-cocuk','s6',449.90,649.90,4.8,910,60,'🧸','#fbc2eb','#a6c1ee','disc'],
+  ['Bebek Arabası Çift Yön','SafeBaby','anne-cocuk','s6',4999.00,6499.00,4.6,320,12,'👶','#89f7fe','#66a6ff','disc'],
+  ['Biberon Anti-Kolik 3lü','SafeBaby','anne-cocuk','s6',299.90,399.90,4.5,1420,140,'🍼','#a1c4fd','#c2e9fb',''],
+  ['Peluş Ayıcık 60cm','MiniMini','anne-cocuk','s6',249.90,349.90,4.7,2100,180,'🧸','#ffdde1','#ee9ca7','disc'],
+  ['Çocuk Yürüteç Müzikli','SafeBaby','anne-cocuk','s6',899.90,1199.90,4.4,410,30,'🎠','#fddb92','#d1fdff','disc'],
+  ['Bebek Bezi 4 Numara 156 Adet','SoftCare','anne-cocuk','s6',549.90,699.90,4.6,3200,90,'🧷','#e0c3fc','#8ec5fc',''],
+
+  ['Türk Kahvesi 250g (3 Paket)','Kervan','supermarket','s7',219.90,289.90,4.6,1840,200,'☕','#3e2723','#795548','disc'],
+  ['Bitter Çikolata %70 (5li)','CocoaLab','supermarket','s7',159.90,199.90,4.5,970,300,'🍫','#4a2c2a','#8d6e63','disc'],
+  ['Sızma Zeytinyağı 1L Cam Şişe','Ege Bahçe','supermarket','s7',329.90,429.90,4.7,1240,150,'🫒','#a8e063','#56ab2f','disc'],
+  ['Tam Buğday Makarna 500g (6lı)','Kervan','supermarket','s7',119.90,null,4.4,610,400,'🍝','#f2c94c','#f2994a',''],
+  ['Süzme Çiçek Balı 850g','Ege Bahçe','supermarket','s7',289.90,359.90,4.8,880,120,'🍯','#f7b733','#fc4a1a','disc'],
+  ['Filtre Kahve Çekirdeği 1kg','CocoaLab','supermarket','s7',449.90,559.90,4.6,540,80,'☕','#3e2723','#6d4c41','disc'],
+
+  ['Ayarlanabilir Dambıl Seti 24kg','Sporcu Deposu','spor','s8',2499.90,3299.90,4.7,420,20,'🏋️','#2193b0','#6dd5ed','disc,best'],
+  ['Yoga Matı Kaymaz 6mm','FlexFit','spor','s8',299.90,449.90,4.5,1620,120,'🧘','#00b09b','#96c93d','disc'],
+  ['Şehir Bisikleti 28 Jant','RideOn','spor','s8',7999.00,9999.00,4.4,180,7,'🚲','#2c3e50','#4ca1af','disc'],
+  ['4 Mevsim Kamp Çadırı 3 Kişilik','NordPeak','spor','s8',2299.90,2999.90,4.6,260,14,'⛺','#134e5e','#71b280','disc'],
+  ['Koşu Bandı Katlanabilir','FlexFit','spor','s8',9499.00,11999.00,4.3,140,5,'🏃','#0575e6','#021b79','disc'],
+  ['Antrenman Direnç Bandı Seti','FlexFit','spor','s8',179.90,269.90,4.5,2400,200,'💪','#f7971e','#ffd200','disc'],
+
+  ['Çok Satan Roman — Sessiz Kar','Kitap Kurdu','kitap-hobi','s9',129.90,169.90,4.8,3200,150,'📖','#654ea3','#eaafc8','best,disc'],
+  ['36 Renk Yağlı Boya Seti','ArtHouse','kitap-hobi','s9',349.90,499.90,4.6,740,60,'🎨','#f2994a','#f2c94c','disc'],
+  ['Akustik Gitar Başlangıç Seti','MelodyPlus','kitap-hobi','s9',2799.90,3499.90,4.5,210,12,'🎸','#603813','#b29f94','disc'],
+  ['1000 Parça Puzzle Manzara','ArtHouse','kitap-hobi','s9',149.90,199.90,4.7,890,140,'🧩','#396afc','#2948ff',''],
+  ['Kişisel Gelişim — Alışkanlık Gücü','Kitap Kurdu','kitap-hobi','s9',119.90,149.90,4.6,1720,200,'📚','#8360c3','#2ebf91','disc'],
+  ['Sert Kapak Defter A5 Noktalı','ArtHouse','kitap-hobi','s9',89.90,129.90,4.5,1240,320,'📔','#e0c3fc','#8ec5fc','disc'],
+
+  ['No-Frost Buzdolabı 500L A++','VistaView','beyaz-esya','s1',27999.00,32999.00,4.5,340,5,'🧊','#0b486b','#3a7bd5','disc'],
+  ['9kg Çamaşır Makinesi 1400 Devir','VistaView','beyaz-esya','s1',18999.00,22999.00,4.6,420,8,'🌀','#2c3e50','#4ca1af','disc'],
+  ['Solo Mikrodalga Fırın 25L','VistaView','beyaz-esya','s1',3499.00,4299.00,4.3,610,18,'🔥','#f7971e','#f44336','disc'],
+  ['Bulaşık Makinesi 6 Program','VistaView','beyaz-esya','s1',14999.00,17999.00,4.4,230,10,'🍽️','#141e30','#243b55','disc'],
+  ['Robot Süpürge Haritalı','GlowTech','beyaz-esya','s1',6999.00,8999.00,4.5,880,15,'🤖','#0575e6','#021b79','disc,new'],
+];
+const SEED_COUPONS = [
+  {code:'HOSGELDIN75', type:'amount', value:75,  min:400, label:'Yeni üyelere 75 ₺', active:true, expires: now()+40*DAY, used:41, limit:5000},
+  {code:'KARGOBEDAVA',  type:'ship',   value:0,   min:0,   label:'Ücretsiz kargo',       active:true, expires: now()+20*DAY, used:1290, limit:99999},
+  {code:'YUZDE10',      type:'percent',value:10,  min:250, max:150, label:'%10 indirim (maks 150 ₺)', active:true, expires: now()+15*DAY, used:642, limit:20000},
+  {code:'SUPER20',      type:'percent',value:20,  min:750, max:400, label:'Sepette %20 (maks 400 ₺)', active:true, expires: now()+8*DAY,  used:210, limit:8000},
+  {code:'TEKNO500',     type:'amount', value:500, min:5000,label:'Elektronikte 500 ₺',   active:true, expires: now()+30*DAY, used:88,  limit:3000},
+];
+const SEED_BANNERS = [
+  {id:'b1', title:'Sezon Sonu Büyük İndirim', sub:'Seçili binlerce üründe %50’ye varan fırsatlar', cta:'Fırsatları Gör', href:'#/kampanyalar', cA:'#f27a1a', cB:'#ff416c', emoji:'🔥'},
+  {id:'b2', title:'Elektronikte Taksit Şöleni', sub:'12 aya varan taksit + kapıda ödeme imkânı', cta:'Elektroniği Keşfet', href:'#/kategori/elektronik', cA:'#3a7bd5', cB:'#00d2ff', emoji:'📱'},
+  {id:'b3', title:'Yeni Sezon Moda', sub:'Gardırobunu yenile, ilk siparişe özel 75 ₺ indirim', cta:'Modaya Göz At', href:'#/kategori/kadin', cA:'#904e95', cB:'#e96443', emoji:'👗'},
+  {id:'b4', title:'300 ₺ Üzeri Kargo Bedava', sub:'Bugün sipariş ver, yarın kapında', cta:'Alışverişe Başla', href:'#/kategori/supermarket', cA:'#11998e', cB:'#38ef7d', emoji:'🚚'},
+];
+const SEED_SETTINGS = {
+  siteName:'Trenda', theme:'auto', shippingFee:39.90, freeShippingThreshold:300,
+  adminUser:'admin', adminPass:'admin123', taxRate:0, installmentMax:12,
+};
+const RENK_HAVUZ=['Siyah','Beyaz','Lacivert','Gri','Bej','Kırmızı','Yeşil','Mavi','Pembe','Kahve'];
+const BEDEN_HAVUZ=['XS','S','M','L','XL','XXL'];
+const SPEC_HAVUZ={
+  elektronik:{'Garanti':'24 Ay','Menşei':'İthal','Bağlantı':'Bluetooth 5.3','Kutu İçeriği':'Ürün, kablo, kılavuz'},
+  'beyaz-esya':{'Enerji Sınıfı':'A++','Garanti':'3 Yıl','Montaj':'Ücretsiz','Renk':'Inox'},
+  kadin:{'Kumaş':'%95 Pamuk %5 Elastan','Yıkama':'30° hassas','Kalıp':'Regular','Menşei':'Türkiye'},
+  erkek:{'Kumaş':'%100 Pamuk','Yıkama':'Makinede 40°','Kalıp':'Slim Fit','Menşei':'Türkiye'},
+  ayakkabi:{'Taban':'Kauçuk','Üst Materyal':'Tekstil / Deri','Sezon':'4 Mevsim','Menşei':'İthal'},
+  'ev-yasam':{'Materyal':'Karışık','Garanti':'2 Yıl','Bakım':'Nemli bezle silin'},
+  kozmetik:{'İçerik':'Paraben içermez','Cilt Tipi':'Tüm ciltler','SKT':'Üretimden itibaren 24 ay'},
+  'anne-cocuk':{'Yaş Grubu':'0+','Sertifika':'CE / TSE','Materyal':'BPA içermez'},
+  supermarket:{'Saklama':'Serin ve kuru yerde','İçindekiler':'Ambalaj üzerinde','Helal Sertifikalı':'Evet'},
+  spor:{'Malzeme':'Çelik / EVA','Garanti':'2 Yıl','Kullanım':'Ev / Salon'},
+  'kitap-hobi':{'Sayfa/Parça':'Değişken','Yayın Yılı':'2024','Cilt':'Karton kapak'},
+};
+const CUSTOMER_NAMES=['Elif Yılmaz','Ahmet Kaya','Zeynep Demir','Mehmet Şahin','Ayşe Çelik','Mustafa Aydın','Fatma Arslan','Emre Doğan','Merve Koç','Burak Yıldız','Selin Aksoy','Can Öztürk','Deniz Polat','Ece Kurt','Kerem Aslan'];
+
+/* ===================== DB (localStorage) ===================== */
+const LS_KEY='trenda_shop_v1';
+let DB;
+function buildSeedDB(){
+  const cats=SEED_CATEGORIES.map(c=>({...c}));
+  const sellers=SEED_SELLERS.map(s=>({...s, active:true, logo:null}));
+  const products = SEED_ROWS.map((r,i)=>{
+    const [name,brand,cat,sellerId,price,oldPrice,rating,reviews,stock,emoji,cA,cB,tags]=r;
+    const t=(tags||'').split(',').filter(Boolean);
+    const opts=[];
+    if(['kadin','erkek','ayakkabi'].includes(cat)){
+      const n=2+Math.floor(rand(name)*4);
+      opts.push({name:'Renk', values:RENK_HAVUZ.slice(0,3+Math.floor(rand(name+'r')*4))});
+      opts.push({name: cat==='ayakkabi'?'Numara':'Beden',
+        values: cat==='ayakkabi' ? ['38','39','40','41','42','43'].slice(0,n+1) : BEDEN_HAVUZ.slice(0,n+2)});
+    } else if(['elektronik','kozmetik','ev-yasam'].includes(cat) && rand(name)>0.55){
+      opts.push({name:'Renk', values:RENK_HAVUZ.slice(0,2+Math.floor(rand(name)*3))});
+    }
+    return {
+      id:'p'+(i+1), name, brand, category:cat, sellerId,
+      price:Number(price), oldPrice:oldPrice?Number(oldPrice):null,
+      rating:Number(rating), reviewCount:Number(reviews), stock:Number(stock),
+      emoji, cA, cB, images:[], options:opts,
+      freeShipping: Number(price)>=150 || t.includes('best'),
+      fastDelivery: rand(name+'f')>0.4,
+      badges:t, active:true,
+      createdAt: now() - Math.floor(rand(name+'d')*120)*DAY,
+      sold: 40 + Math.floor(rand(name+'s')*Number(reviews)*1.4),
+      desc: `${name} — ${brand} güvencesiyle. Günlük kullanıma uygun, özenle seçilmiş malzemeler ve titiz işçilik. `+
+            `Trenda mağazalarından orijinal ürün garantisi, hızlı kargo ve kolay iade avantajıyla gönderilir. `+
+            `Kutu içeriği ve teknik ayrıntılar için "Özellikler" sekmesine göz atabilirsiniz.`,
+      specs: {...(SPEC_HAVUZ[cat]||{}), 'Marka':brand, 'Stok Kodu':'TRN-'+(1000+i)},
+    };
+  });
+  // reviews
+  const revTexts=['Beklediğimden çok daha kaliteli çıktı, kargo hızlıydı.','Fiyat/performans harika. Tavsiye ederim.',
+    'Ürün görseldeki gibi. Paketleme özenliydi.','İkinci kez alıyorum, memnunum.','Kurulumu kolay, kullanışlı.',
+    'Rengi biraz farklı ama genel olarak iyi.','Aynı gün kargolandı, ertesi gün elimdeydi.','Hediye aldım, çok beğenildi.',
+    'Kalitesi fiyatına göre gayet iyi.','Biraz geç geldi ama ürün sorunsuz.'];
+  const reviews=[];
+  products.forEach(p=>{
+    const n=Math.min(6, 1+Math.floor(rand(p.id+'rv')*6));
+    for(let k=0;k<n;k++){
+      const rr=clamp(Math.round(p.rating + (rand(p.id+k)*1.4-0.7)),1,5);
+      reviews.push({id:uid('rev'), productId:p.id, user:pick(CUSTOMER_NAMES,p.id+k),
+        rating:rr, text:pick(revTexts,p.id+k+'t'), date: now()-Math.floor(rand(p.id+k+'z')*90)*DAY,
+        approved:true, helpful:Math.floor(rand(p.id+k+'h')*40)});
+    }
+  });
+  // customers
+  const customers=CUSTOMER_NAMES.map((nm,i)=>({
+    id:'c'+(i+1), name:nm, email:slugify(nm).replace(/-/g,'.')+'@eposta.com',
+    phone:'05'+(300000000+Math.floor(rand(nm)*699999999)), joined: now()-Math.floor(rand(nm)*300)*DAY,
+  }));
+  // orders (geçmiş ~ dashboard için)
+  const STATUS=['Teslim Edildi','Teslim Edildi','Teslim Edildi','Kargoya Verildi','Hazırlanıyor','İptal Edildi'];
+  const orders=[];
+  for(let i=0;i<46;i++){
+    const daysAgo=Math.floor(rand('o'+i)*30);
+    const created=now()-daysAgo*DAY-Math.floor(rand('o'+i+'h')*20*3600000);
+    const cust=pick(customers,'o'+i);
+    const nItems=1+Math.floor(rand('o'+i+'n')*3);
+    const items=[];
+    for(let j=0;j<nItems;j++){
+      const p=pick(products,'o'+i+'p'+j);
+      const qty=1+Math.floor(rand('o'+i+j+'q')*3);
+      items.push({productId:p.id, name:p.name, brand:p.brand, emoji:p.emoji, cA:p.cA, cB:p.cB, image:pImg(p),
+        price:p.price, qty, options:{}, sellerId:p.sellerId});
+    }
+    const sub=items.reduce((a,x)=>a+x.price*x.qty,0);
+    const ship=sub>=SEED_SETTINGS.freeShippingThreshold?0:SEED_SETTINGS.shippingFee;
+    let st=pick(STATUS,'o'+i+'s'); if(daysAgo<2 && st==='Teslim Edildi') st='Hazırlanıyor';
+    orders.push({
+      id:uid('ord'), code:'TRN'+String(240000+i), userEmail:cust.email, userName:cust.name,
+      date:created, items, address:{title:'Ev', name:cust.name, city:pick(['İstanbul','Ankara','İzmir','Bursa','Antalya'],cust.id), line:'Örnek Mah. 1234 Sok. No:5', phone:cust.phone},
+      delivery:{name:'Standart Teslimat', fee:ship, eta:'2-4 iş günü'},
+      payment:{method:'Kredi Kartı', last4:String(1000+Math.floor(rand('o'+i+'c')*8999)).slice(-4), installment:pick([1,1,1,3,6],cust.id)},
+      totals:{subtotal:sub, discount:0, shipping:ship, total:sub+ship},
+      coupon:null, status:st,
+      history: buildHistory(st, created),
+      trackingNo: st==='Hazırlanıyor'?null:'TK'+String(9000000+i),
+    });
+  }
+  return {
+    version:1, categories:cats, sellers, products, reviews, coupons:SEED_COUPONS.map(c=>({...c})),
+    banners:SEED_BANNERS.map(b=>({...b, image:null})), settings:{...SEED_SETTINGS},
+    customers, orders,
+    cart:[], favorites:[], recentlyViewed:[], followedStores:[],
+    currentUser:null, addresses:[],
+  };
+}
+function buildHistory(status, created){
+  const chain=['Sipariş Alındı','Hazırlanıyor','Kargoya Verildi','Dağıtımda','Teslim Edildi'];
+  if(status==='İptal Edildi') return [{status:'Sipariş Alındı',at:created},{status:'İptal Edildi',at:created+3600000}];
+  const idx=chain.indexOf(status); const upto=idx<0?0:idx;
+  const hist=[]; for(let i=0;i<=upto;i++) hist.push({status:chain[i], at:created+i*8*3600000});
+  return hist;
+}
+function loadDB(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(raw){ const d=JSON.parse(raw); if(d&&d.version) return d; } }catch(e){}
+  const seeded=buildSeedDB(); try{ localStorage.setItem(LS_KEY, JSON.stringify(seeded)); }catch(e){}
+  return seeded;
+}
+function saveDB(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }catch(e){ console.warn('kayıt hatası',e); if(/quota|exceeded/i.test(String(e&&e.name)+String(e&&e.message))) toast('Tarayıcı depolaması doldu — büyük fotoğraflar yerine görsel bağlantısı (URL) kullanın','err'); } }
+function resetDB(){ localStorage.removeItem(LS_KEY); DB=loadDB(); toast('Demo verileri sıfırlandı','ok'); location.hash='#/'; render(); }
+
+/* ===================== LOOKUPS ===================== */
+const catBySlug = s => DB.categories.find(c=>c.slug===s);
+const sellerById = id => DB.sellers.find(s=>s.id===id);
+const productById = id => DB.products.find(p=>p.id===id);
+const reviewsFor = pid => DB.reviews.filter(r=>r.productId===pid && r.approved);
+function liveRating(p){ const rs=reviewsFor(p.id); if(!rs.length) return {avg:p.rating, count:p.reviewCount};
+  const avg=rs.reduce((a,r)=>a+r.rating,0)/rs.length;
+  return {avg:(avg*0.4 + p.rating*0.6), count:p.reviewCount}; }
+function discountPct(p){ return p.oldPrice? Math.round((1-p.price/p.oldPrice)*100):0; }
+
+/* ===================== STATE / ROUTER ===================== */
+const state = { route:'home', params:{}, query:'', adminTab:'dashboard', adminSideOpen:false };
+function cartCount(){ return DB.cart.reduce((a,i)=>a+i.qty,0); }
+function favCount(){ return DB.favorites.length; }
+function isFav(id){ return DB.favorites.includes(id); }
+
+function parseHash(){
+  const hash=(location.hash||'#/').slice(1);
+  const [path,qs]=hash.split('?');
+  const parts=path.split('/').filter(Boolean);
+  state.params={}; state.query='';
+  if(qs){ const u=new URLSearchParams(qs); if(u.get('q')) state.query=u.get('q'); state.params.qs=Object.fromEntries(u.entries()); }
+  if(parts.length===0){ state.route='home'; }
+  else if(parts[0]==='kategori'){ state.route='category'; state.params.slug=parts[1]||'all'; }
+  else if(parts[0]==='urun'){ state.route='product'; state.params.id=parts[1]; }
+  else if(parts[0]==='magaza'){ state.route='store'; state.params.id=parts[1]; }
+  else if(parts[0]==='sepet'){ state.route='cart'; }
+  else if(parts[0]==='odeme'){ state.route='checkout'; }
+  else if(parts[0]==='siparis'){ state.route='order'; state.params.id=parts[1]; }
+  else if(parts[0]==='hesabim'){ state.route='account'; state.params.tab=parts[1]||'profil'; }
+  else if(parts[0]==='favoriler'){ state.route='favorites'; }
+  else if(parts[0]==='kampanyalar'){ state.route='campaigns'; }
+  else if(parts[0]==='arama'){ state.route='search'; }
+  else if(parts[0]==='admin'){ state.route='admin'; state.adminTab=parts[1]||'dashboard'; state.params.id=parts[2]||null; }
+  else state.route='notfound';
+}
+function go(hash){ if(location.hash===hash){ parseHash(); render(); } else { location.hash=hash; } }
+window.addEventListener('hashchange', ()=>{ parseHash(); render(); window.scrollTo(0,0); });
+
+function applyTheme(){
+  const t=DB.settings.theme;
+  if(t==='auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+}
+
+/* ===================== CART / FAV LOGIC ===================== */
+function cartKey(pid,options){ return pid+'::'+JSON.stringify(options||{}); }
+function addToCart(pid, options, qty){
+  const p=productById(pid); if(!p) return;
+  qty=qty||1;
+  const key=cartKey(pid,options);
+  const ex=DB.cart.find(i=>cartKey(i.productId,i.options)===key);
+  if(ex){ ex.qty=clamp(ex.qty+qty,1,p.stock||99); }
+  else DB.cart.push({productId:pid, options:options||{}, qty:clamp(qty,1,p.stock||99), addedAt:now()});
+  saveDB(); toast('Sepete eklendi 🛒','ok'); updateBadges();
+}
+function setCartQty(idx,q){ const it=DB.cart[idx]; if(!it) return; const p=productById(it.productId);
+  it.qty=clamp(q,1,(p&&p.stock)||99); saveDB(); render(); }
+function removeCart(idx){ DB.cart.splice(idx,1); saveDB(); render(); }
+function clearCart(){ DB.cart=[]; saveDB(); }
+function toggleFav(pid){
+  const i=DB.favorites.indexOf(pid);
+  if(i<0){ DB.favorites.push(pid); toast('Favorilere eklendi ❤️'); }
+  else { DB.favorites.splice(i,1); toast('Favorilerden çıkarıldı'); }
+  saveDB(); updateBadges(); if(state.route==='favorites') render();
+}
+function toggleFollow(sid){ const i=DB.followedStores.indexOf(sid);
+  if(i<0){ DB.followedStores.push(sid); toast('Mağaza takip ediliyor'); } else { DB.followedStores.splice(i,1); toast('Takip bırakıldı'); }
+  saveDB(); render(); }
+function pushRecent(pid){ DB.recentlyViewed=[pid,...DB.recentlyViewed.filter(x=>x!==pid)].slice(0,12); saveDB(); }
+
+function findCoupon(code){ return DB.coupons.find(c=>c.code.toUpperCase()===(code||'').trim().toUpperCase() && c.active); }
+function cartTotals(couponCode){
+  const items=DB.cart.map(it=>{ const p=productById(it.productId); return {it,p, line:(p?p.price:0)*it.qty}; }).filter(x=>x.p);
+  const subtotal=items.reduce((a,x)=>a+x.line,0);
+  let discount=0, freeShip=false, couponMsg=null, coupon=null;
+  if(couponCode){
+    const c=findCoupon(couponCode);
+    if(!c) couponMsg={err:'Kupon bulunamadı'};
+    else if(c.expires && c.expires<now()) couponMsg={err:'Kuponun süresi dolmuş'};
+    else if(subtotal < (c.min||0)) couponMsg={err:`Bu kupon için minimum sepet tutarı ${money(c.min)}`};
+    else { coupon=c;
+      if(c.type==='percent'){ discount=Math.min(subtotal*c.value/100, c.max||Infinity); couponMsg={ok:`%${c.value} indirim uygulandı`}; }
+      else if(c.type==='amount'){ discount=Math.min(c.value, subtotal); couponMsg={ok:`${money(c.value)} indirim uygulandı`}; }
+      else if(c.type==='ship'){ freeShip=true; couponMsg={ok:'Kargo bedava uygulandı'}; }
+    }
+  }
+  const thr=DB.settings.freeShippingThreshold;
+  let shipping = (subtotal>=thr || freeShip || items.length===0) ? 0 : DB.settings.shippingFee;
+  const total=Math.max(0, subtotal-discount)+shipping;
+  return {items, subtotal, discount, shipping, total, coupon, couponMsg, freeShipRemain:Math.max(0,thr-subtotal)};
+}
+
+/* ===================== LAYOUT ===================== */
+function updateBadges(){
+  const cc=$('#cartBadge'), fc=$('#favBadge');
+  if(cc){ cc.textContent=cartCount(); cc.classList.toggle('hide', cartCount()===0); }
+  if(fc){ fc.textContent=favCount(); fc.classList.toggle('hide', favCount()===0); }
+}
+function Header(){
+  const s=DB.settings;
+  const headact=(ic,label,onClick,badgeId,count)=>h('div',{class:'headact',onClick},
+    h('span',{class:'ic'},ic), h('span',{},label),
+    badgeId?h('span',{id:badgeId,class:'badge-count'+(count?'':' hide')},String(count||0)):null);
+  const searchInput=h('input',{type:'search',placeholder:'Ürün, kategori veya marka ara',value:state.query||'',
+    onInput:debounce(e=>renderSuggest(e.target.value),120),
+    onKeydown:e=>{ if(e.key==='Enter'){ closeSuggest(); go('#/arama?q='+encodeURIComponent(e.target.value)); } }});
+  const box=h('div',{class:'searchbox'}, searchInput,
+    h('button',{class:'sbtn',title:'Ara',onClick:()=>{ closeSuggest(); go('#/arama?q='+encodeURIComponent(searchInput.value)); }},'🔍'),
+    h('div',{id:'suggestHost'}));
+  const catlink=(c)=>h('a',{href:'#/kategori/'+c.slug, class:(state.route==='category'&&state.params.slug===c.slug)?'on':''}, c.name);
+  return h('header',{class:'site'},
+    h('div',{class:'topbar'}, h('div',{class:'wrap'},
+      h('div',{class:'row'}, h('span',{},'📦 Kapıda ödeme'), h('span',{class:'sep'},'|'), h('span',{},'🚚 300 ₺ üzeri kargo bedava'), h('span',{class:'sep'},'|'), h('span',{},'↩️ 30 gün iade')),
+      h('div',{class:'row'},
+        h('a',{href:'#/hesabim/siparislerim'},'Siparişlerim'),
+        h('span',{class:'sep'},'|'),
+        h('a',{href:'#/admin'},'🔐 Satıcı / Yönetim'),
+        h('span',{class:'sep'},'|'),
+        h('a',{onClick:cycleTheme, style:{cursor:'pointer'}}, themeLabel())))),
+    h('div',{class:'wrap'}, h('div',{class:'headmain'},
+      h('div',{class:'logo',onClick:()=>go('#/')}, s.siteName.slice(0,-1), h('b',{},s.siteName.slice(-1))),
+      box,
+      h('div',{class:'headacts'},
+        headact('👤', DB.currentUser?firstName(DB.currentUser):'Giriş', ()=> DB.currentUser?go('#/hesabim/profil'):openLogin()),
+        headact('❤️','Favoriler', ()=>go('#/favoriler'), 'favBadge', favCount()),
+        headact('🛒','Sepet', ()=>go('#/sepet'), 'cartBadge', cartCount())))),
+    h('nav',{class:'cats'}, h('div',{class:'wrap'},
+      h('a',{href:'#/kampanyalar',class:'hot'}, '🔥 Fırsatlar'),
+      ...DB.categories.map(catlink),
+      h('a',{href:'#/kategori/all'}, 'Tüm Ürünler'))));
+}
+function themeLabel(){ return DB.settings.theme==='auto'?'🌗 Tema: Sistem': DB.settings.theme==='dark'?'🌙 Koyu':'☀️ Açık'; }
+function cycleTheme(){ const o=['auto','light','dark']; DB.settings.theme=o[(o.indexOf(DB.settings.theme)+1)%3]; saveDB(); applyTheme(); render(); }
+
+function renderSuggest(q){
+  const host=$('#suggestHost'); if(!host) return;
+  q=(q||'').trim().toLowerCase();
+  if(q.length<2){ host.innerHTML=''; return; }
+  const prods=DB.products.filter(p=>p.active && (p.name.toLowerCase().includes(q)||p.brand.toLowerCase().includes(q))).slice(0,6);
+  const cats=DB.categories.filter(c=>c.name.toLowerCase().includes(q));
+  host.innerHTML='';
+  host.appendChild(h('div',{class:'suggest'},
+    cats.length?h('div',{class:'s-head'},'Kategoriler'):null,
+    ...cats.map(c=>h('div',{class:'s-item',onClick:()=>{ closeSuggest(); go('#/kategori/'+c.slug); }}, h('span',{},c.emoji), h('span',{},c.name))),
+    prods.length?h('div',{class:'s-head'},'Ürünler'):null,
+    ...prods.map(p=>h('div',{class:'s-item',onClick:()=>{ closeSuggest(); go('#/urun/'+p.id); }},
+      h('span',{},p.emoji), h('span',{class:'grow'},p.name), h('b',{},money(p.price)))),
+    (!cats.length&&!prods.length)?h('div',{class:'s-item muted'},'Sonuç bulunamadı'):null));
+}
+function closeSuggest(){ const host=$('#suggestHost'); if(host) host.innerHTML=''; }
+document.addEventListener('click',e=>{ if(!e.target.closest('.searchbox')) closeSuggest(); });
+
+function Footer(){
+  const col=(title,links)=>h('div',{}, h('h5',{},title), ...links.map(l=>h('a',{href:l[1]||'#/'},l[0])));
+  return h('footer',{class:'site'}, h('div',{class:'wrap'},
+    h('div',{class:'footcols'},
+      col('Trenda',[['Hakkımızda'],['Kariyer'],['İletişim'],['Trenda Blog'],['Basın']]),
+      col('Yardım',[['Sıkça Sorulan Sorular'],['Kargo Takibi','#/hesabim/siparislerim'],['İade & Değişim'],['Nasıl Alışveriş Yaparım?']]),
+      col('Kategoriler',DB.categories.slice(0,6).map(c=>[c.name,'#/kategori/'+c.slug])),
+      col('Satıcı',[['Trenda’da Satış Yap','#/admin'],['Satıcı Paneli','#/admin'],['Temel Kavramlar']]),
+      col('Güvenlik',[['KVKK Aydınlatma Metni'],['Çerez Politikası'],['Gizlilik'],['Kullanım Koşulları']])),
+    h('div',{class:'footbot'},
+      h('span',{},'© '+new Date().getFullYear()+' '+DB.settings.siteName+' — Bu bir demo uygulamadır, gerçek satış/ödeme yapılmaz.'),
+      h('span',{},'💳 Kredi Kartı · 🏦 Havale/EFT · 📦 Kapıda Ödeme'))));
+}
+function MobileNav(){
+  const item=(ic,label,route,onClick)=>h('a',{onClick,class:state.route===route?'on':''}, h('span',{class:'ic'},ic), h('span',{},label));
+  return h('nav',{class:'mobnav'},
+    item('🏠','Anasayfa','home',()=>go('#/')),
+    item('🗂️','Kategoriler','category',()=>go('#/kategori/all')),
+    item('❤️','Favoriler','favorites',()=>go('#/favoriler')),
+    item('🛒','Sepet','cart',()=>go('#/sepet')),
+    item('👤','Hesabım','account',()=> DB.currentUser?go('#/hesabim/profil'):openLogin()));
+}
+
+/* ===================== SHARED COMPONENTS ===================== */
+function ProductCard(p){
+  const lr=liveRating(p); const dp=discountPct(p);
+  const tags=h('div',{class:'tags'},
+    dp?h('span',{class:'tag disc'},'%'+dp+' İNDİRİM'):null,
+    p.badges.includes('new')?h('span',{class:'tag new'},'YENİ'):null,
+    p.badges.includes('best')?h('span',{class:'tag best'},'ÇOK SATAN'):null);
+  const fav=h('button',{class:'fav'+(isFav(p.id)?' on':''),title:'Favori',
+    onClick:e=>{ e.stopPropagation(); toggleFav(p.id); e.currentTarget.classList.toggle('on'); }}, isFav(p.id)?'❤️':'🤍');
+  const ph=h('div',{class:'photo',style:photoStyle(p)}); fillPhoto(ph, pImg(p), p.emoji); ph.append(tags, fav);
+  return h('div',{class:'pcard',onClick:()=>go('#/urun/'+p.id)},
+    ph,
+    h('div',{class:'body'},
+      h('div',{class:'brand'}, p.brand),
+      h('div',{class:'name'}, p.name),
+      stars(lr.avg, lr.count),
+      h('div',{class:'pricerow'},
+        h('span',{class:'price'}, money(p.price)),
+        p.oldPrice?h('span',{class:'oldprice'}, money(p.oldPrice)):null,
+        dp?h('span',{class:'discpct'}, '%'+dp):null),
+      p.freeShipping?h('div',{class:'ship'},'🚚 Kargo Bedava'): (p.stock<8?h('div',{class:'ship',style:{color:'var(--red)'}},'Son '+p.stock+' ürün'):null),
+      h('button',{class:'btn sm block addmini',onClick:e=>{ e.stopPropagation(); quickAdd(p); }}, 'Sepete Ekle')));
+}
+function quickAdd(p){
+  if(p.options && p.options.length){ go('#/urun/'+p.id); toast('Lütfen seçenekleri belirleyin'); }
+  else addToCart(p.id,{},1);
+}
+function Carousel(title, list, moreHref){
+  if(!list.length) return null;
+  return h('section',{class:'section'},
+    h('div',{class:'section-head'}, h('h2',{},title), moreHref?h('a',{href:moreHref,class:'link'},'Tümünü gör →'):null),
+    h('div',{class:'pgrid'}, ...list.map(ProductCard)));
+}
+function SectionHead(title, sub, moreHref, moreLabel){
+  return h('div',{class:'section-head'}, h('div',{}, h('h2',{},title), sub?h('div',{class:'sub'},sub):null),
+    moreHref?h('a',{href:moreHref,class:'link'}, moreLabel||'Tümü →'):null);
+}
+
+/* ===================== HOME ===================== */
+let heroTimer=null;
+function HomePage(){
+  const active=DB.products.filter(p=>p.active);
+  const discounted=[...active].filter(p=>p.oldPrice).sort((a,b)=>discountPct(b)-discountPct(a));
+  const best=[...active].filter(p=>p.badges.includes('best')).concat([...active].sort((a,b)=>b.sold-a.sold)).slice(0,10);
+  const fresh=[...active].sort((a,b)=>b.createdAt-a.createdAt).slice(0,10);
+  const foryou=[...active].sort((a,b)=>rand(b.id+'you')-rand(a.id+'you')).slice(0,10);
+  const brands=[...new Set(active.map(p=>p.brand))];
+
+  // hero
+  const slides=DB.banners.map((b,i)=>h('div',{class:'slide'+(i===0?' on':''),'data-i':i,
+    style:{background:bannerBg(b)}},
+    h('h3',{},b.title), h('p',{},b.sub),
+    h('a',{class:'btn',href:b.href}, b.cta),
+    b.image?null:h('span',{class:'emoji'}, b.emoji)));
+  const dots=h('div',{class:'sldots'}, ...DB.banners.map((b,i)=>h('button',{class:i===0?'on':'',onClick:()=>setSlide(i)})));
+  const slidesEl=h('div',{class:'slides'}, ...slides, dots);
+  clearInterval(heroTimer);
+  let cur=0;
+  window.setSlide=(i)=>{ cur=(i+DB.banners.length)%DB.banners.length;
+    $$('.slide',slidesEl).forEach(s=>s.classList.toggle('on', +s.dataset.i===cur));
+    $$('.sldots button',slidesEl).forEach((d,di)=>d.classList.toggle('on', di===cur)); };
+  heroTimer=setInterval(()=>{ if(document.body.contains(slidesEl)) setSlide(cur+1); else clearInterval(heroTimer); }, 5000);
+
+  const herostack=h('div',{class:'herostack'},
+    h('div',{class:'herocard',style:{background:'linear-gradient(135deg,#f7971e,#ffd200)'},onClick:()=>go('#/kampanyalar')},
+      h('div',{}, h('span',{},'GÜNÜN FIRSATI'), h('h4',{},'Flaş İndirimler')), h('span',{class:'e'},'⚡')),
+    h('div',{class:'herocard',style:{background:'linear-gradient(135deg,#654ea3,#eaafc8)'},onClick:()=>go('#/kategori/kitap-hobi')},
+      h('div',{}, h('span',{},'YENİ'), h('h4',{},'Kitap & Hobi')), h('span',{class:'e'},'📚')));
+
+  // flash countdown
+  let flashEnd=DB._flashEnd; if(!flashEnd || flashEnd<now()){ flashEnd=now()+ (2*3600000 + Math.floor(rand('flash'+new Date().toDateString())*6*3600000)); DB._flashEnd=flashEnd; }
+  const cdEl=h('span',{class:'countdown'});
+  function tickCD(){ if(!document.body.contains(cdEl)) return;
+    let s=Math.max(0,Math.floor((flashEnd-now())/1000));
+    const hh=String(Math.floor(s/3600)).padStart(2,'0'), mm=String(Math.floor(s%3600/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
+    cdEl.innerHTML=''; cdEl.append(h('b',{},hh),document.createTextNode(':'),h('b',{},mm),document.createTextNode(':'),h('b',{},ss));
+    setTimeout(tickCD,1000);
+  }
+  tickCD();
+
+  return h('div',{},
+    h('div',{class:'wrap'},
+      h('div',{class:'hero'}, slidesEl, herostack),
+
+      h('section',{class:'section'},
+        h('div',{class:'section-head'}, h('div',{},h('h2',{},'Kategoriler'), h('div',{class:'sub'},'Ne aramıştınız?')), h('a',{href:'#/kategori/all',class:'link'},'Tümü →')),
+        h('div',{class:'catgrid'}, ...DB.categories.map(c=>h('div',{class:'catcell',onClick:()=>go('#/kategori/'+c.slug)},
+          h('div',{class:'e'},c.emoji), h('div',{},c.name))))),
+
+      h('section',{class:'section'},
+        h('div',{class:'section-head'},
+          h('div',{class:'row'}, h('h2',{},'⚡ Flaş Ürünler'), cdEl),
+          h('a',{href:'#/kampanyalar',class:'link'},'Tümü →')),
+        h('div',{class:'pgrid'}, ...discounted.slice(0,10).map(ProductCard))),
+
+      h('section',{class:'section'},
+        h('h2',{style:{marginBottom:'10px'}},'Popüler Markalar'),
+        h('div',{class:'brandstrip'}, ...brands.map(b=>h('div',{class:'brandchip',onClick:()=>go('#/arama?q='+encodeURIComponent(b))}, b)))),
+
+      Carousel('🏆 Çok Satanlar', best, '#/kategori/all?sort=cok-satan'),
+      Carousel('🆕 Yeni Gelenler', fresh, '#/kategori/all?sort=yeni'),
+      Carousel('✨ Sana Özel Seçtiklerimiz', foryou),
+      DB.recentlyViewed.length? Carousel('👀 Son Gezdiklerin', DB.recentlyViewed.map(productById).filter(Boolean)) : null,
+
+      h('section',{class:'section'},
+        h('h2',{style:{marginBottom:'12px'}},'Mağazalar'),
+        h('div',{class:'pgrid wide'}, ...DB.sellers.filter(s=>s.active).map(s=>h('div',{class:'pcard',onClick:()=>go('#/magaza/'+s.id)},
+          fillPhoto(h('div',{class:'photo',style:{background:`linear-gradient(135deg,${s.cA},${s.cB})`,fontSize:'56px'}}), s.logo, s.emoji),
+          h('div',{class:'body'},
+            h('div',{class:'name',style:{fontWeight:'800',fontSize:'15px',minHeight:'auto'}}, s.name),
+            stars(s.rating), h('div',{class:'muted',style:{fontSize:'12px'}}, num(s.followers)+' takipçi'),
+            h('button',{class:'btn sm soft block',style:{marginTop:'6px'}}, DB.followedStores.includes(s.id)?'Takip Ediliyor':'Mağazaya Git'))))))));
+}
+
+/* ===================== LISTING / CATEGORY ===================== */
+const listFilters = { min:'', max:'', brands:new Set(), sellers:new Set(), rating:0, freeShip:false, inStock:false, disc:false, sort:'onerilen', page:1, view:'grid' };
+function resetListFilters(){ listFilters.min=''; listFilters.max=''; listFilters.brands.clear(); listFilters.sellers.clear();
+  listFilters.rating=0; listFilters.freeShip=false; listFilters.inStock=false; listFilters.disc=false; listFilters.page=1; }
+
+function CategoryPage(){
+  const slug=state.params.slug;
+  const cat = slug==='all'? null : catBySlug(slug);
+  if(slug!=='all' && !cat) return NotFound();
+  const qsSort=state.params.qs&&state.params.qs.sort;
+  if(qsSort){ const map={'cok-satan':'cok-satan','yeni':'yeni'}; if(map[qsSort]) listFilters.sort=map[qsSort]; }
+
+  let base=DB.products.filter(p=>p.active && (!cat || p.category===slug));
+  const allBrands=[...new Set(base.map(p=>p.brand))].sort();
+  const allSellers=[...new Set(base.map(p=>p.sellerId))];
+
+  let list=base.filter(p=>{
+    if(listFilters.min!=='' && p.price < +listFilters.min) return false;
+    if(listFilters.max!=='' && p.price > +listFilters.max) return false;
+    if(listFilters.brands.size && !listFilters.brands.has(p.brand)) return false;
+    if(listFilters.sellers.size && !listFilters.sellers.has(p.sellerId)) return false;
+    if(listFilters.rating && liveRating(p).avg < listFilters.rating) return false;
+    if(listFilters.freeShip && !p.freeShipping) return false;
+    if(listFilters.inStock && p.stock<=0) return false;
+    if(listFilters.disc && !p.oldPrice) return false;
+    return true;
+  });
+  const sorters={
+    onerilen:(a,b)=> (b.badges.includes('best')-a.badges.includes('best')) || b.sold-a.sold,
+    'fiyat-artan':(a,b)=>a.price-b.price,
+    'fiyat-azalan':(a,b)=>b.price-a.price,
+    yeni:(a,b)=>b.createdAt-a.createdAt,
+    'cok-satan':(a,b)=>b.sold-a.sold,
+    puan:(a,b)=>liveRating(b).avg-liveRating(a).avg,
+    indirim:(a,b)=>discountPct(b)-discountPct(a),
+  };
+  list.sort(sorters[listFilters.sort]||sorters.onerilen);
+  const PER=15; const pages=Math.max(1,Math.ceil(list.length/PER));
+  listFilters.page=clamp(listFilters.page,1,pages);
+  const pageList=list.slice((listFilters.page-1)*PER, listFilters.page*PER);
+
+  const fgroup=(title,body)=>h('div',{class:'fgroup'}, h('h4',{},title), body);
+  const filtersEl=h('div',{class:'filters',id:'filtersPanel'},
+    h('div',{class:'spread',style:{padding:'12px 0'}}, h('b',{},'Filtreler'),
+      h('span',{class:'link',onClick:()=>{ resetListFilters(); render(); }},'Temizle')),
+    fgroup('Fiyat Aralığı', h('div',{},
+      h('div',{class:'pricein'},
+        h('input',{type:'number',placeholder:'En az',value:listFilters.min,onChange:e=>{listFilters.min=e.target.value;listFilters.page=1;render();}}),
+        h('span',{},'-'),
+        h('input',{type:'number',placeholder:'En çok',value:listFilters.max,onChange:e=>{listFilters.max=e.target.value;listFilters.page=1;render();}})))),
+    fgroup('Marka', h('div',{style:{maxHeight:'190px',overflow:'auto'}}, ...allBrands.map(b=>
+      h('label',{class:'checkline'}, h('input',{type:'checkbox',checked:listFilters.brands.has(b),
+        onChange:e=>{ e.target.checked?listFilters.brands.add(b):listFilters.brands.delete(b); listFilters.page=1; render(); }}), b)))),
+    slug==='all'? fgroup('Mağaza', h('div',{}, ...allSellers.map(sid=>{ const s=sellerById(sid); return s&&
+      h('label',{class:'checkline'}, h('input',{type:'checkbox',checked:listFilters.sellers.has(sid),
+        onChange:e=>{ e.target.checked?listFilters.sellers.add(sid):listFilters.sellers.delete(sid); listFilters.page=1; render(); }}), s.emoji+' '+s.name); }))) : null,
+    fgroup('Değerlendirme', h('div',{}, ...[4,3,2].map(r=>
+      h('label',{class:'checkline'}, h('input',{type:'radio',name:'rt',checked:listFilters.rating===r,
+        onChange:()=>{ listFilters.rating=listFilters.rating===r?0:r; listFilters.page=1; render(); }}),
+        h('span',{class:'stars'}, h('span',{class:'s'},starStr(r)), ' ve üzeri'))))),
+    fgroup('Diğer', h('div',{},
+      h('label',{class:'checkline'}, h('input',{type:'checkbox',checked:listFilters.freeShip,onChange:e=>{listFilters.freeShip=e.target.checked;render();}}),'🚚 Kargo Bedava'),
+      h('label',{class:'checkline'}, h('input',{type:'checkbox',checked:listFilters.disc,onChange:e=>{listFilters.disc=e.target.checked;render();}}),'🔻 İndirimli Ürünler'),
+      h('label',{class:'checkline'}, h('input',{type:'checkbox',checked:listFilters.inStock,onChange:e=>{listFilters.inStock=e.target.checked;render();}}),'📦 Sadece Stokta'))),
+    h('button',{class:'btn block',style:{margin:'12px 0'},onClick:()=>$('#filtersPanel').classList.remove('open')},'Sonuçları Gör'));
+
+  const activeChips=[];
+  if(listFilters.min!=='') activeChips.push(['En az '+money(listFilters.min),()=>{listFilters.min='';render();}]);
+  if(listFilters.max!=='') activeChips.push(['En çok '+money(listFilters.max),()=>{listFilters.max='';render();}]);
+  [...listFilters.brands].forEach(b=>activeChips.push([b,()=>{listFilters.brands.delete(b);render();}]));
+  if(listFilters.rating) activeChips.push([listFilters.rating+'★ ve üzeri',()=>{listFilters.rating=0;render();}]);
+  if(listFilters.freeShip) activeChips.push(['Kargo Bedava',()=>{listFilters.freeShip=false;render();}]);
+  if(listFilters.disc) activeChips.push(['İndirimli',()=>{listFilters.disc=false;render();}]);
+
+  const main=h('div',{},
+    h('div',{class:'row',style:{margin:'2px 0 12px',flexWrap:'wrap'}},
+      h('a',{href:'#/',class:'muted'},'Anasayfa'), h('span',{class:'muted'},'/'),
+      h('b',{}, cat? cat.emoji+' '+cat.name : 'Tüm Ürünler')),
+    h('div',{class:'toolbar'},
+      h('div',{class:'row'},
+        h('button',{class:'btn ghost sm',onClick:()=>$('#filtersPanel').classList.add('open')},'⚙️ Filtrele'),
+        h('span',{class:'count'}, num(list.length)+' ürün')),
+      h('div',{class:'row'},
+        h('select',{class:'select',style:{width:'auto'},onChange:e=>{listFilters.sort=e.target.value;listFilters.page=1;render();}},
+          ...[['onerilen','Önerilen'],['fiyat-artan','Fiyat: Düşükten Yükseğe'],['fiyat-azalan','Fiyat: Yüksekten Düşüğe'],
+             ['yeni','En Yeniler'],['cok-satan','En Çok Satanlar'],['puan','En Yüksek Puan'],['indirim','En Çok İndirim']]
+            .map(o=>h('option',{value:o[0],selected:listFilters.sort===o[0]},o[1]))))),
+    activeChips.length? h('div',{class:'chips'}, ...activeChips.map(c=>h('span',{class:'chip',onClick:c[1]},c[0]))) : null,
+    pageList.length? h('div',{class:'pgrid wide'}, ...pageList.map(ProductCard))
+      : h('div',{class:'emptybox'}, h('div',{class:'e'},'🔍'), h('p',{},'Bu filtrelere uygun ürün bulunamadı.'),
+          h('button',{class:'btn ghost',onClick:()=>{resetListFilters();render();}},'Filtreleri Temizle')),
+    pages>1? h('div',{class:'pager'},
+      h('button',{onClick:()=>{listFilters.page--;render();window.scrollTo(0,0);},disabled:listFilters.page===1},'‹'),
+      ...Array.from({length:pages},(_,i)=>i+1).filter(n=>Math.abs(n-listFilters.page)<3||n===1||n===pages).map(n=>
+        h('button',{class:n===listFilters.page?'on':'',onClick:()=>{listFilters.page=n;render();window.scrollTo(0,0);}},n)),
+      h('button',{onClick:()=>{listFilters.page++;render();window.scrollTo(0,0);},disabled:listFilters.page===pages},'›')) : null);
+
+  return h('div',{class:'wrap'}, h('div',{class:'listing'}, filtersEl, main));
+}
+
+/* ===================== SEARCH ===================== */
+function SearchPage(){
+  const q=(state.query||'').trim(); const ql=q.toLowerCase();
+  const res=DB.products.filter(p=>p.active && (p.name.toLowerCase().includes(ql)||p.brand.toLowerCase().includes(ql)||
+    (catBySlug(p.category)||{}).name.toLowerCase().includes(ql)));
+  return h('div',{class:'wrap'},
+    h('h1',{style:{margin:'8px 0 4px'}}, '“'+q+'” için sonuçlar'),
+    h('p',{class:'muted',style:{marginBottom:'18px'}}, num(res.length)+' ürün bulundu'),
+    res.length? h('div',{class:'pgrid wide'}, ...res.map(ProductCard))
+      : h('div',{class:'emptybox'}, h('div',{class:'e'},'🕵️'), h('p',{},'Aramanızla eşleşen ürün yok.'),
+          h('p',{class:'muted'},'Farklı kelimeler deneyin ya da kategorilere göz atın.'),
+          h('a',{class:'btn',href:'#/kategori/all'},'Tüm Ürünler')));
+}
+
+/* ===================== CAMPAIGNS ===================== */
+function CampaignsPage(){
+  const disc=DB.products.filter(p=>p.active&&p.oldPrice).sort((a,b)=>discountPct(b)-discountPct(a));
+  return h('div',{class:'wrap'},
+    h('div',{class:'slides',style:{minHeight:'180px',marginBottom:'20px'}},
+      h('div',{class:'slide on',style:{background:'linear-gradient(120deg,#f27a1a,#ff416c)'}},
+        h('h3',{},'🔥 Büyük İndirim Günleri'), h('p',{},'Seçili ürünlerde %50’ye varan fırsatlar — stoklarla sınırlı!'),
+        h('span',{class:'emoji'},'🎉'))),
+    h('div',{class:'section-head'}, h('h2',{},'Tüm İndirimli Ürünler'), h('span',{class:'muted'}, num(disc.length)+' ürün')),
+    h('div',{class:'pgrid wide'}, ...disc.map(ProductCard)),
+    h('div',{class:'divider'}),
+    h('h2',{style:{marginBottom:'12px'}},'Aktif Kuponlar'),
+    h('div',{class:'pgrid',style:{gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))'}},
+      ...DB.coupons.filter(c=>c.active).map(c=>h('div',{class:'pcard',style:{padding:'16px',cursor:'default'}},
+        h('div',{class:'row spread'}, h('b',{style:{fontSize:'16px',letterSpacing:'1px'}}, c.code), h('span',{class:'pill accent'}, c.type==='percent'?('%'+c.value): c.type==='amount'?money(c.value):'KARGO')),
+        h('p',{class:'muted',style:{margin:'8px 0'}}, c.label),
+        h('div',{class:'faint',style:{fontSize:'12px'}}, (c.min?('Min. '+money(c.min)+' · '):'')+'Son gün: '+fmtDate(c.expires)),
+        h('button',{class:'btn sm soft block',style:{marginTop:'10px'},onClick:()=>{ navigator.clipboard&&navigator.clipboard.writeText(c.code); toast('Kupon kodu kopyalandı: '+c.code,'ok'); }},'Kodu Kopyala')))));
+}
+
+/* ===================== MODAL HELPERS ===================== */
+function openModal(node, big){
+  const host=$('#modal-host');
+  const ov=h('div',{class:'overlay',onClick:e=>{ if(e.target===ov) closeModal(); }},
+    h('div',{class:'modal'+(big?' lg':'')}, node));
+  host.innerHTML=''; host.appendChild(ov);
+  document.addEventListener('keydown',escClose);
+}
+function closeModal(){ $('#modal-host').innerHTML=''; document.removeEventListener('keydown',escClose); }
+function escClose(e){ if(e.key==='Escape') closeModal(); }
+function modalShell(title, bodyNode, footNode){
+  return h('div',{},
+    h('div',{class:'mh'}, h('h3',{},title), h('button',{class:'iconbtn',onClick:closeModal},'✕')),
+    h('div',{class:'mb'}, bodyNode),
+    footNode? h('div',{class:'mb',style:{borderTop:'1px solid var(--border)'}}, footNode):null);
+}
+function openLogin(){
+  const nameI=h('input',{class:'input',placeholder:'Adınız Soyadınız'});
+  const mailI=h('input',{class:'input',type:'email',placeholder:'ornek@eposta.com'});
+  openModal(modalShell('Giriş Yap / Kayıt Ol',
+    h('div',{},
+      h('p',{class:'muted',style:{marginTop:0}},'Ad soyad ve e-posta ile devam edin.'),
+      h('div',{class:'field'}, h('label',{},'Ad Soyad'), nameI),
+      h('div',{class:'field'}, h('label',{},'E-posta'), mailI),
+      h('button',{class:'btn block lg',onClick:()=>{
+        const nm=nameI.value.trim(), em=mailI.value.trim();
+        if(!nm){ toast('Lütfen ad soyad girin','err'); nameI.focus(); return; }
+        const email = em || (slugify(nm).replace(/-/g,'.')+'@eposta.com');
+        DB.currentUser={name:nm, email};
+        if(!DB.customers.find(c=>c.email===email))
+          DB.customers.push({id:uid('c'),name:nm,email,phone:'',joined:now()});
+        saveDB(); closeModal(); toast('Hoş geldiniz, '+firstName(DB.currentUser)+'!','ok'); render();
+      }},'Devam Et'),
+      h('p',{class:'faint center',style:{fontSize:'12px',marginBottom:0}},'Devam ederek Kullanım Koşulları’nı kabul etmiş olursunuz.'))));
+}
+
+/* ===================== PRODUCT DETAIL ===================== */
+const pdpState={ opts:{}, qty:1, tab:'aciklama', img:0 };
+function ProductPage(){
+  const p=productById(state.params.id);
+  if(!p) return NotFound();
+  pushRecent(p.id);
+  const seller=sellerById(p.sellerId);
+  const lr=liveRating(p); const dp=discountPct(p);
+  const revs=reviewsFor(p.id).sort((a,b)=>b.date-a.date);
+  // reset per-product
+  if(pdpState._pid!==p.id){ pdpState._pid=p.id; pdpState.opts={}; pdpState.qty=1; pdpState.tab='aciklama'; pdpState.img=0;
+    (p.options||[]).forEach(o=>pdpState.opts[o.name]=o.values[0]); }
+
+  const gallery=(()=>{
+    const imgs=(p.images||[]).filter(Boolean);
+    if(imgs.length){
+      pdpState.img=clamp(pdpState.img,0,imgs.length-1);
+      const main=h('div',{class:'main',style:photoStyle(p)}); fillPhoto(main, imgs[pdpState.img], p.emoji);
+      const thumbs=h('div',{class:'thumbs'}, ...imgs.map((src,i)=>{
+        const b=h('button',{class:i===pdpState.img?'on':'',style:photoStyle(p),onClick:()=>{ pdpState.img=i; render(); }});
+        fillPhoto(b, src, p.emoji); return b; }));
+      return h('div',{class:'gallery'}, main, thumbs);
+    }
+    const shades=[[p.cA,p.cB],['#232526','#414345'],[p.cB,p.cA],['#3a3a4a','#6b6b80']];
+    if(pdpState.img>3||pdpState.img<0) pdpState.img=0;
+    const main=h('div',{class:'main',style:{background:`linear-gradient(135deg,${shades[pdpState.img][0]},${shades[pdpState.img][1]})`}}, p.emoji);
+    const thumbs=h('div',{class:'thumbs'}, ...shades.map((s,i)=>h('button',{class:i===pdpState.img?'on':'',style:{background:`linear-gradient(135deg,${s[0]},${s[1]})`},
+      onClick:()=>{ pdpState.img=i; render(); }}, p.emoji)));
+    return h('div',{class:'gallery'}, main, thumbs);
+  })();
+
+  const optionEls=(p.options||[]).map(o=>h('div',{class:'optrow'},
+    h('div',{class:'lab'}, o.name+': ', h('span',{class:'muted'}, pdpState.opts[o.name])),
+    h('div',{class:'optchips'}, ...o.values.map(v=>h('button',{class:'optchip'+(pdpState.opts[o.name]===v?' on':''),
+      onClick:()=>{ pdpState.opts[o.name]=v; render(); }}, v)))));
+
+  const installments=[1,3,6,9,12].filter(n=>n<=DB.settings.installmentMax).map(n=>{
+    const per=p.price/n; return h('div',{class:'row spread',style:{fontSize:'13px',padding:'4px 0',borderBottom:'1px solid var(--border)'}},
+      h('span',{}, n===1?'Tek Çekim':n+' Taksit'), h('b',{}, money(per)+(n>1?' x'+n:''))); });
+
+  const buybox=h('div',{class:'buybox'},
+    h('div',{class:'row',style:{alignItems:'baseline',gap:'8px',flexWrap:'wrap'}},
+      h('span',{class:'price big'}, money(p.price)),
+      p.oldPrice? h('span',{class:'oldprice',style:{fontSize:'14px'}}, money(p.oldPrice)):null,
+      dp? h('span',{class:'discpct',style:{fontSize:'14px'}},'%'+dp+' indirim'):null),
+    p.stock>0? h('div',{class:'pill green'},'✓ Stokta ('+p.stock+' adet)') : h('div',{class:'pill red'},'Tükendi'),
+    h('div',{class:'row',style:{gap:'10px'}},
+      h('div',{class:'qtystep'},
+        h('button',{onClick:()=>{ pdpState.qty=clamp(pdpState.qty-1,1,p.stock); render(); }},'−'),
+        h('span',{}, pdpState.qty),
+        h('button',{onClick:()=>{ pdpState.qty=clamp(pdpState.qty+1,1,p.stock); render(); }},'+'))),
+    h('button',{class:'btn block lg',disabled:p.stock<=0,onClick:()=>addToCart(p.id,{...pdpState.opts},pdpState.qty)},'🛒 Sepete Ekle'),
+    h('button',{class:'btn block ghost',disabled:p.stock<=0,onClick:()=>{ addToCart(p.id,{...pdpState.opts},pdpState.qty); go('#/sepet'); }},'Hemen Al'),
+    h('button',{class:'btn block soft',onClick:()=>toggleFav(p.id)}, isFav(p.id)?'❤️ Favorilerde':'🤍 Favorilere Ekle'),
+    h('div',{class:'trust'},
+      h('div',{},'🚚 ', p.freeShipping?'Kargo Bedava':(money(DB.settings.shippingFee)+' kargo'), ' · ', p.fastDelivery?'Yarın kapında':'2-4 iş günü'),
+      h('div',{},'↩️ 30 gün içinde koşulsuz iade'),
+      h('div',{},'🔒 Güvenli ödeme · 🛡️ Orijinal ürün garantisi')),
+    h('div',{style:{borderTop:'1px solid var(--border)',paddingTop:'10px'}},
+      h('div',{class:'lab',style:{fontWeight:'800',marginBottom:'4px'}},'💳 Taksit Seçenekleri'), ...installments));
+
+  const tabBtn=(k,l)=>h('button',{class:pdpState.tab===k?'on':'',onClick:()=>{ pdpState.tab=k; render(); }}, l);
+  let tabBody;
+  if(pdpState.tab==='aciklama'){
+    tabBody=h('div',{}, h('p',{style:{lineHeight:1.7}}, p.desc),
+      h('ul',{style:{lineHeight:1.9,marginTop:'10px'}},
+        h('li',{},'Orijinal ürün — '+p.brand+' garantili'),
+        h('li',{},'Özenli paketleme ve hızlı kargo'),
+        h('li',{},'Kolay iade & değişim süreci')));
+  } else if(pdpState.tab==='ozellikler'){
+    tabBody=h('table',{class:'spectable'}, ...Object.entries(p.specs).map(([k,v])=>h('tr',{}, h('td',{},k), h('td',{},v))));
+  } else if(pdpState.tab==='yorumlar'){
+    const dist=[5,4,3,2,1].map(st=>({st, n:revs.filter(r=>r.rating===st).length}));
+    const maxN=Math.max(1,...dist.map(d=>d.n));
+    tabBody=h('div',{},
+      h('div',{class:'revsum'},
+        h('div',{class:'bigrate'}, h('div',{class:'n'}, lr.avg.toFixed(1)), h('div',{class:'stars'}, h('span',{class:'s'},starStr(lr.avg))), h('div',{class:'muted',style:{fontSize:'12px'}}, num(revs.length)+' değerlendirme')),
+        h('div',{}, ...dist.map(d=>h('div',{class:'rbar'}, h('span',{},d.st+'★'), h('span',{class:'track'}, h('span',{class:'fill',style:{width:(d.n/maxN*100)+'%'}})), h('span',{class:'muted'},d.n))))),
+      h('button',{class:'btn soft sm',style:{marginBottom:'14px'},onClick:()=>openReviewForm(p)},'✍️ Değerlendirme Yaz'),
+      revs.length? h('div',{}, ...revs.map(r=>h('div',{class:'review'},
+        h('div',{class:'top'}, h('div',{}, h('span',{class:'who'}, r.user), h('span',{class:'stars',style:{marginLeft:'8px'}}, h('span',{class:'s'},starStr(r.rating)))), h('span',{class:'muted',style:{fontSize:'12px'}}, relDate(r.date))),
+        h('p',{style:{margin:'4px 0 6px'}}, r.text),
+        h('span',{class:'faint',style:{fontSize:'12px'}}, '👍 '+r.helpful+' kişi faydalı buldu'))))
+        : h('p',{class:'muted'},'Henüz değerlendirme yok. İlk yorumu siz yapın!'));
+  } else {
+    tabBody=h('div',{},
+      h('div',{class:'review'}, h('b',{},'Soru: '), 'Kargoya ne zaman verilir?', h('p',{class:'muted',style:{margin:'6px 0 0'}}, 'Satıcı: Siparişler 24 saat içinde kargoya teslim edilir.')),
+      h('div',{class:'review'}, h('b',{},'Soru: '), 'Faturası kurumsal kesilir mi?', h('p',{class:'muted',style:{margin:'6px 0 0'}}, 'Satıcı: Evet, sipariş notuna vergi bilgilerinizi ekleyebilirsiniz.')),
+      h('button',{class:'btn soft sm',onClick:()=>toast('Soru satıcıya iletildi (demo)','ok')},'Satıcıya Soru Sor'));
+  }
+
+  const related=DB.products.filter(x=>x.active && x.id!==p.id && x.category===p.category)
+    .sort((a,b)=>liveRating(b).avg-liveRating(a).avg).slice(0,10);
+
+  return h('div',{class:'wrap'},
+    h('div',{class:'row',style:{margin:'2px 0 14px',flexWrap:'wrap',fontSize:'13px'}},
+      h('a',{href:'#/',class:'muted'},'Anasayfa'), h('span',{class:'muted'},'/'),
+      h('a',{href:'#/kategori/'+p.category,class:'muted'}, (catBySlug(p.category)||{}).name), h('span',{class:'muted'},'/'),
+      h('span',{}, p.name)),
+    h('div',{class:'pdp'},
+      gallery,
+      h('div',{class:'info'},
+        h('div',{class:'brand',style:{fontWeight:'800',color:'var(--muted)',textTransform:'uppercase',fontSize:'12px'}}, p.brand),
+        h('h1',{}, p.name),
+        h('div',{class:'row',style:{gap:'12px',flexWrap:'wrap'}},
+          h('span',{class:'stars'}, h('span',{class:'s'},starStr(lr.avg)), ' '+lr.avg.toFixed(1)+' ('+num(revs.length||p.reviewCount)+' değerlendirme)'),
+          h('span',{class:'muted'},'· '+num(p.sold)+'+ satıldı')),
+        h('div',{class:'sellerline muted',style:{margin:'8px 0'}}, 'Satıcı: ', h('b',{style:{cursor:'pointer'},onClick:()=>go('#/magaza/'+seller.id)}, seller.emoji+' '+seller.name), ' · ', h('span',{class:'stars'}, h('span',{class:'s'},starStr(seller.rating)), ' '+seller.rating)),
+        ...optionEls,
+        h('div',{style:{marginTop:'8px'},class:'muted'}, '📍 Tahmini teslimat: ', h('b',{}, p.fastDelivery?'yarın':fmtDate(now()+3*DAY)))),
+      buybox),
+    h('div',{class:'tabs'},
+      tabBtn('aciklama','Ürün Açıklaması'), tabBtn('ozellikler','Özellikler'),
+      tabBtn('yorumlar','Değerlendirmeler ('+ (revs.length||p.reviewCount) +')'), tabBtn('sss','Soru & Cevap')),
+    tabBody,
+    related.length? h('section',{class:'section'}, h('h2',{style:{marginBottom:'12px'}},'Bunları da beğenebilirsin'),
+      h('div',{class:'pgrid wide'}, ...related.map(ProductCard))) : null);
+}
+function openReviewForm(p){
+  let rr=5;
+  const starsPick=h('div',{class:'row',style:{fontSize:'28px',cursor:'pointer'}});
+  function drawStars(){ starsPick.innerHTML=''; for(let i=1;i<=5;i++){ const s=h('span',{onClick:()=>{ rr=i; drawStars(); }}, i<=rr?'★':'☆'); s.style.color=i<=rr?'var(--star)':'var(--faint)'; starsPick.appendChild(s); } }
+  drawStars();
+  const txt=h('textarea',{class:'input',placeholder:'Ürün hakkındaki düşünceleriniz...'});
+  openModal(modalShell('“'+p.name+'” için değerlendirme',
+    h('div',{}, h('div',{class:'field'}, h('label',{},'Puanınız'), starsPick),
+      h('div',{class:'field'}, h('label',{},'Yorumunuz'), txt),
+      h('button',{class:'btn block',onClick:()=>{
+        DB.reviews.push({id:uid('rev'),productId:p.id,user:(DB.currentUser&&DB.currentUser.name)||'Trenda Müşterisi',
+          rating:rr,text:txt.value||'(yorum yok)',date:now(),approved:true,helpful:0});
+        p.reviewCount++; saveDB(); closeModal(); toast('Değerlendirmeniz eklendi, teşekkürler!','ok'); render();
+      }},'Gönder'))));
+}
+
+/* ===================== STORE PAGE ===================== */
+function StorePage(){
+  const s=sellerById(state.params.id); if(!s) return NotFound();
+  const prods=DB.products.filter(p=>p.active && p.sellerId===s.id);
+  const following=DB.followedStores.includes(s.id);
+  const avgRating=prods.length? prods.reduce((a,p)=>a+liveRating(p).avg,0)/prods.length : s.rating;
+  return h('div',{class:'wrap'},
+    h('div',{class:'storehero',style:{background:`linear-gradient(120deg,${s.cA},${s.cB})`}},
+      fillPhoto(h('div',{class:'logo-badge'}), s.logo, s.emoji),
+      h('div',{class:'grow'},
+        h('h1',{}, s.name),
+        h('div',{class:'row',style:{gap:'14px',flexWrap:'wrap',marginTop:'4px'}},
+          h('span',{class:'stars',style:{color:'#fff'}}, h('span',{style:{color:'#ffe08a'}},starStr(avgRating)), ' '+avgRating.toFixed(1)),
+          h('span',{}, '👥 '+num(s.followers)+' takipçi'),
+          h('span',{}, '📦 '+prods.length+' ürün'),
+          h('span',{}, '📅 '+s.since+"'den beri")),
+        h('p',{style:{opacity:.95,margin:'8px 0 0',maxWidth:'640px'}}, s.desc)),
+      h('button',{class:'btn',style:{background:'#fff',color:'#111'},onClick:()=>toggleFollow(s.id)}, following?'✓ Takip Ediliyor':'+ Takip Et')),
+    h('div',{class:'section-head'}, h('h2',{},'Mağaza Ürünleri'), h('span',{class:'muted'}, prods.length+' ürün')),
+    h('div',{class:'pgrid wide'}, ...prods.map(ProductCard)));
+}
+
+/* ===================== CART ===================== */
+let cartCoupon='';
+function CartPage(){
+  const t=cartTotals(cartCoupon);
+  if(!t.items.length) return h('div',{class:'wrap'}, h('div',{class:'emptybox'},
+    h('div',{class:'e'},'🛒'), h('h2',{style:{margin:'8px 0'}},'Sepetiniz boş'),
+    h('p',{class:'muted'},'Beğendiğiniz ürünleri sepete ekleyin, buradan kolayca tamamlayın.'),
+    h('a',{class:'btn',href:'#/kategori/all'},'Alışverişe Başla')));
+
+  const rows=t.items.map(({it,p,line},idx)=>h('div',{class:'cartrow'},
+    fillPhoto(h('div',{class:'th',style:{background:`linear-gradient(135deg,${p.cA},${p.cB})`},onClick:()=>go('#/urun/'+p.id)}), pImg(p), p.emoji),
+    h('div',{},
+      h('div',{class:'brand',style:{fontSize:'11px',color:'var(--muted)',fontWeight:'800',textTransform:'uppercase'}}, p.brand),
+      h('div',{style:{fontWeight:'600',cursor:'pointer'},onClick:()=>go('#/urun/'+p.id)}, p.name),
+      Object.keys(it.options||{}).length? h('div',{class:'muted',style:{fontSize:'12px',margin:'2px 0'}}, Object.entries(it.options).map(([k,v])=>k+': '+v).join(' · ')):null,
+      h('div',{class:'row',style:{gap:'14px',marginTop:'8px'}},
+        h('div',{class:'qtystep'},
+          h('button',{onClick:()=>setCartQty(idx,it.qty-1)},'−'), h('span',{},it.qty),
+          h('button',{onClick:()=>setCartQty(idx,it.qty+1)},'+')),
+        h('span',{class:'link',onClick:()=>removeCart(idx)},'Kaldır'),
+        h('span',{class:'link',onClick:()=>{ toggleFav(p.id); removeCart(idx); }},'Favorilere taşı'))),
+    h('div',{class:'rt'},
+      h('div',{class:'price'}, money(line)),
+      it.qty>1? h('div',{class:'faint',style:{fontSize:'12px'}}, money(p.price)+' / adet'):null)));
+
+  const summary=SummaryBox(t, true);
+  return h('div',{class:'wrap'},
+    h('div',{class:'spread',style:{margin:'4px 0 16px'}}, h('h1',{},'Sepetim ('+cartCount()+' ürün)'),
+      h('span',{class:'link',onClick:()=>{ if(confirm('Sepeti boşaltmak istiyor musunuz?')){ clearCart(); render(); } }},'Sepeti Boşalt')),
+    h('div',{class:'cartlayout'}, h('div',{}, ...rows), summary));
+}
+function SummaryBox(t, showCheckout){
+  const thr=DB.settings.freeShippingThreshold;
+  const box=h('div',{class:'summary'},
+    t.freeShipRemain>0? h('div',{class:'freeship'},
+      '🚚 '+money(t.freeShipRemain)+' daha ekleyin, kargo bedava!',
+      h('div',{class:'track'}, h('div',{class:'fill',style:{width:clamp(t.subtotal/thr*100,0,100)+'%'}})))
+      : h('div',{class:'freeship'},'🎉 Tebrikler, kargo bedava!'),
+    h('h3',{style:{marginBottom:'6px'}},'Sipariş Özeti'),
+    h('div',{class:'line'}, h('span',{},'Ara Toplam'), h('span',{}, money(t.subtotal))),
+    t.discount>0? h('div',{class:'line',style:{color:'var(--green)'}}, h('span',{},'İndirim'), h('span',{}, '−'+money(t.discount))):null,
+    h('div',{class:'line'}, h('span',{},'Kargo'), h('span',{}, t.shipping===0?'Bedava':money(t.shipping))),
+    h('div',{class:'couponrow'},
+      h('input',{placeholder:'İndirim kuponu',value:cartCoupon,onInput:e=>cartCoupon=e.target.value}),
+      h('button',{class:'btn sm',onClick:()=>render()},'Uygula')),
+    t.couponMsg? h('div',{class:'pill '+(t.couponMsg.err?'red':'green'),style:{marginBottom:'8px'}}, t.couponMsg.err||t.couponMsg.ok):null,
+    h('div',{class:'line total'}, h('span',{},'Toplam'), h('span',{}, money(t.total))),
+    showCheckout? h('button',{class:'btn block lg',style:{marginTop:'10px'},onClick:()=>{ if(!DB.currentUser){ openLogin(); return; } go('#/odeme'); }},'Alışverişi Tamamla') : null,
+    h('div',{class:'faint center',style:{fontSize:'11px',marginTop:'8px'}},'🔒 256-bit SSL ile güvenli ödeme'));
+  return box;
+}
+
+/* ===================== CHECKOUT ===================== */
+const checkout={ step:1, addrIdx:0, newAddr:false, delivery:0, pay:'card', installment:1,
+  card:{name:'',num:'',exp:'',cvv:''}, coupon:'' };
+const DELIVERIES=[
+  {name:'Standart Teslimat', fee:0, eta:'2-4 iş günü', icon:'📦'},
+  {name:'Hızlı Teslimat', fee:29.90, eta:'1-2 iş günü', icon:'⚡'},
+  {name:'Aynı Gün Teslimat', fee:59.90, eta:'bugün 20:00’a kadar', icon:'🚀'},
+];
+function ensureAddress(){
+  if(!DB.addresses.length && DB.currentUser){
+    DB.addresses.push({id:uid('ad'),title:'Ev', name:DB.currentUser.name, phone:'05001234567',
+      city:'İstanbul', district:'Kadıköy', line:'Örnek Mahallesi, 1234. Sokak No:5 D:8', zip:'34000'});
+    saveDB();
+  }
+}
+function CheckoutPage(){
+  if(!DB.currentUser){ openLogin(); return h('div',{class:'wrap'}, h('p',{},'Devam etmek için giriş yapın.')); }
+  ensureAddress();
+  const baseT=cartTotals(checkout.coupon || cartCoupon);
+  if(!baseT.items.length) return h('div',{class:'wrap'}, h('div',{class:'emptybox'}, h('div',{class:'e'},'🛒'), h('p',{},'Sepetiniz boş.'), h('a',{class:'btn',href:'#/kategori/all'},'Alışverişe Başla')));
+  const delFee=DELIVERIES[checkout.delivery].fee;
+  const grand=baseT.total + delFee;
+
+  const stepper=h('div',{class:'stepper'}, ...['Adres','Kargo','Ödeme','Onay'].map((l,i)=>{
+    const n=i+1; const cls=checkout.step===n?'on':(checkout.step>n?'done':'');
+    return h('div',{class:'st '+cls,onClick:()=>{ if(n<checkout.step){ checkout.step=n; render(); } }},
+      h('span',{class:'n'}, checkout.step>n?'✓':n), l);
+  }));
+
+  let body;
+  if(checkout.step===1){
+    body=h('div',{},
+      h('h3',{style:{marginBottom:'12px'}},'Teslimat Adresi'),
+      ...DB.addresses.map((a,i)=>h('div',{class:'addrcard'+(checkout.addrIdx===i?' on':''),onClick:()=>{ checkout.addrIdx=i; render(); }},
+        h('div',{class:'spread'}, h('span',{class:'name'}, a.title+' — '+a.name),
+          h('span',{class:'link',onClick:e=>{ e.stopPropagation(); openAddrForm(i); }},'Düzenle')),
+        h('div',{class:'muted',style:{fontSize:'13px',marginTop:'4px'}}, a.line+', '+a.district+'/'+a.city+' · '+a.phone))),
+      h('button',{class:'btn ghost sm',onClick:()=>openAddrForm(-1)},'+ Yeni Adres Ekle'),
+      h('button',{class:'btn block lg',style:{marginTop:'16px'},onClick:()=>{ checkout.step=2; render(); }},'Kargo Adımına Geç'));
+  } else if(checkout.step===2){
+    body=h('div',{},
+      h('h3',{style:{marginBottom:'12px'}},'Kargo Seçeneği'),
+      ...DELIVERIES.map((d,i)=>h('div',{class:'deliv'+(checkout.delivery===i?' on':''),onClick:()=>{ checkout.delivery=i; render(); }},
+        h('div',{}, h('b',{}, d.icon+' '+d.name), h('div',{class:'muted',style:{fontSize:'12px'}}, 'Tahmini: '+d.eta)),
+        h('b',{}, d.fee===0?'Bedava':money(d.fee)))),
+      h('div',{class:'row',style:{marginTop:'16px',gap:'10px'}},
+        h('button',{class:'btn ghost',onClick:()=>{ checkout.step=1; render(); }},'‹ Geri'),
+        h('button',{class:'btn grow lg',onClick:()=>{ checkout.step=3; render(); }},'Ödeme Adımına Geç')));
+  } else if(checkout.step===3){
+    const c=checkout.card;
+    const cardFace=h('div',{class:'cardface'},
+      h('div',{}, h('span',{style:{fontSize:'12px',opacity:.8}},'TRENDA BANK'), h('span',{style:{float:'right'}},'💳')),
+      h('div',{class:'num'}, (c.num||'•••• •••• •••• ••••')),
+      h('div',{class:'spread',style:{fontSize:'12px'}}, h('span',{}, (c.name||'AD SOYAD').toUpperCase()), h('span',{}, c.exp||'AA/YY')));
+    const payOpt=(k,label,desc)=>h('div',{class:'payopt'+(checkout.pay===k?' on':''),onClick:()=>{ checkout.pay=k; render(); }},
+      h('b',{}, label), h('div',{class:'muted',style:{fontSize:'12px'}}, desc));
+    body=h('div',{},
+      h('h3',{style:{marginBottom:'12px'}},'Ödeme Yöntemi'),
+      payOpt('card','💳 Kredi / Banka Kartı','Tek çekim veya taksitli ödeyin'),
+      payOpt('cod','📦 Kapıda Ödeme','Nakit veya kart · +9,90 ₺ hizmet bedeli'),
+      payOpt('eft','🏦 Havale / EFT','Sipariş sonrası hesap bilgileri iletilir'),
+      checkout.pay==='card'? h('div',{},
+        cardFace,
+        h('div',{class:'field'}, h('label',{},'Kart Üzerindeki İsim'), h('input',{class:'input',value:c.name,onInput:e=>{ c.name=e.target.value; $('.cardface .spread span').textContent=(c.name||'AD SOYAD').toUpperCase(); }})),
+        h('div',{class:'field'}, h('label',{},'Kart Numarası'), h('input',{class:'input',inputmode:'numeric',placeholder:'0000 0000 0000 0000',maxlength:'19',value:c.num,
+          onInput:e=>{ let v=e.target.value.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim(); c.num=v; e.target.value=v; $('.cardface .num').textContent=v||'•••• •••• •••• ••••'; }})),
+        h('div',{class:'grid2'},
+          h('div',{class:'field'}, h('label',{},'Son Kullanma'), h('input',{class:'input',placeholder:'AA/YY',maxlength:'5',value:c.exp,
+            onInput:e=>{ let v=e.target.value.replace(/\D/g,'').slice(0,4); if(v.length>2)v=v.slice(0,2)+'/'+v.slice(2); c.exp=v; e.target.value=v; }})),
+          h('div',{class:'field'}, h('label',{},'CVV'), h('input',{class:'input',inputmode:'numeric',maxlength:'3',value:c.cvv,onInput:e=>{ c.cvv=e.target.value.replace(/\D/g,'').slice(0,3); e.target.value=c.cvv; }}))),
+        h('div',{class:'field'}, h('label',{},'Taksit'),
+          h('select',{class:'select',onChange:e=>{ checkout.installment=+e.target.value; render(); }},
+            ...[1,3,6,9,12].filter(n=>n<=DB.settings.installmentMax).map(n=>h('option',{value:n,selected:checkout.installment===n},
+              n===1?'Tek Çekim — '+money(grand): n+' Taksit — '+money(grand/n)+' x'+n)))),
+        h('p',{class:'faint',style:{fontSize:'12px'}},'ℹ️ Bu bir demodur; girilen kart bilgileri kaydedilmez, gerçek çekim yapılmaz.')
+      ):null,
+      h('div',{class:'row',style:{marginTop:'16px',gap:'10px'}},
+        h('button',{class:'btn ghost',onClick:()=>{ checkout.step=2; render(); }},'‹ Geri'),
+        h('button',{class:'btn grow lg',onClick:()=>{ checkout.step=4; render(); }},'Siparişi Gözden Geçir')));
+  } else {
+    const a=DB.addresses[checkout.addrIdx]||DB.addresses[0];
+    body=h('div',{},
+      h('h3',{style:{marginBottom:'12px'}},'Siparişi Onayla'),
+      h('div',{class:'panel'}, h('b',{},'📍 Teslimat: '), a? (a.line+', '+a.district+'/'+a.city) : '—'),
+      h('div',{class:'panel'}, h('b',{},'🚚 Kargo: '), DELIVERIES[checkout.delivery].name+' ('+DELIVERIES[checkout.delivery].eta+')'),
+      h('div',{class:'panel'}, h('b',{},'💳 Ödeme: '), checkout.pay==='card'?('Kredi Kartı ****'+(checkout.card.num.replace(/\s/g,'').slice(-4)||'0000')+' · '+(checkout.installment===1?'Tek Çekim':checkout.installment+' Taksit')): checkout.pay==='cod'?'Kapıda Ödeme':'Havale/EFT'),
+      h('div',{class:'panel'}, h('b',{},'📦 Ürünler'),
+        h('div',{style:{marginTop:'8px'}}, ...baseT.items.map(({it,p})=>h('div',{class:'row spread',style:{padding:'4px 0'}},
+          h('span',{}, p.emoji+' '+p.name+'  ×'+it.qty), h('b',{}, money(p.price*it.qty)))))),
+      h('label',{class:'checkline'}, h('input',{type:'checkbox',id:'agree'}), 'Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi’ni okudum, onaylıyorum.'),
+      h('div',{class:'row',style:{marginTop:'12px',gap:'10px'}},
+        h('button',{class:'btn ghost',onClick:()=>{ checkout.step=3; render(); }},'‹ Geri'),
+        h('button',{class:'btn grow lg green',onClick:()=>placeOrder(baseT)},'✓ Siparişi Tamamla ('+money(grand + (checkout.pay==='cod'?9.90:0))+')')));
+  }
+
+  const sideT={...baseT, shipping:baseT.shipping+delFee, total:grand + (checkout.pay==='cod'?9.90:0)};
+  const side=h('div',{class:'summary'},
+    h('h3',{style:{marginBottom:'8px'}},'Ödenecek Tutar'),
+    h('div',{class:'line'}, h('span',{},'Ara Toplam'), h('span',{}, money(baseT.subtotal))),
+    baseT.discount>0? h('div',{class:'line',style:{color:'var(--green)'}}, h('span',{},'Kupon İndirimi'), h('span',{},'−'+money(baseT.discount))):null,
+    h('div',{class:'line'}, h('span',{},'Kargo'), h('span',{}, (baseT.shipping+delFee)===0?'Bedava':money(baseT.shipping+delFee))),
+    checkout.pay==='cod'? h('div',{class:'line'}, h('span',{},'Kapıda Ödeme'), h('span',{},money(9.90))):null,
+    h('div',{class:'line total'}, h('span',{},'Toplam'), h('span',{}, money(sideT.total))),
+    checkout.pay==='card'&&checkout.installment>1? h('div',{class:'faint',style:{fontSize:'12px'}}, checkout.installment+' x '+money(sideT.total/checkout.installment)):null);
+
+  return h('div',{class:'wrap'},
+    h('h1',{style:{margin:'4px 0 16px'}},'Ödeme'),
+    stepper,
+    h('div',{class:'cartlayout'}, h('div',{}, body), side));
+}
+function openAddrForm(idx){
+  const a= idx>=0? {...DB.addresses[idx]} : {id:uid('ad'),title:'',name:DB.currentUser.name,phone:'',city:'',district:'',line:'',zip:''};
+  const f={};
+  const mk=(k,label,ph)=>{ const i=h('input',{class:'input',value:a[k]||'',placeholder:ph||'',onInput:e=>f[k]=e.target.value}); f[k]=a[k]||''; return h('div',{class:'field'}, h('label',{},label), i); };
+  openModal(modalShell(idx>=0?'Adresi Düzenle':'Yeni Adres',
+    h('div',{},
+      mk('title','Adres Başlığı','Ev, İş...'),
+      mk('name','Ad Soyad'),
+      mk('phone','Telefon','05XX XXX XX XX'),
+      h('div',{class:'grid2'}, mk('city','İl'), mk('district','İlçe')),
+      mk('line','Açık Adres'),
+      mk('zip','Posta Kodu'),
+      h('button',{class:'btn block',onClick:()=>{
+        const rec={...a,...f};
+        if(idx>=0) DB.addresses[idx]=rec; else DB.addresses.push(rec);
+        saveDB(); closeModal(); toast('Adres kaydedildi','ok'); render();
+      }},'Kaydet'))));
+}
+function placeOrder(t){
+  if(!$('#agree') || !$('#agree').checked){ toast('Lütfen sözleşmeyi onaylayın','err'); return; }
+  const a=DB.addresses[checkout.addrIdx]||DB.addresses[0];
+  const delFee=DELIVERIES[checkout.delivery].fee;
+  const codFee=checkout.pay==='cod'?9.90:0;
+  const order={
+    id:uid('ord'), code:'TRN'+String(Math.floor(100000+Math.random()*899999)),
+    userEmail:DB.currentUser.email, userName:DB.currentUser.name, date:now(),
+    items:t.items.map(({it,p})=>({productId:p.id,name:p.name,brand:p.brand,emoji:p.emoji,cA:p.cA,cB:p.cB,image:pImg(p),price:p.price,qty:it.qty,options:it.options,sellerId:p.sellerId})),
+    address:{title:a.title,name:a.name,city:a.city,line:a.line+', '+a.district,phone:a.phone},
+    delivery:{name:DELIVERIES[checkout.delivery].name, fee:delFee, eta:DELIVERIES[checkout.delivery].eta},
+    payment:{method: checkout.pay==='card'?'Kredi Kartı':checkout.pay==='cod'?'Kapıda Ödeme':'Havale/EFT',
+      last4: checkout.pay==='card'? (checkout.card.num.replace(/\s/g,'').slice(-4)||'0000') : null,
+      installment: checkout.pay==='card'? checkout.installment : 1},
+    totals:{subtotal:t.subtotal, discount:t.discount, shipping:t.shipping+delFee+codFee, total:t.total+delFee+codFee},
+    coupon: t.coupon? t.coupon.code : null,
+    status:'Sipariş Alındı',
+    history:[{status:'Sipariş Alındı', at:now()}],
+    trackingNo:null,
+  };
+  // decrement stock, bump sold
+  order.items.forEach(oi=>{ const p=productById(oi.productId); if(p){ p.stock=Math.max(0,p.stock-oi.qty); p.sold+=oi.qty; } });
+  if(t.coupon) t.coupon.used=(t.coupon.used||0)+1;
+  DB.orders.unshift(order);
+  clearCart(); cartCoupon=''; checkout.step=1; checkout.card={name:'',num:'',exp:'',cvv:''}; checkout.coupon='';
+  saveDB();
+  location.hash='#/siparis/'+order.id;
+  state.route='order'; state.params={id:order.id};
+  render(); window.scrollTo(0,0);
+}
+
+/* ===================== ORDER DETAIL / TRACKING ===================== */
+const ORDER_FLOW=['Sipariş Alındı','Hazırlanıyor','Kargoya Verildi','Dağıtımda','Teslim Edildi'];
+const STATUS_COLORS={
+  'Sipariş Alındı':['#eef2ff','#3b5bdb'],'Hazırlanıyor':['#fff3bf','#b08900'],
+  'Kargoya Verildi':['#e3fafc','#0c8599'],'Dağıtımda':['#d3f9d8','#2f9e44'],
+  'Teslim Edildi':['#d3f9d8','#2b8a3e'],'İptal Edildi':['#ffe3e3','#c92a2a'],
+  'İade Talebi':['#ffe8cc','#d9480f'],'İade Edildi':['#f1f3f5','#495057'],
+};
+function stBadge(st){ const c=STATUS_COLORS[st]||['#f1f3f5','#495057']; return h('span',{class:'st-badge',style:{background:c[0],color:c[1]}}, st); }
+function OrderPage(){
+  const o=DB.orders.find(x=>x.id===state.params.id);
+  if(!o) return NotFound();
+  const justPlaced = now()-o.date < 20000;
+  const isFlow = ORDER_FLOW.includes(o.status);
+  const curIdx = ORDER_FLOW.indexOf(o.status);
+  const tl=isFlow? ORDER_FLOW.map((s,i)=>{
+    const done=i<curIdx, cur=i===curIdx;
+    const at=(o.history.find(x=>x.status===s)||{}).at;
+    return h('div',{class:'tl '+(done?'done':cur?'cur':'')},
+      h('div',{class:'dot'}, done?'✓':cur?'●':(i+1)),
+      h('div',{}, h('div',{class:'lab'}, s), h('div',{class:'at'}, at? fmtDateTime(at) : 'bekleniyor')));
+  }) : [h('div',{class:'tl cur'}, h('div',{class:'dot'},'!'), h('div',{}, h('div',{class:'lab'}, o.status), h('div',{class:'at'}, fmtDateTime(o.history[o.history.length-1].at))))];
+
+  return h('div',{class:'wrap'},
+    justPlaced? h('div',{class:'success'},
+      h('div',{class:'big'},'🎉'),
+      h('h1',{style:{margin:'8px 0'}},'Siparişiniz Alındı!'),
+      h('p',{class:'muted'},'Sipariş numaranız: '), h('h2',{style:{color:'var(--accent)'}}, o.code),
+      h('p',{class:'muted'},'Onay e-postası '+o.userEmail+' adresine gönderildi (demo).')) : h('h1',{style:{margin:'6px 0 4px'}},'Sipariş '+o.code),
+    h('div',{class:'spread',style:{margin:'10px 0 18px',flexWrap:'wrap',gap:'10px'}},
+      h('div',{class:'row',style:{gap:'10px'}}, stBadge(o.status), h('span',{class:'muted'}, fmtDate(o.date))),
+      h('div',{class:'row',style:{gap:'8px'}},
+        h('a',{class:'btn ghost sm',href:'#/hesabim/siparislerim'},'Siparişlerim'),
+        h('button',{class:'btn ghost sm',onClick:()=>{ o.items.forEach(oi=>addToCart(oi.productId,oi.options||{},oi.qty)); go('#/sepet'); }},'🔁 Tekrar Sipariş Ver'))),
+    h('div',{class:'cartlayout'},
+      h('div',{},
+        h('div',{class:'panel'},
+          h('h3',{},'📦 Kargo Takibi'),
+          o.trackingNo? h('p',{class:'muted',style:{marginTop:0}}, 'Kargo Takip No: ', h('b',{}, o.trackingNo)) : h('p',{class:'muted',style:{marginTop:0}},'Ürünleriniz hazırlanıyor, takip numarası yakında eklenecek.'),
+          h('div',{class:'timeline'}, ...tl),
+          isFlow && o.status!=='Teslim Edildi'? h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap'}},
+            justPlaced||o.status==='Sipariş Alındı'? h('button',{class:'btn ghost sm red',onClick:()=>{ o.status='İptal Edildi'; o.history.push({status:'İptal Edildi',at:now()}); saveDB(); render(); toast('Sipariş iptal edildi'); }},'Siparişi İptal Et'):null) : null,
+          o.status==='Teslim Edildi'? h('button',{class:'btn ghost sm',onClick:()=>{ o.status='İade Talebi'; o.history.push({status:'İade Talebi',at:now()}); saveDB(); render(); toast('İade talebiniz alındı','ok'); }},'↩️ İade Talebi Oluştur'):null),
+        h('div',{class:'panel'},
+          h('h3',{},'Ürünler'),
+          ...o.items.map(oi=>h('div',{class:'row spread',style:{padding:'8px 0',borderBottom:'1px solid var(--border)'}},
+            h('div',{class:'row',style:{gap:'10px'}},
+              thumbBox(44, oi.image, oi.emoji, oi.cA, oi.cB),
+              h('div',{}, h('div',{style:{fontWeight:'600'}}, oi.name),
+                h('div',{class:'muted',style:{fontSize:'12px'}}, oi.brand + (Object.keys(oi.options||{}).length? ' · '+Object.values(oi.options).join(', '):'') + ' · '+oi.qty+' adet'))),
+            h('b',{}, money(oi.price*oi.qty)))))),
+      h('div',{class:'summary'},
+        h('h3',{style:{marginBottom:'8px'}},'Ödeme Özeti'),
+        h('div',{class:'line'}, h('span',{},'Ara Toplam'), h('span',{}, money(o.totals.subtotal))),
+        o.totals.discount>0? h('div',{class:'line',style:{color:'var(--green)'}}, h('span',{},'İndirim'+(o.coupon?' ('+o.coupon+')':'')), h('span',{},'−'+money(o.totals.discount))):null,
+        h('div',{class:'line'}, h('span',{},'Kargo'), h('span',{}, o.totals.shipping===0?'Bedava':money(o.totals.shipping))),
+        h('div',{class:'line total'}, h('span',{},'Toplam'), h('span',{}, money(o.totals.total))),
+        h('div',{class:'divider'}),
+        h('div',{class:'muted',style:{fontSize:'13px',lineHeight:1.8}},
+          h('div',{}, '💳 '+o.payment.method + (o.payment.last4?' ****'+o.payment.last4:'') + (o.payment.installment>1?' · '+o.payment.installment+' taksit':'')),
+          h('div',{}, '🚚 '+o.delivery.name),
+          h('div',{}, '📍 '+o.address.name+', '+o.address.line+', '+o.address.city),
+          h('div',{}, '📞 '+o.address.phone)))));
+}
+
+/* ===================== ACCOUNT ===================== */
+function AccountPage(){
+  if(!DB.currentUser){ openLogin(); return h('div',{class:'wrap'}, h('p',{},'Giriş yapın.')); }
+  const tab=state.params.tab||'profil';
+  const nav=(k,ic,l)=>h('a',{class:tab===k?'on':'',onClick:()=>go('#/hesabim/'+k)}, h('span',{},ic), h('span',{},l));
+  const myOrders=DB.orders.filter(o=>o.userEmail===DB.currentUser.email);
+  let panel;
+  if(tab==='profil'){
+    const u=DB.currentUser;
+    const nameI=h('input',{class:'input',value:u.name}); const mailI=h('input',{class:'input',value:u.email});
+    panel=h('div',{},
+      h('h2',{style:{marginBottom:'14px'}},'Hesap Bilgilerim'),
+      h('div',{class:'panel',style:{maxWidth:'440px'}},
+        h('div',{class:'field'}, h('label',{},'Ad Soyad'), nameI),
+        h('div',{class:'field'}, h('label',{},'E-posta'), mailI),
+        h('button',{class:'btn',onClick:()=>{ u.name=nameI.value; u.email=mailI.value; saveDB(); toast('Bilgiler güncellendi','ok'); render(); }},'Kaydet')),
+      h('div',{class:'kpis',style:{marginTop:'16px'}},
+        h('div',{class:'kpi'}, h('div',{class:'k'},'Sipariş'), h('div',{class:'v'}, myOrders.length)),
+        h('div',{class:'kpi'}, h('div',{class:'k'},'Favori'), h('div',{class:'v'}, favCount())),
+        h('div',{class:'kpi'}, h('div',{class:'k'},'Toplam Harcama'), h('div',{class:'v',style:{fontSize:'20px'}}, money(myOrders.reduce((a,o)=>a+o.totals.total,0))))),
+      h('button',{class:'btn ghost',style:{marginTop:'16px'},onClick:()=>{ DB.currentUser=null; saveDB(); toast('Çıkış yapıldı'); go('#/'); }},'Çıkış Yap'));
+  } else if(tab==='siparislerim'){
+    panel=h('div',{},
+      h('h2',{style:{marginBottom:'14px'}},'Siparişlerim'),
+      myOrders.length? h('div',{}, ...myOrders.map(o=>h('div',{class:'orderrow'},
+        h('div',{class:'oh'},
+          h('span',{}, '📅 '+fmtDate(o.date)+'  ·  '+o.code),
+          h('span',{}, stBadge(o.status))),
+        h('div',{class:'ob'},
+          h('div',{class:'mini'}, ...o.items.slice(0,4).map(oi=>thumbBox(46, oi.image, oi.emoji, oi.cA, oi.cB))),
+          h('div',{class:'grow'}, h('div',{style:{fontWeight:'600'}}, o.items[0].name + (o.items.length>1? ' +'+(o.items.length-1)+' ürün':'')),
+            h('div',{class:'muted',style:{fontSize:'13px'}}, o.items.reduce((a,i)=>a+i.qty,0)+' adet · '+money(o.totals.total))),
+          h('a',{class:'btn ghost sm',href:'#/siparis/'+o.id},'Detay / Takip')))))
+      : h('div',{class:'emptybox'}, h('div',{class:'e'},'📭'), h('p',{},'Henüz siparişiniz yok.'), h('a',{class:'btn',href:'#/kategori/all'},'Alışverişe Başla')));
+  } else if(tab==='adreslerim'){
+    ensureAddress();
+    panel=h('div',{},
+      h('div',{class:'spread',style:{marginBottom:'14px'}}, h('h2',{},'Adreslerim'), h('button',{class:'btn sm',onClick:()=>openAddrForm(-1)},'+ Yeni Adres')),
+      DB.addresses.length? h('div',{}, ...DB.addresses.map((a,i)=>h('div',{class:'addrcard'},
+        h('div',{class:'spread'}, h('b',{}, a.title+' — '+a.name),
+          h('div',{class:'row',style:{gap:'10px'}}, h('span',{class:'link',onClick:()=>openAddrForm(i)},'Düzenle'),
+            h('span',{class:'link',style:{color:'var(--red)'},onClick:()=>{ DB.addresses.splice(i,1); saveDB(); render(); }},'Sil'))),
+        h('div',{class:'muted',style:{fontSize:'13px',marginTop:'4px'}}, a.line+', '+a.district+'/'+a.city+' · '+a.phone))))
+      : h('p',{class:'muted'},'Kayıtlı adres yok.'));
+  } else if(tab==='degerlendirmelerim'){
+    const mine=DB.reviews.filter(r=>DB.currentUser && r.user===DB.currentUser.name);
+    panel=h('div',{}, h('h2',{style:{marginBottom:'14px'}},'Değerlendirmelerim'),
+      mine.length? h('div',{}, ...mine.map(r=>{ const p=productById(r.productId); return h('div',{class:'review'},
+        h('div',{class:'spread'}, h('b',{style:{cursor:'pointer'},onClick:()=>go('#/urun/'+r.productId)}, p?p.name:'Ürün'),
+          h('span',{class:'stars'}, h('span',{class:'s'},starStr(r.rating)))),
+        h('p',{style:{margin:'6px 0 0'}}, r.text), h('span',{class:'faint',style:{fontSize:'12px'}}, relDate(r.date))); }))
+      : h('p',{class:'muted'},'Henüz değerlendirme yapmadınız.'));
+  } else if(tab==='kuponlarim'){
+    panel=h('div',{}, h('h2',{style:{marginBottom:'14px'}},'Kuponlarım'),
+      h('div',{class:'pgrid',style:{gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))'}},
+        ...DB.coupons.filter(c=>c.active).map(c=>h('div',{class:'pcard',style:{padding:'16px',cursor:'default'}},
+          h('div',{class:'row spread'}, h('b',{style:{letterSpacing:'1px'}}, c.code), h('span',{class:'pill accent'}, c.type==='percent'?'%'+c.value: c.type==='amount'?money(c.value):'KARGO')),
+          h('p',{class:'muted',style:{margin:'8px 0'}}, c.label),
+          h('div',{class:'faint',style:{fontSize:'12px'}}, 'Son gün: '+fmtDate(c.expires)),
+          h('button',{class:'btn sm soft block',style:{marginTop:'8px'},onClick:()=>{ cartCoupon=c.code; toast('Kupon sepete uygulanacak: '+c.code,'ok'); go('#/sepet'); }},'Sepette Kullan')))));
+  }
+  return h('div',{class:'wrap'},
+    h('h1',{style:{margin:'4px 0 16px'}},'Merhaba, '+firstName(DB.currentUser)+' 👋'),
+    h('div',{class:'acct'},
+      h('div',{class:'acctnav'},
+        nav('profil','👤','Hesap Bilgilerim'), nav('siparislerim','📦','Siparişlerim'),
+        nav('adreslerim','📍','Adreslerim'), nav('degerlendirmelerim','⭐','Değerlendirmelerim'),
+        nav('kuponlarim','🎟️','Kuponlarım')),
+      h('div',{}, panel)));
+}
+
+/* ===================== FAVORITES ===================== */
+function FavoritesPage(){
+  const list=DB.favorites.map(productById).filter(Boolean);
+  return h('div',{class:'wrap'},
+    h('h1',{style:{margin:'4px 0 16px'}},'Favorilerim ('+list.length+')'),
+    list.length? h('div',{class:'pgrid wide'}, ...list.map(ProductCard))
+      : h('div',{class:'emptybox'}, h('div',{class:'e'},'💔'), h('p',{},'Favori listeniz boş.'),
+          h('p',{class:'muted'},'Ürün kartlarındaki kalbe dokunarak favorilerinize ekleyin.'),
+          h('a',{class:'btn',href:'#/kategori/all'},'Ürünleri Keşfet')));
+}
+function NotFound(){ return h('div',{class:'wrap'}, h('div',{class:'emptybox'},
+  h('div',{class:'e'},'🧭'), h('h2',{},'Sayfa bulunamadı'),
+  h('a',{class:'btn',href:'#/'},'Anasayfaya Dön'))); }
+
+/* ===================== ADMIN ===================== */
+let adminAuthed = false;
+try{ adminAuthed = sessionStorage.getItem('trenda_admin')==='1'; }catch(e){}
+const ADMIN_TABS=[
+  ['dashboard','📊','Genel Bakış'],['products','📦','Ürünler'],['orders','🧾','Siparişler'],
+  ['categories','🗂️','Kategoriler'],['sellers','🏪','Mağazalar'],['coupons','🎟️','Kuponlar'],
+  ['customers','👥','Müşteriler'],['reviews','⭐','Değerlendirmeler'],['banners','🖼️','Kampanyalar'],
+  ['settings','⚙️','Ayarlar'],
+];
+function AdminApp(){
+  if(!adminAuthed) return AdminLogin();
+  const tab=state.adminTab;
+  const side=h('div',{class:'adminside'+(state.adminSideOpen?' open':'')},
+    h('div',{class:'brand'}, '🛍️ '+DB.settings.siteName, h('div',{style:{fontSize:'11px',opacity:.6,fontWeight:'400'}},'Yönetim Paneli')),
+    ...ADMIN_TABS.map(([k,ic,l])=>h('a',{class:tab===k?'on':'',onClick:()=>{ state.adminSideOpen=false; go('#/admin/'+k); }}, h('span',{},ic), h('span',{},l))),
+    h('div',{class:'sp'}),
+    h('a',{onClick:()=>go('#/')}, h('span',{},'↩️'), h('span',{},'Mağazaya Dön')),
+    h('a',{onClick:()=>{ adminAuthed=false; try{sessionStorage.removeItem('trenda_admin');}catch(e){}; render(); }}, h('span',{},'🚪'), h('span',{},'Çıkış')));
+  const views={dashboard:AdminDashboard,products:AdminProducts,orders:AdminOrders,categories:AdminCategories,
+    sellers:AdminSellers,coupons:AdminCoupons,customers:AdminCustomers,reviews:AdminReviews,banners:AdminBanners,settings:AdminSettings};
+  const view=(views[tab]||AdminDashboard)();
+  return h('div',{class:'admin'}, side,
+    h('div',{class:'adminmain'},
+      h('div',{class:'admintop'},
+        h('div',{class:'row'}, h('button',{class:'iconbtn',style:{display:'none'},id:'admBurger',onClick:()=>{ state.adminSideOpen=!state.adminSideOpen; render(); }},'☰'),
+          h('h1',{}, (ADMIN_TABS.find(t=>t[0]===tab)||[])[2] || 'Panel')),
+        h('div',{class:'row'},
+          h('span',{class:'muted',style:{fontSize:'13px'}}, new Date().toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'})),
+          h('span',{class:'pill green'},'● Çevrimiçi'))),
+      view));
+}
+function AdminLogin(){
+  const uI=h('input',{class:'input',placeholder:'Kullanıcı adı',value:'admin'});
+  const pI=h('input',{class:'input',type:'password',placeholder:'Şifre',value:''});
+  const err=h('div',{class:'pill red',style:{display:'none',marginBottom:'10px'}},'Hatalı bilgi');
+  const submit=()=>{
+    if(uI.value===DB.settings.adminUser && pI.value===DB.settings.adminPass){
+      adminAuthed=true; try{sessionStorage.setItem('trenda_admin','1');}catch(e){}
+      toast('Yönetim paneline hoş geldiniz','ok'); render();
+    } else { err.style.display='inline-flex'; }
+  };
+  return h('div',{class:'login-wrap'}, h('div',{class:'login-card'},
+    h('div',{class:'logo',style:{marginBottom:'6px'}}, DB.settings.siteName.slice(0,-1), h('b',{},DB.settings.siteName.slice(-1))),
+    h('h2',{style:{marginBottom:'4px'}},'Yönetim Girişi'),
+    h('p',{class:'muted',style:{marginTop:0,fontSize:'13px'}},'Demo giriş bilgileri: '),
+    h('p',{class:'pill accent',style:{marginBottom:'14px'}},'kullanıcı: admin · şifre: admin123'),
+    err,
+    h('div',{class:'field'}, h('label',{},'Kullanıcı Adı'), uI),
+    h('div',{class:'field'}, h('label',{},'Şifre'), pI),
+    h('button',{class:'btn block lg',onClick:submit},'Giriş Yap'),
+    h('button',{class:'btn block ghost',style:{marginTop:'8px'},onClick:()=>go('#/')},'← Mağazaya Dön')));
+}
+
+/* helpers for admin stats */
+function ordersInRange(days){ const from=now()-days*DAY; return DB.orders.filter(o=>o.date>=from && o.status!=='İptal Edildi'); }
+function revenue(orders){ return orders.reduce((a,o)=>a+o.totals.total,0); }
+function BarChart(data, fmt){
+  const max=Math.max(1,...data.map(d=>d.v));
+  return h('div',{class:'chart'}, ...data.map(d=>h('div',{class:'bar',style:{height:(d.v/max*100)+'%'},title:d.label+': '+(fmt?fmt(d.v):d.v)})));
+}
+function AdminDashboard(){
+  const last30=ordersInRange(30), last7=ordersInRange(7), prev7=DB.orders.filter(o=>o.date>=now()-14*DAY && o.date<now()-7*DAY && o.status!=='İptal Edildi');
+  const rev30=revenue(last30), rev7=revenue(last7), revPrev7=revenue(prev7);
+  const growth = revPrev7? Math.round((rev7-revPrev7)/revPrev7*100) : 100;
+  const aov = last30.length? rev30/last30.length : 0;
+  const pending=DB.orders.filter(o=>['Sipariş Alındı','Hazırlanıyor'].includes(o.status)).length;
+  const lowStock=DB.products.filter(p=>p.active && p.stock<=8);
+  // daily series 14 gün
+  const days=[]; for(let i=13;i>=0;i--){ const dayStart=now()-i*DAY; const d=new Date(dayStart);
+    const dayOrders=DB.orders.filter(o=>{ const od=new Date(o.date); return od.toDateString()===d.toDateString() && o.status!=='İptal Edildi'; });
+    days.push({label:d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'}), v:revenue(dayOrders)}); }
+  // top products
+  const soldMap={}; last30.forEach(o=>o.items.forEach(it=>{ soldMap[it.productId]=(soldMap[it.productId]||0)+it.qty; }));
+  const top=Object.entries(soldMap).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([pid,q])=>({p:productById(pid),q}));
+  const kpi=(k,v,d,cls)=>h('div',{class:'kpi'}, h('div',{class:'k'},k), h('div',{class:'v'},v), d?h('div',{class:'d '+(cls||'')},d):null);
+  return h('div',{},
+    h('div',{class:'kpis'},
+      kpi('30 Günlük Ciro', money(rev30), (growth>=0?'▲ ':'▼ ')+Math.abs(growth)+'% (haftalık)', growth>=0?'up':'down'),
+      kpi('Sipariş (30g)', num(last30.length), '7 günde '+last7.length+' sipariş','up'),
+      kpi('Ortalama Sepet', money(aov), 'AOV'),
+      kpi('Bekleyen Sipariş', pending, pending?'işlem bekliyor':'hepsi tamam', pending?'down':'up'),
+      kpi('Aktif Ürün', DB.products.filter(p=>p.active).length, DB.products.length+' toplam'),
+      kpi('Müşteri', num(DB.customers.length), 'kayıtlı')),
+    h('div',{class:'panel'}, h('h3',{},'Günlük Ciro — Son 14 Gün'), BarChart(days, money),
+      h('div',{class:'row spread',style:{marginTop:'6px'}}, h('span',{class:'miniof'}, days[0].label), h('span',{class:'miniof'}, days[days.length-1].label))),
+    h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'18px'}},
+      h('div',{class:'panel'}, h('h3',{},'En Çok Satanlar (30g)'),
+        h('div',{class:'tablewrap'}, h('table',{class:'data'}, h('thead',{}, h('tr',{}, h('th',{},'Ürün'), h('th',{},'Adet'), h('th',{},'Stok'))),
+          h('tbody',{}, ...top.map(t=>t.p&&h('tr',{}, h('td',{}, t.p.emoji+' '+t.p.name), h('td',{}, t.q), h('td',{}, t.p.stock))))))),
+      h('div',{class:'panel'}, h('h3',{},'⚠️ Düşük Stok'),
+        lowStock.length? h('div',{class:'tablewrap'}, h('table',{class:'data'}, h('thead',{}, h('tr',{}, h('th',{},'Ürün'), h('th',{},'Stok'), h('th',{},''))),
+          h('tbody',{}, ...lowStock.slice(0,8).map(p=>h('tr',{}, h('td',{}, p.emoji+' '+p.name), h('td',{}, h('span',{class:'pill red'}, p.stock)),
+            h('td',{}, h('button',{class:'btn sm ghost',onClick:()=>{ p.stock+=50; saveDB(); render(); toast('+50 stok eklendi'); }},'+50')))))))
+          : h('p',{class:'muted'},'Tüm ürünlerin stoğu yeterli. 👍'))),
+    h('div',{class:'panel'}, h('h3',{},'Son Siparişler'),
+      h('div',{class:'tablewrap'}, h('table',{class:'data'},
+        h('thead',{}, h('tr',{}, h('th',{},'Kod'), h('th',{},'Müşteri'), h('th',{},'Tarih'), h('th',{},'Tutar'), h('th',{},'Durum'), h('th',{},''))),
+        h('tbody',{}, ...DB.orders.slice(0,8).map(o=>h('tr',{},
+          h('td',{}, h('b',{},o.code)), h('td',{}, o.userName), h('td',{}, fmtDate(o.date)),
+          h('td',{}, money(o.totals.total)), h('td',{}, stBadge(o.status)),
+          h('td',{}, h('button',{class:'btn sm ghost',onClick:()=>openAdminOrder(o.id)},'Aç')))))))));
+}
+
+/* ---------- ADMIN: PRODUCTS ---------- */
+const adminProdFilter={ q:'', cat:'', seller:'', status:'' };
+function AdminProducts(){
+  let list=DB.products.slice();
+  const f=adminProdFilter;
+  if(f.q) list=list.filter(p=>(p.name+p.brand).toLowerCase().includes(f.q.toLowerCase()));
+  if(f.cat) list=list.filter(p=>p.category===f.cat);
+  if(f.seller) list=list.filter(p=>p.sellerId===f.seller);
+  if(f.status==='active') list=list.filter(p=>p.active);
+  if(f.status==='passive') list=list.filter(p=>!p.active);
+  if(f.status==='low') list=list.filter(p=>p.stock<=8);
+  return h('div',{},
+    h('div',{class:'adminbar'},
+      h('input',{class:'input',placeholder:'🔍 Ürün / marka ara',value:f.q,onInput:e=>{ f.q=e.target.value; render(); }}),
+      h('select',{class:'select',onChange:e=>{ f.cat=e.target.value; render(); }},
+        h('option',{value:''},'Tüm Kategoriler'), ...DB.categories.map(c=>h('option',{value:c.slug,selected:f.cat===c.slug},c.name))),
+      h('select',{class:'select',onChange:e=>{ f.seller=e.target.value; render(); }},
+        h('option',{value:''},'Tüm Mağazalar'), ...DB.sellers.map(s=>h('option',{value:s.id,selected:f.seller===s.id},s.name))),
+      h('select',{class:'select',onChange:e=>{ f.status=e.target.value; render(); }},
+        ...[['','Tüm Durumlar'],['active','Aktif'],['passive','Pasif'],['low','Düşük Stok']].map(o=>h('option',{value:o[0],selected:f.status===o[0]},o[1]))),
+      h('div',{class:'grow'}),
+      h('button',{class:'btn',onClick:()=>openProductForm(null)},'+ Yeni Ürün')),
+    h('div',{class:'panel',style:{padding:0}}, h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, h('th',{},'Ürün'), h('th',{},'Kategori'), h('th',{},'Mağaza'), h('th',{},'Fiyat'), h('th',{},'Stok'), h('th',{},'Puan'), h('th',{},'Satış'), h('th',{},'Durum'), h('th',{},'İşlem'))),
+      h('tbody',{}, ...list.map(p=>h('tr',{},
+        h('td',{}, h('div',{class:'row',style:{gap:'8px'}}, thumbBox(34, pImg(p), p.emoji, p.cA, p.cB),
+          h('div',{}, h('div',{style:{fontWeight:'600'}}, p.name), h('div',{class:'miniof'}, p.brand)))),
+        h('td',{}, (catBySlug(p.category)||{}).name),
+        h('td',{}, (sellerById(p.sellerId)||{}).name),
+        h('td',{}, h('div',{}, money(p.price)), p.oldPrice?h('div',{class:'miniof',style:{textDecoration:'line-through'}}, money(p.oldPrice)):null),
+        h('td',{}, h('span',{class:'pill '+(p.stock<=8?'red':p.stock<=20?'':'green')}, p.stock)),
+        h('td',{}, liveRating(p).avg.toFixed(1)+'★'),
+        h('td',{}, num(p.sold)),
+        h('td',{}, h('span',{class:'st-badge',style:{background:p.active?'var(--green-soft)':'var(--surface-3)',color:p.active?'var(--green)':'var(--muted)'}}, p.active?'Aktif':'Pasif')),
+        h('td',{}, h('div',{class:'row',style:{gap:'4px'}},
+          h('button',{class:'btn sm ghost',onClick:()=>openProductForm(p.id)},'Düzenle'),
+          h('button',{class:'btn sm ghost',onClick:()=>{ p.active=!p.active; saveDB(); render(); }}, p.active?'Gizle':'Yayınla'),
+          h('button',{class:'btn sm ghost',style:{color:'var(--red)'},onClick:()=>{ if(confirm(p.name+' silinsin mi?')){ DB.products=DB.products.filter(x=>x.id!==p.id); saveDB(); render(); toast('Ürün silindi'); } }},'Sil'))))))))),
+    h('p',{class:'miniof',style:{marginTop:'10px'}}, list.length+' ürün listeleniyor'));
+}
+const EMOJI_CHOICES=['📦','🎧','📱','💻','⌚','📺','📷','🔊','⌨️','🖱️','👗','👚','🧥','👕','👖','🧶','👔','👟','👞','👠','🥾','🎒','👜','🩴','🛋️','💡','🍽️','🛏️','🕯️','🧺','💄','🌸','🧴','💨','🖌️','🧸','👶','🍼','🎠','🧷','☕','🍫','🫒','🍝','🍯','🏋️','🧘','🚲','⛺','🏃','💪','📖','🎨','🎸','🧩','📚','📔','🧊','🌀','🔥','🤖'];
+const GRAD_CHOICES=[['#232526','#414345'],['#0f2027','#2c5364'],['#e96443','#904e95'],['#11998e','#38ef7d'],['#f7971e','#ffd200'],['#654ea3','#eaafc8'],['#2193b0','#6dd5ed'],['#ee9ca7','#ffdde1'],['#3a7bd5','#00d2ff'],['#c94b4b','#4b134f'],['#f2994a','#f2c94c'],['#43cea2','#185a9d']];
+function openProductForm(id){
+  const editing = id? productById(id) : null;
+  const p = editing ? JSON.parse(JSON.stringify(editing)) : {
+    id:uid('p'), name:'', brand:'', category:DB.categories[0].slug, sellerId:DB.sellers[0].id,
+    price:0, oldPrice:null, stock:0, emoji:'📦', cA:'#232526', cB:'#414345',
+    options:[], badges:[], active:true, rating:0, reviewCount:0, sold:0, createdAt:now(),
+    freeShipping:false, fastDelivery:true, desc:'', specs:{},
+  };
+  const fld=(label,node)=>h('div',{class:'field'}, h('label',{},label), node);
+  const nameI=h('input',{class:'input',value:p.name});
+  const brandI=h('input',{class:'input',value:p.brand});
+  const priceI=h('input',{class:'input',type:'number',step:'0.01',value:p.price});
+  const oldI=h('input',{class:'input',type:'number',step:'0.01',value:p.oldPrice||''});
+  const stockI=h('input',{class:'input',type:'number',value:p.stock});
+  const catS=h('select',{class:'select'}, ...DB.categories.map(c=>h('option',{value:c.slug,selected:p.category===c.slug},c.name)));
+  const selS=h('select',{class:'select'}, ...DB.sellers.map(s=>h('option',{value:s.id,selected:p.sellerId===s.id},s.name)));
+  const descI=h('textarea',{class:'input',value:p.desc});
+  let emoji=p.emoji, grad=[p.cA,p.cB];
+  const emojiPick=h('div',{class:'imgpick',style:{maxHeight:'120px',overflow:'auto'}});
+  EMOJI_CHOICES.forEach(e=>{ const o=h('div',{class:'opt'+(e===emoji?' on':''),onClick:()=>{ emoji=e; $$('.opt',emojiPick).forEach(x=>x.classList.toggle('on',x.textContent===e)); prev(); }}, e); emojiPick.appendChild(o); });
+  const gradPick=h('div',{class:'imgpick'});
+  GRAD_CHOICES.forEach(g=>{ const o=h('div',{class:'opt',style:{background:`linear-gradient(135deg,${g[0]},${g[1]})`},onClick:()=>{ grad=g; $$('.opt',gradPick).forEach(x=>x.classList.remove('on')); o.classList.add('on'); prev(); }});
+    if(g[0]===grad[0]) o.classList.add('on'); gradPick.appendChild(o); });
+  // gerçek fotoğraflar
+  let imgs=(p.images||[]).filter(Boolean).slice();
+  const imgEd=imageEditor(imgs, ()=>prev());
+  const preview=h('div',{class:'photo',style:{width:'90px',height:'90px',borderRadius:'12px',overflow:'hidden',fontSize:'44px',...photoStyle({cA:grad[0],cB:grad[1]})}});
+  function prev(){ preview.style.background=`linear-gradient(135deg,${grad[0]},${grad[1]})`; fillPhoto(preview, imgs[0]||null, emoji); }
+  prev();
+  // badges
+  const badgeState=new Set(p.badges);
+  const badgeRow=h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap'}}, ...[['new','Yeni'],['best','Çok Satan'],['disc','İndirim']].map(b=>
+    h('label',{class:'checkline'}, h('input',{type:'checkbox',checked:badgeState.has(b[0]),onChange:e=>{ e.target.checked?badgeState.add(b[0]):badgeState.delete(b[0]); }}), b[1])));
+  const freeI=h('input',{type:'checkbox',checked:p.freeShipping});
+  const fastI=h('input',{type:'checkbox',checked:p.fastDelivery});
+  const activeI=h('input',{type:'checkbox',checked:p.active});
+  // options (varyant)
+  let opts=JSON.parse(JSON.stringify(p.options||[]));
+  const optsHost=h('div',{});
+  function drawOpts(){ optsHost.innerHTML='';
+    opts.forEach((o,i)=>{ optsHost.appendChild(h('div',{class:'kvrow'},
+      h('input',{class:'input',placeholder:'Seçenek adı (Renk)',value:o.name,onInput:e=>o.name=e.target.value}),
+      h('input',{class:'input',placeholder:'Değerler (virgülle): S,M,L',value:o.values.join(','),onInput:e=>o.values=e.target.value.split(',').map(s=>s.trim()).filter(Boolean)}),
+      h('button',{class:'btn sm ghost',onClick:()=>{ opts.splice(i,1); drawOpts(); }},'✕'))); });
+    optsHost.appendChild(h('button',{class:'btn sm ghost',onClick:()=>{ opts.push({name:'',values:[]}); drawOpts(); }},'+ Varyant Ekle'));
+  }
+  drawOpts();
+  // specs
+  let specs=Object.entries(p.specs||{}).map(([k,v])=>({k,v}));
+  const specHost=h('div',{});
+  function drawSpecs(){ specHost.innerHTML='';
+    specs.forEach((s,i)=>{ specHost.appendChild(h('div',{class:'kvrow'},
+      h('input',{class:'input',placeholder:'Özellik',value:s.k,onInput:e=>s.k=e.target.value}),
+      h('input',{class:'input',placeholder:'Değer',value:s.v,onInput:e=>s.v=e.target.value}),
+      h('button',{class:'btn sm ghost',onClick:()=>{ specs.splice(i,1); drawSpecs(); }},'✕'))); });
+    specHost.appendChild(h('button',{class:'btn sm ghost',onClick:()=>{ specs.push({k:'',v:''}); drawSpecs(); }},'+ Özellik Ekle'));
+  }
+  drawSpecs();
+
+  openModal(modalShell(editing?'Ürünü Düzenle':'Yeni Ürün Ekle',
+    h('div',{},
+      h('div',{class:'row',style:{gap:'16px',alignItems:'flex-start'}},
+        preview,
+        h('div',{class:'grow'}, fld('Ürün Adı',nameI), fld('Marka',brandI))),
+      h('div',{class:'grid2'}, fld('Kategori',catS), fld('Mağaza',selS)),
+      h('div',{class:'grid2'}, fld('Satış Fiyatı (₺)',priceI), fld('Eski Fiyat (₺, opsiyonel)',oldI)),
+      fld('Stok Adedi',stockI),
+      fld('Ürün Fotoğrafları (gerçek görseller)', imgEd),
+      fld('İkon — Emoji (fotoğraf yoksa gösterilir)', emojiPick),
+      fld('İkon — Arka Plan Rengi', gradPick),
+      fld('Açıklama',descI),
+      fld('Rozetler',badgeRow),
+      h('div',{class:'row',style:{gap:'20px'}},
+        h('label',{class:'checkline'}, freeI,'🚚 Kargo Bedava'),
+        h('label',{class:'checkline'}, fastI,'⚡ Hızlı Teslimat'),
+        h('label',{class:'checkline'}, activeI,'✅ Yayında')),
+      h('div',{class:'divider'}),
+      h('b',{},'Varyantlar'), optsHost,
+      h('div',{class:'divider'}),
+      h('b',{},'Teknik Özellikler'), specHost,
+      h('div',{class:'divider'}),
+      h('button',{class:'btn block lg',onClick:()=>{
+        if(!nameI.value.trim()){ toast('Ürün adı gerekli','err'); return; }
+        p.name=nameI.value.trim(); p.brand=brandI.value.trim()||'Trenda';
+        p.price=+priceI.value||0; p.oldPrice= oldI.value? +oldI.value : null;
+        p.stock=+stockI.value||0; p.category=catS.value; p.sellerId=selS.value;
+        p.emoji=emoji; p.cA=grad[0]; p.cB=grad[1]; p.images=imgs.filter(Boolean); p.desc=descI.value;
+        p.badges=[...badgeState]; p.freeShipping=freeI.checked; p.fastDelivery=fastI.checked; p.active=activeI.checked;
+        p.options=opts.filter(o=>o.name && o.values.length);
+        p.specs={}; specs.forEach(s=>{ if(s.k) p.specs[s.k]=s.v; });
+        if(editing){ Object.assign(editing,p); } else { DB.products.unshift(p); }
+        saveDB(); closeModal(); render(); toast(editing?'Ürün güncellendi':'Ürün eklendi','ok');
+      }}, editing?'Değişiklikleri Kaydet':'Ürünü Ekle')), null), true);
+}
+
+/* ---------- ADMIN: ORDERS ---------- */
+const adminOrdFilter={ q:'', status:'' };
+function AdminOrders(){
+  const f=adminOrdFilter;
+  let list=DB.orders.slice();
+  if(f.q) list=list.filter(o=>(o.code+o.userName+o.userEmail).toLowerCase().includes(f.q.toLowerCase()));
+  if(f.status) list=list.filter(o=>o.status===f.status);
+  const allStatuses=[...ORDER_FLOW,'İptal Edildi','İade Talebi','İade Edildi'];
+  const counts={}; DB.orders.forEach(o=>counts[o.status]=(counts[o.status]||0)+1);
+  return h('div',{},
+    h('div',{class:'kpis'},
+      ...['Sipariş Alındı','Hazırlanıyor','Kargoya Verildi','Teslim Edildi','İptal Edildi'].map(s=>
+        h('div',{class:'kpi',style:{cursor:'pointer'},onClick:()=>{ f.status=f.status===s?'':s; render(); }},
+          h('div',{class:'k'},s), h('div',{class:'v'}, counts[s]||0)))),
+    h('div',{class:'adminbar'},
+      h('input',{class:'input',placeholder:'🔍 Kod / müşteri ara',value:f.q,onInput:e=>{ f.q=e.target.value; render(); }}),
+      h('select',{class:'select',onChange:e=>{ f.status=e.target.value; render(); }},
+        h('option',{value:''},'Tüm Durumlar'), ...allStatuses.map(s=>h('option',{value:s,selected:f.status===s},s)))),
+    h('div',{class:'panel',style:{padding:0}}, h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, h('th',{},'Kod'), h('th',{},'Müşteri'), h('th',{},'Tarih'), h('th',{},'Ürün'), h('th',{},'Tutar'), h('th',{},'Ödeme'), h('th',{},'Durum'), h('th',{},''))),
+      h('tbody',{}, ...list.map(o=>h('tr',{},
+        h('td',{}, h('b',{},o.code)),
+        h('td',{}, h('div',{}, o.userName), h('div',{class:'miniof'}, o.userEmail)),
+        h('td',{}, fmtDate(o.date)),
+        h('td',{}, o.items.reduce((a,i)=>a+i.qty,0)+' adet'),
+        h('td',{}, money(o.totals.total)),
+        h('td',{}, o.payment.method),
+        h('td',{}, stBadge(o.status)),
+        h('td',{}, h('button',{class:'btn sm ghost',onClick:()=>openAdminOrder(o.id)},'Yönet')))))))),
+    h('p',{class:'miniof',style:{marginTop:'10px'}}, list.length+' sipariş'));
+}
+function openAdminOrder(id){
+  const o=DB.orders.find(x=>x.id===id); if(!o) return;
+  const host=$('#modal-host');
+  const stSel=h('select',{class:'select'}, ...[...ORDER_FLOW,'İptal Edildi','İade Talebi','İade Edildi'].map(s=>h('option',{value:s,selected:o.status===s},s)));
+  const trackI=h('input',{class:'input',value:o.trackingNo||'',placeholder:'Kargo takip no'});
+  const draw=()=>{
+    const body=h('div',{class:'drawer'},
+      h('div',{class:'dh'}, h('h3',{},'Sipariş '+o.code), h('button',{class:'iconbtn',onClick:closeModal},'✕')),
+      h('div',{class:'dbody'},
+        h('div',{class:'panel'},
+          h('div',{class:'row spread'}, stBadge(o.status), h('span',{class:'muted'}, fmtDateTime(o.date))),
+          h('div',{style:{marginTop:'10px'}},
+            h('div',{}, h('b',{},'Müşteri: '), o.userName+' ('+o.userEmail+')'),
+            h('div',{}, h('b',{},'Adres: '), o.address.name+', '+o.address.line+', '+o.address.city),
+            h('div',{}, h('b',{},'Telefon: '), o.address.phone),
+            h('div',{}, h('b',{},'Kargo: '), o.delivery.name+' — '+o.delivery.eta),
+            h('div',{}, h('b',{},'Ödeme: '), o.payment.method + (o.payment.last4?' ****'+o.payment.last4:'') + (o.payment.installment>1?' · '+o.payment.installment+' taksit':'')))),
+        h('div',{class:'panel'}, h('h3',{},'Ürünler'),
+          ...o.items.map(it=>h('div',{class:'row spread',style:{padding:'6px 0',borderBottom:'1px solid var(--border)'}},
+            h('span',{}, it.emoji+' '+it.name+'  ×'+it.qty), h('b',{}, money(it.price*it.qty)))),
+          h('div',{class:'row spread',style:{paddingTop:'8px'}}, h('b',{},'Toplam'), h('b',{}, money(o.totals.total)))),
+        h('div',{class:'panel'}, h('h3',{},'Durum Güncelle'),
+          h('div',{class:'field'}, h('label',{},'Sipariş Durumu'), stSel),
+          h('div',{class:'field'}, h('label',{},'Kargo Takip No'), trackI),
+          h('button',{class:'btn block',onClick:()=>{
+            if(o.status!==stSel.value){ o.status=stSel.value; o.history.push({status:stSel.value, at:now()}); }
+            o.trackingNo=trackI.value||null;
+            saveDB(); toast('Sipariş güncellendi','ok'); closeModal(); render();
+          }},'Kaydet'),
+          h('div',{class:'row',style:{gap:'6px',marginTop:'10px',flexWrap:'wrap'}},
+            ...ORDER_FLOW.map(s=>h('button',{class:'btn sm ghost',onClick:()=>{ o.status=s; o.history.push({status:s,at:now()}); if(s==='Kargoya Verildi'&&!o.trackingNo) o.trackingNo='TK'+String(9000000+Math.floor(Math.random()*999999)); saveDB(); closeModal(); openAdminOrder(id); render(); }}, s)))),
+        h('div',{class:'panel'}, h('h3',{},'Durum Geçmişi'),
+          h('div',{class:'timeline'}, ...o.history.map((x,i)=>h('div',{class:'tl done'}, h('div',{class:'dot'},'✓'), h('div',{}, h('div',{class:'lab'},x.status), h('div',{class:'at'}, fmtDateTime(x.at)))))))));
+    const ov=h('div',{class:'overlay',style:{justifyContent:'flex-end',padding:0},onClick:e=>{ if(e.target===ov) closeModal(); }}, body);
+    host.innerHTML=''; host.appendChild(ov);
+    document.addEventListener('keydown',escClose);
+  };
+  draw();
+}
+
+/* ---------- ADMIN: CATEGORIES ---------- */
+function AdminCategories(){
+  return h('div',{},
+    h('div',{class:'adminbar'}, h('div',{class:'grow'}), h('button',{class:'btn',onClick:()=>openCatForm(null)},'+ Yeni Kategori')),
+    h('div',{class:'panel',style:{padding:0}}, h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, h('th',{},'Kategori'), h('th',{},'Slug'), h('th',{},'Ürün Sayısı'), h('th',{},''))),
+      h('tbody',{}, ...DB.categories.map(c=>{ const n=DB.products.filter(p=>p.category===c.slug).length; return h('tr',{},
+        h('td',{}, h('span',{style:{fontSize:'20px',marginRight:'8px'}},c.emoji), h('b',{},c.name)),
+        h('td',{}, h('code',{},c.slug)),
+        h('td',{}, n),
+        h('td',{}, h('div',{class:'row',style:{gap:'4px'}},
+          h('button',{class:'btn sm ghost',onClick:()=>openCatForm(c.slug)},'Düzenle'),
+          h('button',{class:'btn sm ghost',style:{color:'var(--red)'},onClick:()=>{ if(n){ toast('Bu kategoride ürün var, önce taşıyın','err'); return; } DB.categories=DB.categories.filter(x=>x.slug!==c.slug); saveDB(); render(); }},'Sil')))); }))))));
+}
+function openCatForm(slug){
+  const editing = slug? catBySlug(slug) : null;
+  const nameI=h('input',{class:'input',value:editing?editing.name:''});
+  let emoji= editing? editing.emoji : '🗂️';
+  const pickHost=h('div',{class:'imgpick',style:{maxHeight:'120px',overflow:'auto'}});
+  EMOJI_CHOICES.forEach(e=>pickHost.appendChild(h('div',{class:'opt'+(e===emoji?' on':''),onClick:()=>{ emoji=e; $$('.opt',pickHost).forEach(x=>x.classList.toggle('on',x.textContent===e)); }}, e)));
+  openModal(modalShell(editing?'Kategoriyi Düzenle':'Yeni Kategori',
+    h('div',{},
+      h('div',{class:'field'}, h('label',{},'Ad'), nameI),
+      h('div',{class:'field'}, h('label',{},'Emoji'), pickHost),
+      h('button',{class:'btn block',onClick:()=>{
+        if(!nameI.value.trim()){ toast('Ad gerekli','err'); return; }
+        if(editing){ editing.name=nameI.value.trim(); editing.emoji=emoji; }
+        else DB.categories.push({slug:slugify(nameI.value)||uid('cat'), name:nameI.value.trim(), emoji});
+        saveDB(); closeModal(); render(); toast('Kaydedildi','ok');
+      }},'Kaydet'))));
+}
+
+/* ---------- ADMIN: SELLERS ---------- */
+function AdminSellers(){
+  return h('div',{},
+    h('div',{class:'adminbar'}, h('div',{class:'grow'}), h('button',{class:'btn',onClick:()=>openSellerForm(null)},'+ Yeni Mağaza')),
+    h('div',{class:'pgrid wide'}, ...DB.sellers.map(s=>{ const n=DB.products.filter(p=>p.sellerId===s.id).length;
+      return h('div',{class:'panel'},
+        h('div',{class:'row',style:{gap:'12px'}},
+          fillPhoto(h('div',{style:{width:'54px',height:'54px',borderRadius:'14px',overflow:'hidden',background:`linear-gradient(135deg,${s.cA},${s.cB})`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'28px'}}), s.logo, s.emoji),
+          h('div',{class:'grow'}, h('b',{},s.name), h('div',{class:'miniof'}, '★ '+s.rating+' · '+num(s.followers)+' takipçi · '+n+' ürün'))),
+        h('p',{class:'muted',style:{fontSize:'13px',margin:'10px 0'}}, s.desc),
+        h('div',{class:'row',style:{gap:'6px'}},
+          h('button',{class:'btn sm ghost',onClick:()=>openSellerForm(s.id)},'Düzenle'),
+          h('button',{class:'btn sm ghost',onClick:()=>{ s.active=!s.active; saveDB(); render(); }}, s.active?'Pasifleştir':'Aktifleştir'),
+          h('a',{class:'btn sm ghost',href:'#/magaza/'+s.id},'Mağazayı Gör'))); })));
+}
+function openSellerForm(id){
+  const editing=id?sellerById(id):null;
+  const nameI=h('input',{class:'input',value:editing?editing.name:''});
+  const descI=h('textarea',{class:'input',value:editing?editing.desc:''});
+  const rateI=h('input',{class:'input',type:'number',step:'0.1',min:'1',max:'5',value:editing?editing.rating:4.5});
+  const folI=h('input',{class:'input',type:'number',value:editing?editing.followers:1000});
+  let emoji=editing?editing.emoji:'🏪', grad=editing?[editing.cA,editing.cB]:GRAD_CHOICES[0];
+  let logoArr=(editing&&editing.logo)?[editing.logo]:[];
+  const logoEd=imageEditor(logoArr);
+  const eHost=h('div',{class:'imgpick',style:{maxHeight:'100px',overflow:'auto'}});
+  EMOJI_CHOICES.forEach(e=>eHost.appendChild(h('div',{class:'opt'+(e===emoji?' on':''),onClick:()=>{ emoji=e; $$('.opt',eHost).forEach(x=>x.classList.toggle('on',x.textContent===e)); }},e)));
+  const gHost=h('div',{class:'imgpick'});
+  GRAD_CHOICES.forEach(g=>{ const o=h('div',{class:'opt',style:{background:`linear-gradient(135deg,${g[0]},${g[1]})`},onClick:()=>{ grad=g; $$('.opt',gHost).forEach(x=>x.classList.remove('on')); o.classList.add('on'); }}); if(g[0]===grad[0])o.classList.add('on'); gHost.appendChild(o); });
+  openModal(modalShell(editing?'Mağazayı Düzenle':'Yeni Mağaza',
+    h('div',{},
+      h('div',{class:'field'}, h('label',{},'Mağaza Adı'), nameI),
+      h('div',{class:'field'}, h('label',{},'Açıklama'), descI),
+      h('div',{class:'grid2'}, h('div',{class:'field'}, h('label',{},'Puan'), rateI), h('div',{class:'field'}, h('label',{},'Takipçi'), folI)),
+      h('div',{class:'field'}, h('label',{},'Logo Fotoğrafı (gerçek görsel)'), logoEd),
+      h('div',{class:'field'}, h('label',{},'Logo İkonu — Emoji (fotoğraf yoksa)'), eHost),
+      h('div',{class:'field'}, h('label',{},'Renk'), gHost),
+      h('button',{class:'btn block',onClick:()=>{
+        if(!nameI.value.trim()){ toast('Ad gerekli','err'); return; }
+        const rec={name:nameI.value.trim(),desc:descI.value,rating:clamp(+rateI.value||4.5,1,5),followers:+folI.value||0,emoji,logo:logoArr[0]||null,cA:grad[0],cB:grad[1]};
+        if(editing) Object.assign(editing,rec);
+        else DB.sellers.push({id:uid('s'),active:true,since:new Date().getFullYear(),...rec});
+        saveDB(); closeModal(); render(); toast('Kaydedildi','ok');
+      }},'Kaydet'))));
+}
+
+/* ---------- ADMIN: COUPONS ---------- */
+function AdminCoupons(){
+  return h('div',{},
+    h('div',{class:'adminbar'}, h('div',{class:'grow'}), h('button',{class:'btn',onClick:()=>openCouponForm(null)},'+ Yeni Kupon')),
+    h('div',{class:'panel',style:{padding:0}}, h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, h('th',{},'Kod'), h('th',{},'Tür'), h('th',{},'Değer'), h('th',{},'Min. Sepet'), h('th',{},'Kullanım'), h('th',{},'Bitiş'), h('th',{},'Durum'), h('th',{},''))),
+      h('tbody',{}, ...DB.coupons.map((c,i)=>h('tr',{},
+        h('td',{}, h('b',{style:{letterSpacing:'1px'}},c.code)),
+        h('td',{}, c.type==='percent'?'Yüzde':c.type==='amount'?'Tutar':'Kargo'),
+        h('td',{}, c.type==='percent'?('%'+c.value+(c.max?' (maks '+money(c.max)+')':'')): c.type==='amount'?money(c.value):'—'),
+        h('td',{}, c.min?money(c.min):'—'),
+        h('td',{}, num(c.used||0)+' / '+num(c.limit||0)),
+        h('td',{}, fmtDate(c.expires)),
+        h('td',{}, h('span',{class:'st-badge',style:{background:c.active?'var(--green-soft)':'var(--surface-3)',color:c.active?'var(--green)':'var(--muted)'}}, c.active?'Aktif':'Pasif')),
+        h('td',{}, h('div',{class:'row',style:{gap:'4px'}},
+          h('button',{class:'btn sm ghost',onClick:()=>openCouponForm(i)},'Düzenle'),
+          h('button',{class:'btn sm ghost',onClick:()=>{ c.active=!c.active; saveDB(); render(); }}, c.active?'Kapat':'Aç'),
+          h('button',{class:'btn sm ghost',style:{color:'var(--red)'},onClick:()=>{ DB.coupons.splice(i,1); saveDB(); render(); }},'Sil'))))))))));
+}
+function openCouponForm(idx){
+  const editing = idx!=null? DB.coupons[idx] : null;
+  const codeI=h('input',{class:'input',value:editing?editing.code:'',placeholder:'ORNEK20'});
+  const typeS=h('select',{class:'select'}, ...[['percent','Yüzde İndirim'],['amount','Tutar İndirimi'],['ship','Ücretsiz Kargo']].map(o=>h('option',{value:o[0],selected:editing&&editing.type===o[0]},o[1])));
+  const valI=h('input',{class:'input',type:'number',value:editing?editing.value:10});
+  const maxI=h('input',{class:'input',type:'number',value:editing&&editing.max||'',placeholder:'Maksimum indirim (opsiyonel)'});
+  const minI=h('input',{class:'input',type:'number',value:editing?editing.min:0});
+  const limI=h('input',{class:'input',type:'number',value:editing?editing.limit:1000});
+  const labI=h('input',{class:'input',value:editing?editing.label:''});
+  const days=Math.max(1,Math.round(((editing?editing.expires:now()+30*DAY)-now())/DAY));
+  const dayI=h('input',{class:'input',type:'number',value:days});
+  openModal(modalShell(editing?'Kuponu Düzenle':'Yeni Kupon',
+    h('div',{},
+      h('div',{class:'field'}, h('label',{},'Kupon Kodu'), codeI),
+      h('div',{class:'field'}, h('label',{},'Tür'), typeS),
+      h('div',{class:'grid2'}, h('div',{class:'field'}, h('label',{},'Değer (% veya ₺)'), valI), h('div',{class:'field'}, h('label',{},'Maks. İndirim ₺'), maxI)),
+      h('div',{class:'grid2'}, h('div',{class:'field'}, h('label',{},'Min. Sepet ₺'), minI), h('div',{class:'field'}, h('label',{},'Kullanım Limiti'), limI)),
+      h('div',{class:'field'}, h('label',{},'Açıklama'), labI),
+      h('div',{class:'field'}, h('label',{},'Geçerlilik (gün)'), dayI),
+      h('button',{class:'btn block',onClick:()=>{
+        if(!codeI.value.trim()){ toast('Kod gerekli','err'); return; }
+        const rec={code:codeI.value.trim().toUpperCase(), type:typeS.value, value:+valI.value||0,
+          max: maxI.value? +maxI.value : null, min:+minI.value||0, limit:+limI.value||0,
+          label:labI.value||'İndirim kuponu', expires: now()+(+dayI.value||30)*DAY};
+        if(editing) Object.assign(editing,rec);
+        else DB.coupons.push({...rec, active:true, used:0});
+        saveDB(); closeModal(); render(); toast('Kaydedildi','ok');
+      }},'Kaydet'))));
+}
+
+/* ---------- ADMIN: CUSTOMERS ---------- */
+function AdminCustomers(){
+  const rows=DB.customers.map(c=>{
+    const os=DB.orders.filter(o=>o.userEmail===c.email);
+    return {c, orders:os.length, spent:os.reduce((a,o)=>a+o.totals.total,0), last:os[0]?os[0].date:null};
+  }).sort((a,b)=>b.spent-a.spent);
+  return h('div',{},
+    h('div',{class:'kpis'},
+      h('div',{class:'kpi'}, h('div',{class:'k'},'Toplam Müşteri'), h('div',{class:'v'}, DB.customers.length)),
+      h('div',{class:'kpi'}, h('div',{class:'k'},'Sipariş Veren'), h('div',{class:'v'}, rows.filter(r=>r.orders).length)),
+      h('div',{class:'kpi'}, h('div',{class:'k'},'Toplam Ciro'), h('div',{class:'v',style:{fontSize:'20px'}}, money(rows.reduce((a,r)=>a+r.spent,0))))),
+    h('div',{class:'panel',style:{padding:0}}, h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, h('th',{},'Müşteri'), h('th',{},'E-posta'), h('th',{},'Telefon'), h('th',{},'Sipariş'), h('th',{},'Harcama'), h('th',{},'Son Sipariş'), h('th',{},'Üyelik'))),
+      h('tbody',{}, ...rows.map(r=>h('tr',{},
+        h('td',{}, h('b',{},r.c.name)), h('td',{}, r.c.email), h('td',{}, r.c.phone||'—'),
+        h('td',{}, r.orders), h('td',{}, money(r.spent)),
+        h('td',{}, r.last? fmtDate(r.last):'—'), h('td',{}, fmtDate(r.c.joined)))))))));
+}
+
+/* ---------- ADMIN: REVIEWS ---------- */
+function AdminReviews(){
+  const all=DB.reviews.slice().sort((a,b)=>b.date-a.date);
+  return h('div',{},
+    h('p',{class:'muted'}, all.length+' değerlendirme · '+all.filter(r=>!r.approved).length+' onay bekliyor'),
+    h('div',{class:'panel',style:{padding:0}}, h('div',{class:'tablewrap'}, h('table',{class:'data'},
+      h('thead',{}, h('tr',{}, h('th',{},'Ürün'), h('th',{},'Kullanıcı'), h('th',{},'Puan'), h('th',{},'Yorum'), h('th',{},'Tarih'), h('th',{},'Durum'), h('th',{},''))),
+      h('tbody',{}, ...all.map(r=>{ const p=productById(r.productId); return h('tr',{},
+        h('td',{}, p? (p.emoji+' '+p.name.slice(0,26)) : '—'),
+        h('td',{}, r.user),
+        h('td',{}, h('span',{class:'stars'}, h('span',{class:'s'},starStr(r.rating)))),
+        h('td',{style:{maxWidth:'280px'}}, r.text),
+        h('td',{}, fmtDate(r.date)),
+        h('td',{}, h('span',{class:'st-badge',style:{background:r.approved?'var(--green-soft)':'var(--red-soft)',color:r.approved?'var(--green)':'var(--red)'}}, r.approved?'Yayında':'Bekliyor')),
+        h('td',{}, h('div',{class:'row',style:{gap:'4px'}},
+          h('button',{class:'btn sm ghost',onClick:()=>{ r.approved=!r.approved; saveDB(); render(); }}, r.approved?'Gizle':'Onayla'),
+          h('button',{class:'btn sm ghost',style:{color:'var(--red)'},onClick:()=>{ DB.reviews=DB.reviews.filter(x=>x.id!==r.id); saveDB(); render(); }},'Sil')))); }))))));
+}
+
+/* ---------- ADMIN: BANNERS ---------- */
+function AdminBanners(){
+  return h('div',{},
+    h('div',{class:'adminbar'}, h('div',{class:'grow'}), h('button',{class:'btn',onClick:()=>openBannerForm(null)},'+ Yeni Kampanya')),
+    h('div',{class:'pgrid wide'}, ...DB.banners.map((b,i)=>h('div',{class:'panel',style:{padding:0,overflow:'hidden'}},
+      h('div',{style:{background:bannerBg(b),color:'#fff',padding:'20px',minHeight:'120px'}},
+        h('div',{style:{fontSize:'40px',float:'right'}}, b.emoji),
+        h('b',{style:{fontSize:'16px'}}, b.title), h('p',{style:{opacity:.9,fontSize:'13px',margin:'6px 0 0'}}, b.sub)),
+      h('div',{style:{padding:'12px'}},
+        h('div',{class:'miniof',style:{marginBottom:'8px'}}, 'Buton: '+b.cta+' → '+b.href),
+        h('div',{class:'row',style:{gap:'6px'}},
+          h('button',{class:'btn sm ghost',onClick:()=>openBannerForm(i)},'Düzenle'),
+          h('button',{class:'btn sm ghost',onClick:()=>{ if(i>0){ [DB.banners[i-1],DB.banners[i]]=[DB.banners[i],DB.banners[i-1]]; saveDB(); render(); } }},'↑'),
+          h('button',{class:'btn sm ghost',style:{color:'var(--red)'},onClick:()=>{ DB.banners.splice(i,1); saveDB(); render(); }},'Sil')))))));
+}
+function openBannerForm(idx){
+  const editing = idx!=null? DB.banners[idx] : null;
+  const b = editing || {id:uid('b'),title:'',sub:'',cta:'Keşfet',href:'#/kategori/all',cA:'#f27a1a',cB:'#ff416c',emoji:'🔥',image:null};
+  const f={...b};
+  let bImgArr=b.image?[b.image]:[];
+  const bImgEd=imageEditor(bImgArr);
+  const mk=(k,label)=>{ const i=h('input',{class:'input',value:f[k],onInput:e=>f[k]=e.target.value}); return h('div',{class:'field'}, h('label',{},label), i); };
+  let grad=[b.cA,b.cB];
+  const gHost=h('div',{class:'imgpick'});
+  GRAD_CHOICES.forEach(g=>{ const o=h('div',{class:'opt',style:{background:`linear-gradient(120deg,${g[0]},${g[1]})`},onClick:()=>{ grad=g; f.cA=g[0]; f.cB=g[1]; $$('.opt',gHost).forEach(x=>x.classList.remove('on')); o.classList.add('on'); }}); if(g[0]===grad[0])o.classList.add('on'); gHost.appendChild(o); });
+  const hrefS=h('select',{class:'select',onChange:e=>f.href=e.target.value},
+    h('option',{value:'#/kategori/all',selected:f.href==='#/kategori/all'},'Tüm Ürünler'),
+    h('option',{value:'#/kampanyalar',selected:f.href==='#/kampanyalar'},'Kampanyalar'),
+    ...DB.categories.map(c=>h('option',{value:'#/kategori/'+c.slug,selected:f.href==='#/kategori/'+c.slug},c.name)));
+  openModal(modalShell(editing?'Kampanyayı Düzenle':'Yeni Kampanya',
+    h('div',{},
+      mk('title','Başlık'), mk('sub','Alt Metin'), mk('cta','Buton Metni'), mk('emoji','Emoji (fotoğraf yoksa)'),
+      h('div',{class:'field'}, h('label',{},'Arka Plan Fotoğrafı (gerçek görsel)'), bImgEd),
+      h('div',{class:'field'}, h('label',{},'Yönlendirme'), hrefS),
+      h('div',{class:'field'}, h('label',{},'Renk (fotoğraf yoksa / üzerine ton)'), gHost),
+      h('button',{class:'btn block',onClick:()=>{
+        Object.assign(b,f,{cA:grad[0],cB:grad[1],image:bImgArr[0]||null});
+        if(!editing) DB.banners.push(b);
+        saveDB(); closeModal(); render(); toast('Kaydedildi','ok');
+      }},'Kaydet'))));
+}
+
+/* ---------- ADMIN: SETTINGS ---------- */
+function AdminSettings(){
+  const s=DB.settings;
+  const nameI=h('input',{class:'input',value:s.siteName});
+  const shipI=h('input',{class:'input',type:'number',step:'0.01',value:s.shippingFee});
+  const thrI=h('input',{class:'input',type:'number',value:s.freeShippingThreshold});
+  const instI=h('input',{class:'input',type:'number',value:s.installmentMax});
+  const passI=h('input',{class:'input',value:s.adminPass});
+  const themeS=h('select',{class:'select'}, ...[['auto','Sistem'],['light','Açık'],['dark','Koyu']].map(o=>h('option',{value:o[0],selected:s.theme===o[0]},o[1])));
+  return h('div',{},
+    h('div',{class:'panel',style:{maxWidth:'520px'}},
+      h('h3',{},'Mağaza Ayarları'),
+      h('div',{class:'field'}, h('label',{},'Site Adı'), nameI),
+      h('div',{class:'grid2'},
+        h('div',{class:'field'}, h('label',{},'Kargo Ücreti (₺)'), shipI),
+        h('div',{class:'field'}, h('label',{},'Ücretsiz Kargo Limiti (₺)'), thrI)),
+      h('div',{class:'grid2'},
+        h('div',{class:'field'}, h('label',{},'Maks. Taksit'), instI),
+        h('div',{class:'field'}, h('label',{},'Tema'), themeS)),
+      h('div',{class:'field'}, h('label',{},'Yönetim Şifresi'), passI),
+      h('button',{class:'btn',onClick:()=>{
+        s.siteName=nameI.value||'Trenda'; s.shippingFee=+shipI.value||0; s.freeShippingThreshold=+thrI.value||0;
+        s.installmentMax=+instI.value||12; s.adminPass=passI.value||'admin123'; s.theme=themeS.value;
+        saveDB(); applyTheme(); render(); toast('Ayarlar kaydedildi','ok');
+      }},'Kaydet')),
+    h('div',{class:'panel',style:{maxWidth:'520px'}},
+      h('h3',{},'Veri Yönetimi'),
+      h('p',{class:'muted',style:{fontSize:'13px'}},'Tüm veriler tarayıcınızın localStorage’ında tutulur. Demo verilerini ilk haline döndürebilirsiniz.'),
+      h('div',{class:'row',style:{gap:'8px',flexWrap:'wrap'}},
+        h('button',{class:'btn ghost',onClick:()=>{ const blob=JSON.stringify(DB,null,2); navigator.clipboard&&navigator.clipboard.writeText(blob); toast('Veri panoya kopyalandı'); }},'📋 Veriyi Kopyala'),
+        h('button',{class:'btn red',onClick:()=>{ if(confirm('TÜM veriler silinip demo baştan yüklenecek. Emin misiniz?')) resetDB(); }},'🗑️ Demoyu Sıfırla'))),
+    h('div',{class:'panel',style:{maxWidth:'520px'}},
+      h('h3',{},'Özet'),
+      h('div',{class:'miniof',style:{lineHeight:2}},
+        h('div',{}, DB.products.length+' ürün · '+DB.products.filter(p=>p.active).length+' aktif'),
+        h('div',{}, DB.orders.length+' sipariş · '+DB.customers.length+' müşteri'),
+        h('div',{}, DB.sellers.length+' mağaza · '+DB.coupons.length+' kupon · '+DB.reviews.length+' değerlendirme'))));
+}
+
+/* ===================== RENDER DISPATCHER ===================== */
+const STORE_ROUTES={
+  home:HomePage, category:CategoryPage, product:ProductPage, store:StorePage,
+  cart:CartPage, checkout:CheckoutPage, order:OrderPage, account:AccountPage,
+  favorites:FavoritesPage, campaigns:CampaignsPage, search:SearchPage, notfound:NotFound,
+};
+function render(){
+  const root=$('#root');
+  clearInterval(heroTimer);
+  if(state.route==='admin'){
+    root.innerHTML='';
+    root.appendChild(AdminApp());
+    // mobil admin menü butonu görünürlüğü
+    const bg=$('#admBurger'); if(bg && window.innerWidth<=860) bg.style.display='inline-flex';
+    return;
+  }
+  const page=(STORE_ROUTES[state.route]||NotFound);
+  root.innerHTML='';
+  const content=page() || h('div',{});
+  root.append(Header(), h('main',{}, content), Footer(), MobileNav());
+  updateBadges();
+}
+
+/* ===================== INIT ===================== */
+DB=loadDB();
+// eksik alan güvenlikleri (eski kayıt şeması)
+['cart','favorites','recentlyViewed','followedStores','addresses','orders','customers','banners','coupons'].forEach(k=>{ if(!Array.isArray(DB[k])) DB[k]=[]; });
+if(!DB.settings) DB.settings={...SEED_SETTINGS};
+(DB.products||[]).forEach(p=>{ if(!Array.isArray(p.images)) p.images=[]; });
+(DB.sellers||[]).forEach(s=>{ if(!('logo' in s)) s.logo=null; });
+(DB.banners||[]).forEach(b=>{ if(!('image' in b)) b.image=null; });
+applyTheme();
+parseHash();
+render();
+window.addEventListener('resize', debounce(()=>{ if(state.route==='admin') render(); },200));
+console.log('%cTrenda','color:#f27a1a;font-size:20px;font-weight:bold','demo mağaza hazır · yönetim: #/admin (admin / admin123)');
+
+</script>
+</body>
+</html>

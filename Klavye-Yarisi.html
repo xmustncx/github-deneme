@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klavye Hız Yarışı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#e7e9e0;
+    --surface:#f3f4ee;
+    --surface-2:#ffffff;
+    --border:#c8ccbe;
+    --text:#22261d;
+    --text-dim:#5f6357;
+    --text-faint:#969a8b;
+    --accent:#b5451f;
+    --accent-2:#1f6f61;
+    --good:#2f7d4f;
+    --bad:#b23a2c;
+    --gold:#b8860b;
+    --road:#3a3f37;
+    --road-line:#f2c14e;
+    --shadow:0 1px 2px rgba(30,28,20,.06), 0 12px 34px -16px rgba(30,28,20,.28);
+    --radius:16px;
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono:'JetBrains Mono', Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#181a17;
+      --surface:#212420;
+      --surface-2:#2a2d27;
+      --border:#3a3e35;
+      --text:#e9e7dc;
+      --text-dim:#a0a494;
+      --text-faint:#6d7163;
+      --accent:#e06a3f;
+      --accent-2:#5ec3ae;
+      --good:#7ecb92;
+      --bad:#e2695c;
+      --gold:#e0a940;
+      --road:#2b2f28;
+      --road-line:#e0a940;
+      --shadow:0 1px 2px rgba(0,0,0,.35), 0 16px 40px -18px rgba(0,0,0,.6);
+    }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--font-body);
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px 16px;
+    line-height:1.5;
+  }
+  .app{
+    width:100%;
+    max-width:920px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 20px;
+    border-bottom:1px solid var(--border);
+    background:var(--surface-2);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.12rem}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+  .topright{display:flex;align-items:center;gap:8px}
+  .icon-btn{
+    cursor:pointer;border:1px solid var(--border);background:var(--surface);
+    width:34px;height:34px;border-radius:9px;font-size:1rem;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .icon-btn:hover{border-color:var(--accent)}
+  .tier-pill{
+    font-family:var(--font-mono);font-size:.78rem;font-weight:500;
+    color:var(--text-dim);
+    background:var(--surface);
+    border:1px solid var(--border);
+    padding:5px 12px;border-radius:999px;
+  }
+  .screen{padding:26px 22px 30px}
+  .hidden{display:none !important}
+
+  /* ---------- Menu ---------- */
+  h1{font-family:var(--font-display);font-size:1.9rem;line-height:1.15;margin-bottom:8px}
+  .lede{color:var(--text-dim);max-width:56ch;margin-bottom:20px}
+  .section-label{
+    font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--text-faint);margin-bottom:10px;
+  }
+  .seg{
+    display:inline-flex;border:1.5px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:22px;
+  }
+  .seg button{
+    cursor:pointer;border:none;background:var(--surface-2);color:var(--text-dim);
+    font-family:var(--font-body);font-weight:700;font-size:.9rem;padding:9px 18px;
+  }
+  .seg button.on{background:var(--accent);color:#fff}
+  .tier-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:22px;
+  }
+  .tier{
+    text-align:left;cursor:pointer;
+    background:var(--surface-2);
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    padding:11px 13px 10px;
+    transition:border-color .12s, transform .12s, background .12s;
+  }
+  .tier:hover{transform:translateY(-2px)}
+  .tier.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface-2))}
+  .tier .wpm{font-family:var(--font-mono);font-weight:700;font-size:1.12rem}
+  .tier .nm{font-size:.84rem;font-weight:600}
+  .tier .sub{font-size:.71rem;color:var(--text-faint);font-family:var(--font-mono)}
+  .tier .best{font-size:.71rem;color:var(--gold);font-weight:700;margin-top:5px;font-family:var(--font-mono);min-height:1em}
+
+  .btn{
+    font-family:var(--font-body);font-weight:700;font-size:.98rem;
+    cursor:pointer;border:none;border-radius:11px;
+    padding:13px 22px;
+    background:var(--accent);color:#fff;
+    transition:filter .12s, transform .12s;
+  }
+  .btn:hover{filter:brightness(1.06)}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn.ghost{background:var(--surface-2);color:var(--text);border:1.5px solid var(--border)}
+  .btn.small{padding:9px 15px;font-size:.85rem}
+  .btn.good{background:var(--good)}
+  .btn.bad{background:var(--bad)}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .menu-foot{margin-top:16px;display:flex;align-items:center;gap:12px}
+
+  /* ---------- Race ---------- */
+  .hud{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+  .stat{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:11px;
+    padding:9px 12px;text-align:center;
+  }
+  .stat .k{font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;color:var(--text-faint);font-weight:700}
+  .stat .v{font-family:var(--font-mono);font-weight:700;font-size:1.12rem;margin-top:2px}
+
+  .track-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+  .lane{
+    position:relative;background:var(--road);border-radius:12px;height:74px;overflow:hidden;
+    border:1px solid rgba(0,0,0,.25);
+  }
+  .lane .tag{
+    position:absolute;top:6px;left:10px;z-index:3;
+    font-size:.7rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.85);
+  }
+  .lane .roadline{
+    position:absolute;top:50%;left:0;right:0;height:4px;transform:translateY(-50%);
+    background:repeating-linear-gradient(90deg,var(--road-line) 0 26px,transparent 26px 52px);opacity:.75;
+  }
+  .lane.run .roadline{animation:dash 1s linear infinite}
+  .lane.run.fast .roadline{animation-duration:.5s}
+  @keyframes dash{to{background-position:-52px 0}}
+  .finish{
+    position:absolute;top:0;bottom:0;right:0;width:14px;z-index:2;
+    background:repeating-conic-gradient(#fff 0 25%, #111 0 50%) 0 0/14px 14px;opacity:.9;
+  }
+  .car{
+    position:absolute;bottom:10px;left:0;width:78px;z-index:4;
+    transition:left .18s linear;filter:drop-shadow(0 4px 4px rgba(0,0,0,.35));
+  }
+  .car svg{display:block;width:100%;height:auto}
+
+  .progressbars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+  .pb{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:8px 10px}
+  .pb .lbl{display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;color:var(--text-dim);margin-bottom:5px}
+  .pb .bar{height:7px;border-radius:99px;background:var(--border);overflow:hidden}
+  .pb .fill{height:100%;width:0;background:var(--accent);transition:width .18s linear}
+  .pb.cpu .fill{background:var(--text-dim)}
+
+  .typebox{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:16px 16px 14px}
+  .words{
+    font-family:var(--font-mono);font-size:1.12rem;line-height:1.9;
+    min-height:2.4em;margin-bottom:12px;
+  }
+  .cur{font-weight:700;padding:1px 4px;border-radius:5px;background:color-mix(in srgb,var(--accent) 14%,transparent)}
+  .cur .cw-good{color:var(--good)}
+  .cur .cw-bad{color:var(--bad);text-decoration:underline}
+  .cur .cw-pending{color:var(--text)}
+  .up{color:var(--text-faint)}
+  .words.shake{animation:shake .18s}
+  @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  #inp{
+    width:100%;font-family:var(--font-mono);font-size:1.05rem;padding:11px 13px;border-radius:9px;
+    border:1.5px solid var(--border);background:var(--bg);color:var(--text);outline:none;
+  }
+  #inp:focus{border-color:var(--accent)}
+  #inp:disabled{opacity:.5}
+  .hint{font-size:.76rem;color:var(--text-faint);margin-top:8px}
+
+  .countdown{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(3px);z-index:50;
+    font-family:var(--font-display);font-size:5rem;font-weight:700;color:var(--accent);
+  }
+
+  /* ---------- Result ---------- */
+  .result h2{font-family:var(--font-display);font-size:2.1rem;margin-bottom:6px}
+  .result .rsub{color:var(--text-dim);margin-bottom:14px}
+  .result .win{color:var(--good)}
+  .result .lose{color:var(--bad)}
+  .record-badge{
+    display:inline-block;margin-bottom:16px;padding:6px 14px;border-radius:999px;
+    background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--gold);
+    font-weight:800;font-size:.9rem;border:1.5px solid color-mix(in srgb,var(--gold) 45%,transparent);
+  }
+  .rstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:24px}
+  .divider{height:1px;background:var(--border);margin:18px 0}
+  .adjust-note{font-size:.82rem;color:var(--text-faint)}
+
+  @media (max-width:560px){
+    .hud{grid-template-columns:repeat(2,1fr)}
+    h1{font-size:1.55rem}
+    .result h2{font-size:1.7rem}
+    .countdown{font-size:3.4rem}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span>Klavye Hız Yarışı</div>
+    <div class="topright">
+      <button class="icon-btn" id="soundBtn" title="Ses aç/kapat">🔊</button>
+      <div class="tier-pill" id="tierPill">Seviye seçilmedi</div>
+    </div>
+  </div>
+
+  <!-- ============ MENU ============ -->
+  <section class="screen" id="menuScreen">
+    <h1>Yazdıkça hızlan, rakibi geçmeden bitiş çizgisine ulaş.</h1>
+    <p class="lede">Klavye vuruş hızını seç. Kırmızı araba senin, beyaz araba bilgisayarın.
+       Doğru yazdığın her kelime kırmızı arabayı ileri taşır. Bitişe önce sen varırsan kazanırsın.</p>
+
+    <div class="section-label">Metin Türü</div>
+    <div class="seg" id="modeSeg">
+      <button data-mode="passage" class="on">Pasaj</button>
+      <button data-mode="words">Rastgele Kelime</button>
+    </div>
+
+    <div class="section-label">Klavye Vuruş Hızı (KDS — kelime/dakika)</div>
+    <div class="tier-grid" id="tierGrid"></div>
+
+    <div class="btn-row">
+      <button class="btn" id="startBtn" disabled>Yarışı Başlat</button>
+      <span class="hint" id="menuHint">Devam etmek için bir seviye seç.</span>
+    </div>
+    <div class="menu-foot">
+      <button class="btn ghost small" id="resetBtn">Rekorları Sıfırla</button>
+      <span class="hint" id="resetHint"></span>
+    </div>
+  </section>
+
+  <!-- ============ RACE ============ -->
+  <section class="screen hidden" id="raceScreen">
+    <div class="hud">
+      <div class="stat"><div class="k">Süre</div><div class="v" id="sTime">0.0</div></div>
+      <div class="stat"><div class="k">Senin KDS</div><div class="v" id="sWpm">0</div></div>
+      <div class="stat"><div class="k">İsabet</div><div class="v" id="sAcc">100%</div></div>
+      <div class="stat"><div class="k">Bilgisayar KDS</div><div class="v" id="sCpu">0</div></div>
+    </div>
+
+    <div class="track-wrap">
+      <div class="lane" id="laneP">
+        <span class="tag">Sen</span><div class="roadline"></div><div class="finish"></div>
+        <div class="car" id="carP"></div>
+      </div>
+      <div class="lane" id="laneC">
+        <span class="tag">Bilgisayar</span><div class="roadline"></div><div class="finish"></div>
+        <div class="car" id="carC"></div>
+      </div>
+    </div>
+
+    <div class="progressbars">
+      <div class="pb"><div class="lbl"><span>Sen</span><span id="pbPtxt">0%</span></div><div class="bar"><div class="fill" id="pbP"></div></div></div>
+      <div class="pb cpu"><div class="lbl"><span>Bilgisayar</span><span id="pbCtxt">0%</span></div><div class="bar"><div class="fill" id="pbC"></div></div></div>
+    </div>
+
+    <div class="typebox">
+      <div class="words" id="wordsEl"><span class="cur" id="curWord"></span><span class="up" id="upWords"></span></div>
+      <input id="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" disabled placeholder="Yarış başlayınca buraya yaz...">
+      <div class="hint">Kelimeyi yaz ve <b>boşluk</b> tuşuna bas. Yanlış kelime arabayı ilerletmez, tekrar karşına gelir.</div>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section class="screen hidden result" id="resultScreen">
+    <h2 id="rTitle">—</h2>
+    <p class="rsub" id="rSub">—</p>
+    <div id="rRecord" class="record-badge hidden">🏅 Yeni Rekor!</div>
+    <div class="rstats" id="rStats"></div>
+    <div class="btn-row">
+      <button class="btn" id="againBtn">Tekrar Oyna</button>
+      <button class="btn ghost" id="menuBtn">Menüye Dön</button>
+    </div>
+    <div class="divider"></div>
+    <div class="btn-row">
+      <button class="btn" id="adjustBtn">—</button>
+      <span class="adjust-note" id="adjustNote"></span>
+    </div>
+  </section>
+</div>
+
+<div class="countdown hidden" id="countdown">3</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ------------------------------------------------------------------ *
+   *  Data
+   * ------------------------------------------------------------------ */
+  const TIERS = [
+    {wpm:15,  name:"İki Parmak"},   {wpm:20,  name:"Yeni Başlayan"},
+    {wpm:25,  name:"Acemi"},        {wpm:30,  name:"Yavaş"},
+    {wpm:35,  name:"Gelişen"},      {wpm:40,  name:"Ortalama Altı"},
+    {wpm:45,  name:"Ortalama"},     {wpm:50,  name:"İyi"},
+    {wpm:55,  name:"Ortalama Üstü"},{wpm:60,  name:"Hızlı"},
+    {wpm:70,  name:"Çok Hızlı"},    {wpm:80,  name:"İleri Seviye"},
+    {wpm:90,  name:"Uzman"},        {wpm:100, name:"Profesyonel"},
+    {wpm:110, name:"Yarışçı"},      {wpm:120, name:"Yarışmacı"},
+    {wpm:140, name:"Elit"},         {wpm:160, name:"Dünya Sınıfı"}
+  ];
+
+  const WORD_POOL = ("ve bir bu için ile de da çok az kadar sonra önce gibi ama fakat ancak yani zaman "+
+    "gün gece sabah akşam yıl saat dakika saniye insan çocuk kadın adam arkadaş aile ev okul iş yol "+
+    "araba kapı pencere masa sandalye kitap kalem defter kağıt telefon bilgisayar ekran klavye fare "+
+    "su ekmek çay kahve süt meyve sebze elma armut kiraz üzüm domates biber patates soğan "+
+    "kedi köpek kuş balık at inek koyun tavşan aslan kaplan fil zürafa maymun ayı kurt tilki "+
+    "kırmızı mavi yeşil sarı siyah beyaz turuncu mor pembe gri kahverengi lacivert "+
+    "gitmek gelmek almak vermek yapmak etmek olmak bakmak görmek duymak bilmek istemek "+
+    "sevmek yazmak okumak koşmak yürümek durmak başlamak bitirmek açmak kapamak bulmak "+
+    "büyük küçük uzun kısa geniş dar yüksek alçak hızlı yavaş sıcak soğuk yeni eski güzel "+
+    "kolay zor doğru yanlış ağır hafif temiz kirli dolu boş açık kapalı erken geç "+
+    "şehir köy ülke dünya deniz göl nehir dağ orman ova çöl ada sahil rüzgar bulut yağmur kar güneş "+
+    "yemek içmek uyumak kalkmak oturmak konuşmak dinlemek anlamak öğrenmek çalışmak oynamak gülmek "+
+    "para pazar market dükkan fiyat ucuz pahalı hesap kart nakit fiş poşet sepet "+
+    "renk sayı harf sözcük cümle satır sayfa bölüm konu soru cevap sınav ders not "+
+    "hafta ay mevsim bahar kış güz bugün yarın dün şimdi hemen belki her bazı hiç "+
+    "kalp göz kulak burun ağız el kol bacak ayak parmak saç diş omuz sırt karın").split(/\s+/);
+
+  const PASSAGES = [
+    "sabahın erken saatlerinde deniz kıyısında yürümek insana huzur verir. dalgalar usulca kıyıya vururken martılar gökyüzünde süzülür. kum ıslak ve serindir, ayak izleri kısa sürede kaybolur. uzakta bir balıkçı teknesi ağlarını toplar ve limana doğru yavaşça ilerler.",
+    "kitap okumak yeni dünyaların kapısını aralar. bir sayfayı çevirdiğinde kendini başka bir zamanda, başka bir şehirde bulabilirsin. iyi bir hikaye okuru düşündürür, güldürür ve bazen de gözlerini doldurur. bu yüzden her evde küçük de olsa bir kitaplık bulunmalıdır.",
+    "kış geldiğinde şehir bembeyaz bir örtüye bürünür. çocuklar sokaklarda kartopu oynar, kardan adamlar yapar. pencere kenarında sıcak bir çay içmek, dışarıdaki soğuğu daha katlanılır kılar. akşam olunca sokak lambaları karın üzerinde sarı bir ışık bırakır.",
+    "dağ yürüyüşü hem bedeni hem zihni dinlendirir. patika boyunca çam kokusu burnuna dolar, kuş sesleri sana eşlik eder. zirveye yaklaştıkça hava serinler ve manzara giderek genişler. tepeye vardığında bütün yorgunluk bir anda unutulur gider.",
+    "kahve birçok insan için güne başlamanın vazgeçilmez bir parçasıdır. taze çekilmiş çekirdeklerin kokusu mutfağı doldurur. kimi sade sever, kimi sütlü. önemli olan fincanı eline alıp birkaç dakika durmak, aceleye ara vermek ve derin bir nefes almaktır.",
+    "bisiklete binmek çocukluğun en güzel hatıralarından biridir. rüzgar saçlarının arasından geçerken kendini özgür hissedersin. mahalle aralarında pedal çevirmek, arkadaşlarla yarışmak ve akşam eve yorgun ama mutlu dönmek paha biçilemez bir duygudur.",
+    "gece gökyüzüne baktığında binlerce yıldız görürsün. bunların bir kısmının ışığı sana ulaşana kadar milyonlarca yıl geçmiştir. evren sessiz, geniş ve merak uyandırıcıdır. insan bu büyüklük karşısında hem küçüldüğünü hem de bir parçası olduğunu hisseder.",
+    "bahar gelince ağaçlar yeniden çiçek açar, kuşlar yuva yapmaya başlar. havada ılık bir rüzgar ve toprak kokusu vardır. parklar yeşerir, insanlar dışarı çıkıp güneşin tadını çıkarır. uzun kış aylarından sonra bu canlanma herkese iyi gelir.",
+    "müzik dil bilmeden anlaşılan bir şeydir. bir melodi seni yıllar öncesine, unuttuğunu sandığın bir güne götürebilir. kimi zaman neşelendirir, kimi zaman sakinleştirir. kulaklığı takıp gözlerini kapattığında dünya bir süreliğine yavaşlar.",
+    "büyük şehirde sabahlar telaşlıdır. otobüs durakları kalabalık, caddeler araç doludur. herkesin gitmesi gereken bir yer, yetişmesi gereken bir saat vardır. yine de bir köşe başındaki simitçi ya da yaşlı bir çınar, bu koşuşturmaya küçük bir mola verdirir.",
+    "yolculuk sadece bir yerden bir yere gitmek değildir. yeni yüzler, yeni tatlar ve yeni sesler demektir. tren camından geçip giden tarlaları izlemek, haritada daha önce hiç duymadığın bir kasabada durmak insanın bakış açısını genişletir.",
+    "iyi bir dost, zor gününde yanında olan kişidir. çok konuşmasa bile varlığı yeter. yıllar geçse, araya mesafeler girse bile telefonu açtığında hiç ayrılmamış gibi kaldığın yerden devam edersin. böyle dostluklar hayatın en değerli hazineleridir.",
+    "teknoloji hayatımızı hızlandırdı ama bazen yavaşlamayı da öğrenmek gerekir. ekranlardan başımızı kaldırıp karşımızdaki insanın gözüne bakmak, bir defter açıp elle not almak küçük ama değerli alışkanlıklardır. denge kurmak her şeyin anahtarıdır.",
+    "yağmurlu bir günde evde olmak ayrı bir keyiftir. cama vuran damlaların sesi, sıcak bir battaniye ve yarım kalmış bir kitap. dışarı çıkmak zorunda değilsen, yağmur sana ait bir gün armağan eder. çay demlenir, saatler fark edilmeden geçer.",
+    "her akşam biraz yürümek basit ama etkili bir alışkanlıktır. gün içinde biriken düşünceler adım adım yerine oturur. mahalledeki fırının kokusu, komşuların selamı ve gökyüzünün rengi derken zihin yavaş yavaş sakinleşir ve uyku daha kolay gelir.",
+    "mutfakta yemek yapmak bir tür dinlenmedir. sebzeleri doğrarken, tencerenin kaynamasını beklerken insan ellerine ve o ana odaklanır. sonunda sofraya sıcak bir tabak koymak ve sevdiklerinle paylaşmak günün en güzel bölümü olabilir."
+  ];
+
+  const TOTAL_WORDS = 30;            // bitiş çizgisi = 30 doğru kelime
+  const LS = { sound:'khy_sound', mode:'khy_mode', best:'khy_best_v1' };
+
+  /* ------------------------------------------------------------------ *
+   *  Safe localStorage
+   * ------------------------------------------------------------------ */
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+  let bests = {};
+  try{ bests = JSON.parse(lsGet(LS.best) || '{}') || {}; }catch(e){ bests = {}; }
+  function saveBests(){ lsSet(LS.best, JSON.stringify(bests)); }
+
+  /* ------------------------------------------------------------------ *
+   *  Sound (Web Audio, no files)
+   * ------------------------------------------------------------------ */
+  let actx = null;
+  let soundOn = lsGet(LS.sound) !== '0';
+  function ac(){
+    if(!actx){ try{ actx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ actx = null; } }
+    return actx;
+  }
+  function tone(freq, dur, type, vol, delay){
+    if(!soundOn) return;
+    const c = ac(); if(!c) return;
+    const t0 = c.currentTime + (delay || 0);
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.14, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t0); o.stop(t0 + dur + 0.03);
+  }
+  const sfx = {
+    ok(){ tone(680, 0.06, 'square', 0.05); },
+    bad(){ tone(150, 0.16, 'sawtooth', 0.10); },
+    tick(){ tone(440, 0.10, 'sine', 0.13); },
+    go(){ tone(880, 0.22, 'sine', 0.18); },
+    win(){ [0,0.12,0.24,0.42].forEach((d,i)=>tone([523,659,784,1047][i], 0.22, 'triangle', 0.15, d)); },
+    lose(){ [0,0.14,0.30].forEach((d,i)=>tone([392,311,233][i], 0.28, 'sawtooth', 0.13, d)); }
+  };
+
+  /* ------------------------------------------------------------------ *
+   *  Element refs
+   * ------------------------------------------------------------------ */
+  const $ = id => document.getElementById(id);
+  const menuScreen=$('menuScreen'), raceScreen=$('raceScreen'), resultScreen=$('resultScreen');
+  const tierGrid=$('tierGrid'), tierPill=$('tierPill'), startBtn=$('startBtn'), menuHint=$('menuHint');
+  const modeSeg=$('modeSeg'), soundBtn=$('soundBtn'), resetBtn=$('resetBtn'), resetHint=$('resetHint');
+  const inp=$('inp'), curWord=$('curWord'), upWords=$('upWords'), wordsEl=$('wordsEl');
+  const carP=$('carP'), carC=$('carC'), laneP=$('laneP'), laneC=$('laneC');
+  const pbP=$('pbP'), pbC=$('pbC'), pbPtxt=$('pbPtxt'), pbCtxt=$('pbCtxt');
+  const sTime=$('sTime'), sWpm=$('sWpm'), sAcc=$('sAcc'), sCpu=$('sCpu');
+  const countdown=$('countdown');
+  const rTitle=$('rTitle'), rSub=$('rSub'), rStats=$('rStats'), rRecord=$('rRecord');
+  const againBtn=$('againBtn'), menuBtn=$('menuBtn'), adjustBtn=$('adjustBtn'), adjustNote=$('adjustNote');
+
+  /* ------------------------------------------------------------------ *
+   *  Cars
+   * ------------------------------------------------------------------ */
+  function carSVG(body, isWhite){
+    const stroke = isWhite ? '#3a3a3a' : 'rgba(0,0,0,.25)';
+    return `<svg viewBox="0 0 120 52" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 34 h108 a4 4 0 0 1 4 4 v4 a4 4 0 0 1 -4 4 h-108 a4 4 0 0 1 -4 -4 v-4 a4 4 0 0 1 4 -4 z" fill="${body}" stroke="${stroke}"/>
+      <path d="M20 34 L34 16 Q37 12 43 12 H74 Q80 12 84 16 L98 34 Z" fill="${body}" stroke="${stroke}"/>
+      <path d="M40 32 L47 18 H60 V32 Z M64 32 V18 H72 L80 32 Z" fill="#bfe3ff" stroke="${stroke}" stroke-width="1"/>
+      <rect x="110" y="30" width="6" height="6" rx="2" fill="#ffe27a"/>
+      <circle cx="34" cy="45" r="9" fill="#1c1c1c"/><circle cx="34" cy="45" r="3.6" fill="#9aa0a6"/>
+      <circle cx="88" cy="45" r="9" fill="#1c1c1c"/><circle cx="88" cy="45" r="3.6" fill="#9aa0a6"/>
+    </svg>`;
+  }
+  carP.innerHTML = carSVG('#d23b25', false);
+  carC.innerHTML = carSVG('#f2f2f2', true);
+
+  /* ------------------------------------------------------------------ *
+   *  State
+   * ------------------------------------------------------------------ */
+  let selIdx = -1;
+  let mode = (lsGet(LS.mode) === 'words') ? 'words' : 'passage';
+  let race = null;
+
+  /* ------------------------------------------------------------------ *
+   *  Menu
+   * ------------------------------------------------------------------ */
+  TIERS.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='tier';
+    b.dataset.i=i;
+    b.innerHTML=`<div class="wpm">${t.wpm} KDS</div><div class="nm">${t.name}</div>`+
+                `<div class="sub">~${t.wpm*5} vuruş/dk</div><div class="best" data-best></div>`;
+    b.addEventListener('click',()=>selectTier(i));
+    tierGrid.appendChild(b);
+  });
+  refreshBests();
+
+  function refreshBests(){
+    tierGrid.querySelectorAll('.tier').forEach(el=>{
+      const w = TIERS[+el.dataset.i].wpm;
+      const rec = bests[w];
+      const slot = el.querySelector('[data-best]');
+      slot.textContent = (rec && rec.time!=null) ? `★ en iyi ${rec.time.toFixed(1)} sn` : '';
+    });
+  }
+
+  function selectTier(i){
+    selIdx=i;
+    [...tierGrid.children].forEach((c,ci)=>c.classList.toggle('selected',ci===i));
+    startBtn.disabled=false;
+    menuHint.textContent='';
+    updatePill();
+  }
+  function updatePill(){
+    if(selIdx<0){ tierPill.textContent='Seviye seçilmedi'; return; }
+    const t=TIERS[selIdx];
+    tierPill.textContent=`Seviye ${selIdx+1}/${TIERS.length} · ${t.wpm} KDS · ${t.name}`;
+  }
+
+  modeSeg.addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]'); if(!btn) return;
+    mode=btn.dataset.mode;
+    lsSet(LS.mode, mode);
+    [...modeSeg.children].forEach(c=>c.classList.toggle('on', c.dataset.mode===mode));
+  });
+  [...modeSeg.children].forEach(c=>c.classList.toggle('on', c.dataset.mode===mode));
+
+  soundBtn.addEventListener('click',()=>{
+    soundOn=!soundOn;
+    lsSet(LS.sound, soundOn ? '1' : '0');
+    soundBtn.textContent = soundOn ? '🔊' : '🔇';
+    if(soundOn){ const c=ac(); if(c && c.state==='suspended') c.resume(); sfx.tick(); }
+  });
+  soundBtn.textContent = soundOn ? '🔊' : '🔇';
+
+  resetBtn.addEventListener('click',()=>{
+    if(!confirm('Tüm seviyelerdeki rekorlar silinsin mi?')) return;
+    bests={}; lsDel(LS.best); refreshBests();
+    resetHint.textContent='Rekorlar silindi.';
+    setTimeout(()=>resetHint.textContent='',2500);
+  });
+
+  startBtn.addEventListener('click',()=>{ const c=ac(); if(c && c.state==='suspended') c.resume(); startRace(); });
+  againBtn.addEventListener('click',()=>startRace());
+  menuBtn.addEventListener('click',()=>show('menu'));
+
+  function show(which){
+    menuScreen.classList.toggle('hidden',which!=='menu');
+    raceScreen.classList.toggle('hidden',which!=='race');
+    resultScreen.classList.toggle('hidden',which!=='result');
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Queue building
+   * ------------------------------------------------------------------ */
+  function randomPassageWords(){
+    return PASSAGES[(Math.random()*PASSAGES.length)|0].split(/\s+/).filter(Boolean);
+  }
+  function buildQueue(){
+    const need = TOTAL_WORDS + 40;
+    let q = [];
+    if(mode==='passage'){
+      q = randomPassageWords();
+      while(q.length < need) q = q.concat(randomPassageWords());
+    }else{
+      for(let i=0;i<need;i++) q.push(WORD_POOL[(Math.random()*WORD_POOL.length)|0]);
+    }
+    return q;
+  }
+  function refillQueue(){
+    if(race.queue.length - race.qi >= 22) return;
+    const more = (mode==='passage') ? randomPassageWords()
+                                    : Array.from({length:24},()=>WORD_POOL[(Math.random()*WORD_POOL.length)|0]);
+    race.queue = race.queue.concat(more);
+  }
+
+  function escapeHtml(s){ return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+  function renderWords(){
+    const target = race.queue[race.qi] || '';
+    const val = inp.value;
+    let html='';
+    for(let i=0;i<target.length;i++){
+      let cls='cw-pending';
+      if(i<val.length) cls = (val[i]===target[i]) ? 'cw-good' : 'cw-bad';
+      html += `<span class="${cls}">${escapeHtml(target[i])}</span>`;
+    }
+    if(val.length>target.length) html += `<span class="cw-bad">${escapeHtml(val.slice(target.length))}</span>`;
+    curWord.innerHTML = html;
+    upWords.textContent = ' ' + race.queue.slice(race.qi+1, race.qi+16).join(' ');
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Race flow
+   * ------------------------------------------------------------------ */
+  function startRace(){
+    updatePill();
+    const tier = TIERS[selIdx];
+    race = {
+      tier, cpuWpm:tier.wpm,
+      queue:buildQueue(), qi:0,
+      correct:0, errors:0, keystrokes:0, correctKeys:0,
+      startTime:0, running:false, finished:false, ended:false,
+      pFrac:0, cFrac:0
+    };
+    show('race');
+    inp.value=''; inp.disabled=true;
+    renderWords();
+    setCar(carP,0); setCar(carC,0);
+    pbP.style.width='0%'; pbC.style.width='0%'; pbPtxt.textContent='0%'; pbCtxt.textContent='0%';
+    sTime.textContent='0.0'; sWpm.textContent='0'; sAcc.textContent='100%'; sCpu.textContent=String(tier.wpm);
+    laneP.classList.remove('run','fast'); laneC.classList.remove('run','fast');
+
+    let n=3;
+    countdown.textContent=n;
+    countdown.classList.remove('hidden');
+    sfx.tick();
+    const iv=setInterval(()=>{
+      n--;
+      if(n>0){ countdown.textContent=n; sfx.tick(); }
+      else if(n===0){ countdown.textContent='Başla!'; sfx.go(); }
+      else{ clearInterval(iv); countdown.classList.add('hidden'); beginRun(); }
+    },800);
+  }
+
+  function beginRun(){
+    race.running=true;
+    race.startTime=performance.now();
+    inp.disabled=false;
+    inp.focus();
+    laneP.classList.add('run'); laneC.classList.add('run');
+    if(race.cpuWpm>=90) laneC.classList.add('fast');
+    requestAnimationFrame(loop);
+  }
+
+  function setCar(el,frac){
+    const lane=el.parentElement;
+    const span=lane.clientWidth - el.clientWidth - 16;
+    el.style.left=Math.max(0,Math.min(span,frac*span))+'px';
+  }
+
+  function loop(now){
+    if(!race || !race.running) return;
+    const elapsed=(now-race.startTime)/1000;
+    const cpuWords=elapsed*(race.cpuWpm/60);
+    race.cFrac=Math.min(1,cpuWords/TOTAL_WORDS);
+    race.pFrac=Math.min(1,race.correct/TOTAL_WORDS);
+
+    setCar(carP,race.pFrac); setCar(carC,race.cFrac);
+    pbP.style.width=(race.pFrac*100).toFixed(1)+'%';
+    pbC.style.width=(race.cFrac*100).toFixed(1)+'%';
+    pbPtxt.textContent=Math.round(race.pFrac*100)+'%';
+    pbCtxt.textContent=Math.round(race.cFrac*100)+'%';
+
+    sTime.textContent=elapsed.toFixed(1);
+    const liveWpm = elapsed>0 ? Math.round(race.correct/(elapsed/60)) : 0;
+    sWpm.textContent=String(liveWpm);
+    laneP.classList.toggle('fast', liveWpm>=90);
+    const acc = race.keystrokes>0 ? Math.round(race.correctKeys/race.keystrokes*100) : 100;
+    sAcc.textContent=acc+'%';
+
+    if(race.pFrac>=1){ endRace(true); return; }
+    if(race.cFrac>=1){ endRace(false); return; }
+    requestAnimationFrame(loop);
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  Typing
+   * ------------------------------------------------------------------ */
+  inp.addEventListener('keydown',e=>{
+    if(!race||!race.running) return;
+    if(e.key==='Enter'){
+      e.preventDefault();
+      const v=inp.value.trim();
+      if(v){ submitWordValue(v); inp.value=''; renderWords(); }
+      return;
+    }
+    if(e.key.length===1){ race.keystrokes++; }
+  });
+  inp.addEventListener('input',()=>{
+    if(!race||!race.running) return;
+    let v=inp.value;
+    if(v.indexOf(' ')!==-1){
+      const parts=v.split(' ');
+      for(let i=0;i<parts.length-1;i++){ if(parts[i].length) submitWordValue(parts[i]); }
+      inp.value=parts[parts.length-1];
+    }
+    renderWords();
+  });
+
+  function submitWordValue(typed){
+    if(!race||!race.running||race.finished) return;
+    const target=race.queue[race.qi];
+    if(typed===target){
+      race.correct++;
+      race.correctKeys+=target.length;
+      race.qi++;
+      sfx.ok();
+    }else{
+      race.errors++;
+      let m=0; while(m<typed.length && m<target.length && typed[m]===target[m]) m++;
+      race.correctKeys+=m;
+      race.queue.push(target);            // yanlış kelime tekrar sıraya girer
+      race.qi++;
+      sfx.bad();
+      wordsEl.classList.remove('shake'); void wordsEl.offsetWidth; wordsEl.classList.add('shake');
+    }
+    refillQueue();
+    if(race.correct>=TOTAL_WORDS){ race.correct=TOTAL_WORDS; endRace(true); }
+  }
+
+  /* ------------------------------------------------------------------ *
+   *  End / result / records
+   * ------------------------------------------------------------------ */
+  function endRace(playerWon){
+    if(!race || race.ended) return;
+    race.ended=true; race.running=false; race.finished=true;
+    laneP.classList.remove('run'); laneC.classList.remove('run');
+    inp.disabled=true;
+
+    const elapsed = parseFloat(sTime.textContent) || 0;
+    const pWpm = elapsed>0 ? Math.round(race.correct/(elapsed/60)) : 0;
+    const acc  = race.keystrokes>0 ? Math.round(race.correctKeys/race.keystrokes*100) : 100;
+
+    // ---- record keeping ----
+    const key = String(race.tier.wpm);
+    const rec = bests[key] || { time:null, wpm:0, wins:0, races:0 };
+    rec.races++;
+    let newRecord=false;
+    if(playerWon){
+      rec.wins++;
+      if(rec.time==null || elapsed < rec.time){ rec.time=elapsed; newRecord=true; }
+      if(pWpm > rec.wpm) rec.wpm=pWpm;
+    }
+    bests[key]=rec;
+    saveBests();
+    refreshBests();
+
+    playerWon ? sfx.win() : sfx.lose();
+
+    show('result');
+    rTitle.textContent = playerWon ? 'KAZANDIN! 🏆' : 'KAYBETTİN 💨';
+    rTitle.className = playerWon ? 'win' : 'lose';
+    rSub.textContent = playerWon
+      ? `Bilgisayarı ${race.tier.wpm} KDS seviyesinde geçtin.`
+      : `Bilgisayar (${race.tier.wpm} KDS) bitişe önce ulaştı.`;
+    rRecord.classList.toggle('hidden', !newRecord);
+
+    rStats.innerHTML='';
+    [
+      ['Süre', elapsed.toFixed(1)+' sn'],
+      ['Senin KDS', String(pWpm)],
+      ['İsabet', acc+'%'],
+      ['Doğru Kelime', race.correct+' / '+TOTAL_WORDS],
+      ['Hatalı Kelime', String(race.errors)],
+      ['Bu Seviyede Rekor', rec.time!=null ? rec.time.toFixed(1)+' sn' : '—'],
+      ['Galibiyet / Yarış', rec.wins+' / '+rec.races],
+      ['Bilgisayar KDS', String(race.tier.wpm)]
+    ].forEach(([k,v])=>{
+      const d=document.createElement('div');
+      d.className='stat';
+      d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
+      rStats.appendChild(d);
+    });
+
+    // ---- adjust button ----
+    if(playerWon){
+      const has = selIdx < TIERS.length-1;
+      adjustBtn.className='btn good';
+      adjustBtn.textContent='Hızı Arttır ▲';
+      adjustBtn.disabled=!has;
+      if(has){
+        adjustBtn.onclick=()=>{ selIdx++; updatePill(); startRace(); };
+        adjustNote.textContent=`Sonraki seviye: ${TIERS[selIdx+1].wpm} KDS · ${TIERS[selIdx+1].name}`;
+      }else{
+        adjustBtn.onclick=null;
+        adjustNote.textContent='En yüksek seviyedesin. Zirvedesin! 🎉';
+      }
+    }else{
+      const has = selIdx > 0;
+      adjustBtn.className='btn bad';
+      adjustBtn.textContent='Hızı Azalt ▼';
+      adjustBtn.disabled=!has;
+      if(has){
+        adjustBtn.onclick=()=>{ selIdx--; updatePill(); startRace(); };
+        adjustNote.textContent=`Önceki seviye: ${TIERS[selIdx-1].wpm} KDS · ${TIERS[selIdx-1].name}`;
+      }else{
+        adjustBtn.onclick=null;
+        adjustNote.textContent='En düşük seviyedesin. Bu tempoda çalışmaya devam!';
+      }
+    }
+  }
+
+  window.addEventListener('resize',()=>{
+    if(race && !raceScreen.classList.contains('hidden')){
+      setCar(carP,race.pFrac); setCar(carC,race.cFrac);
+    }
+  });
+
+  // convenience default
+  selectTier(6); // 45 KDS
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manşet — Bağımsız Haber</title>
+<meta name="description" content="Gündem, ekonomi, spor, teknoloji, kültür ve dünya haberleri.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23111'/%3E%3Cpath d='M7 9h18M7 14h18M7 19h12' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='22' r='3' fill='%23c8102e'/%3E%3C/svg%3E">
+<style>
+:root{
+  --paper:#ffffff; --paper-2:#f7f7f5; --paper-3:#efefec;
+  --ink:#14140f; --ink-2:#4b4b44; --ink-3:#84847b;
+  --line:#e0e0da; --line-2:#cecec6;
+  --red:#c8102e; --red-dark:#9c0c23;
+  --blue:#1a5fb4; --green:#1a7f45; --amber:#b45309;
+  --r:4px;
+  --serif:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --sans:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+:root[data-theme="dark"]{
+  --paper:#111312; --paper-2:#181a19; --paper-3:#202422;
+  --ink:#eceee9; --ink-2:#a8aca4; --ink-3:#787d74;
+  --line:#2a2e2b; --line-2:#3a403c;
+  --red:#ef4b62; --red-dark:#c8102e;
+  --blue:#6aa3f0; --green:#4cc47d; --amber:#e0a33f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;color:inherit}
+img,video{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.wrap{width:100%;max-width:1220px;margin:0 auto;padding:0 20px}
+.hidden{display:none !important}
+.dim{color:var(--ink-2)} .faint{color:var(--ink-3)}
+
+/* ---------- üst ---------- */
+.tick{background:var(--ink);color:#f4f4f0;font-size:.78rem;overflow:hidden}
+.tick__in{display:flex;align-items:center;gap:14px;height:34px;white-space:nowrap}
+.tick__tag{background:var(--red);color:#fff;font-weight:800;letter-spacing:.06em;padding:3px 9px;border-radius:3px;flex:none;font-size:.7rem}
+.tick__track{overflow:hidden;flex:1;position:relative;height:20px}
+.tick__track ul{display:flex;gap:44px;list-style:none;position:absolute;left:0;animation:tickmove 34s linear infinite}
+@keyframes tickmove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick__track li{opacity:.9}
+
+.mast{border-bottom:2px solid var(--ink);padding:18px 0 14px}
+.mast__in{display:flex;align-items:center;gap:20px}
+.mast__date{font-size:.76rem;color:var(--ink-3);flex:1;min-width:0}
+.logo{font-family:var(--serif);font-weight:700;font-size:clamp(1.7rem,4.6vw,2.6rem);letter-spacing:-.03em;line-height:1;text-align:center;flex:none}
+.logo i{font-style:normal;color:var(--red)}
+.mast__act{flex:1;display:flex;justify-content:flex-end;gap:8px}
+.ibtn{width:36px;height:36px;border-radius:var(--r);border:1px solid var(--line);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.ibtn:hover{background:var(--paper-2)}
+.ibtn.on{background:var(--red);border-color:var(--red);color:#fff}
+
+.nav{border-bottom:1px solid var(--line);position:sticky;top:0;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(10px);z-index:50}
+.nav__in{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav__in::-webkit-scrollbar{display:none}
+.nav a{padding:12px 14px;font-size:.87rem;font-weight:700;letter-spacing:.01em;color:var(--ink-2);white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px}
+.nav a:hover{color:var(--ink)}
+.nav a.on{color:var(--red);border-bottom-color:var(--red)}
+
+/* ---------- arama ---------- */
+.search{border-bottom:1px solid var(--line);padding:12px 0;background:var(--paper-2)}
+.search input{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:11px 14px;font-size:.95rem;outline:none}
+.search input:focus{border-color:var(--red)}
+
+/* ---------- düzen ---------- */
+.lead{display:grid;grid-template-columns:1.7fr 1fr;gap:28px;padding:28px 0;border-bottom:1px solid var(--line)}
+.lead__side{display:flex;flex-direction:column;gap:18px}
+
+.a-cover{position:relative;background:var(--paper-3);border-radius:var(--r);overflow:hidden;aspect-ratio:16/9}
+.a-cover img,.a-cover video{width:100%;height:100%;object-fit:cover}
+.a-cover .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:var(--ink-3);background:repeating-linear-gradient(45deg,var(--paper-3) 0 12px,var(--paper-2) 12px 24px)}
+.a-cover .vbadge{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.75);color:#fff;font-size:.7rem;font-weight:700;padding:4px 9px;border-radius:3px;display:flex;gap:5px;align-items:center}
+
+.kicker{display:inline-block;font-size:.71rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+.h-lead{font-family:var(--serif);font-weight:700;font-size:clamp(1.6rem,3.8vw,2.5rem);line-height:1.14;letter-spacing:-.02em;margin:12px 0 10px}
+.h-lead a:hover{color:var(--red)}
+.sum{color:var(--ink-2);font-size:1rem;max-width:62ch}
+.meta{display:flex;gap:12px;align-items:center;font-size:.77rem;color:var(--ink-3);margin-top:10px;flex-wrap:wrap}
+.meta b{font-weight:600;color:var(--ink-2)}
+
+.mini{display:grid;grid-template-columns:96px 1fr;gap:13px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.mini:last-child{border-bottom:0;padding-bottom:0}
+.mini .a-cover{aspect-ratio:1;border-radius:var(--r)}
+.mini h3{font-family:var(--serif);font-size:1.02rem;font-weight:600;line-height:1.28;letter-spacing:-.01em}
+.mini h3 a:hover{color:var(--red)}
+
+.sec{padding:30px 0}
+.sec__h{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.sec__h h2{font-family:var(--serif);font-size:1.4rem;font-weight:700;letter-spacing:-.02em;flex:none}
+.sec__h .rule{flex:1;height:1px;background:var(--line)}
+.sec__h a{font-size:.8rem;font-weight:700;color:var(--red);flex:none}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:26px}
+.card h3{font-family:var(--serif);font-size:1.16rem;font-weight:600;line-height:1.26;letter-spacing:-.012em;margin:10px 0 6px}
+.card h3 a:hover{color:var(--red)}
+.card p{font-size:.89rem;color:var(--ink-2)}
+
+/* ---------- makale ---------- */
+.article{max-width:760px;margin:0 auto;padding:30px 0 50px}
+.article h1{font-family:var(--serif);font-weight:700;font-size:clamp(1.8rem,4.6vw,2.85rem);line-height:1.1;letter-spacing:-.025em;margin:14px 0 14px}
+.article .sum{font-size:1.12rem;color:var(--ink-2);border-left:3px solid var(--red);padding-left:16px;margin-bottom:20px}
+.article .a-cover{aspect-ratio:16/9;margin-bottom:8px}
+.cap{font-size:.79rem;color:var(--ink-3);padding:6px 2px 20px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.body{font-family:var(--serif);font-size:1.13rem;line-height:1.78}
+.body p{margin-bottom:18px}
+.body h2{font-family:var(--serif);font-size:1.35rem;margin:28px 0 12px;letter-spacing:-.015em}
+.body blockquote{border-left:3px solid var(--line-2);padding-left:18px;margin:22px 0;color:var(--ink-2);font-style:italic}
+
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin:26px 0}
+.gal figure{background:var(--paper-3);border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;cursor:zoom-in}
+.gal img{width:100%;height:100%;object-fit:cover}
+
+.vidwrap{background:#000;border-radius:var(--r);overflow:hidden;margin:24px 0}
+.vidwrap video{width:100%;max-height:70vh}
+
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;object-fit:contain}
+
+.share{display:flex;gap:8px;margin:28px 0;flex-wrap:wrap}
+
+/* ---------- yönetim ---------- */
+.admin{padding:26px 0 60px}
+.admin__bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:16px;border-bottom:2px solid var(--ink)}
+.admin__bar h1{font-family:var(--serif);font-size:1.55rem;letter-spacing:-.02em;margin-right:auto}
+
+.editor{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;align-items:start}
+.card-box{background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:20px}
+.card-box+.card-box{margin-top:16px}
+.card-box h3{font-size:.98rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.fl{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fl label{font-size:.78rem;font-weight:700;color:var(--ink-2)}
+.fl input,.fl select,.fl textarea{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+  padding:10px 12px;font-size:.94rem;outline:none;width:100%;
+}
+.fl textarea{min-height:220px;resize:vertical;font-family:var(--serif);font-size:1rem;line-height:1.7}
+.fl input:focus,.fl select:focus,.fl textarea:focus{border-color:var(--red)}
+.fl .hint{font-size:.76rem;color:var(--ink-3)}
+.fl2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.drop{
+  border:2px dashed var(--line-2);border-radius:6px;padding:22px;text-align:center;
+  cursor:pointer;transition:border-color .15s,background .15s;
+}
+.drop:hover,.drop.over{border-color:var(--red);background:color-mix(in srgb,var(--red) 5%,transparent)}
+.drop b{display:block;font-size:.92rem;margin-bottom:3px}
+.drop span{font-size:.79rem;color:var(--ink-3)}
+
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:12px}
+.thumb{position:relative;aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:var(--paper-3)}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.thumb button{
+  position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;
+  border:0;background:rgba(0,0,0,.72);color:#fff;cursor:pointer;font-size:.8rem;line-height:1;
+}
+.thumb .kind{position:absolute;left:3px;bottom:3px;background:rgba(0,0,0,.72);color:#fff;font-size:.6rem;padding:1px 5px;border-radius:3px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  font-weight:700;font-size:.88rem;padding:10px 18px;border-radius:var(--r);
+  border:1px solid transparent;background:var(--red);color:#fff;cursor:pointer;white-space:nowrap;
+  transition:filter .15s,transform .1s;
+}
+.btn:hover{filter:brightness(1.08)} .btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn--ghost{background:transparent;border-color:var(--line-2);color:var(--ink)}
+.btn--ghost:hover{background:var(--paper-3);filter:none}
+.btn--dark{background:var(--ink);color:var(--paper)}
+.btn--sm{padding:7px 13px;font-size:.81rem}
+.btn-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+.list{display:flex;flex-direction:column;gap:8px}
+.row{
+  display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;
+  background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:10px 12px;
+}
+.row__th{width:56px;height:42px;border-radius:3px;overflow:hidden;background:var(--paper-3);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.row__th img,.row__th video{width:100%;height:100%;object-fit:cover}
+.row h4{font-size:.92rem;font-weight:600;line-height:1.3;margin-bottom:2px}
+.row .sub{font-size:.74rem;color:var(--ink-3)}
+.pill{font-size:.66rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:3px}
+.pill--pub{background:color-mix(in srgb,var(--green) 15%,transparent);color:var(--green)}
+.pill--dr{background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber)}
+
+.empty{text-align:center;padding:44px 20px;color:var(--ink-3);font-size:.93rem;border:1px dashed var(--line-2);border-radius:6px}
+
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:300;
+  background:var(--ink);color:var(--paper);padding:11px 20px;border-radius:6px;
+  font-size:.88rem;font-weight:600;box-shadow:0 14px 36px -14px rgba(0,0,0,.6);
+}
+
+.foot{border-top:2px solid var(--ink);padding:34px 0 40px;margin-top:26px;font-size:.85rem;color:var(--ink-2)}
+.foot__g{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+@media (max-width:900px){
+  .lead{grid-template-columns:1fr;gap:24px}
+  .editor{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .wrap{padding:0 15px}
+  .mast__in{flex-direction:column;gap:10px}
+  .mast__date,.mast__act{flex:none;justify-content:center;text-align:center}
+  .mini{grid-template-columns:78px 1fr}
+  .body{font-size:1.06rem}
+  .fl2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){.tick__track ul{animation:none}*{transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+
+<!-- ===== son dakika şeridi ===== -->
+<div class="tick"><div class="wrap tick__in">
+  <span class="tick__tag">SON DAKİKA</span>
+  <div class="tick__track"><ul id="tickList"></ul></div>
+</div></div>
+
+<!-- ===== logo ===== -->
+<header class="mast"><div class="wrap mast__in">
+  <div class="mast__date" id="today"></div>
+  <a href="#/" class="logo">Man<i>şet</i></a>
+  <div class="mast__act">
+    <button class="ibtn" id="searchBtn" title="Ara" aria-label="Ara">🔍</button>
+    <button class="ibtn" id="themeBtn" title="Tema" aria-label="Tema değiştir">🌙</button>
+    <button class="ibtn" id="adminBtn" title="Yönetim" aria-label="Yönetim paneli">✎</button>
+  </div>
+</div></header>
+
+<nav class="nav"><div class="wrap nav__in" id="catNav"></div></nav>
+
+<div class="search hidden" id="searchBar"><div class="wrap">
+  <input id="searchInput" type="search" placeholder="Haberlerde ara — başlık, özet ve metin içinde…" autocomplete="off">
+</div></div>
+
+<main id="view"></main>
+
+<footer class="foot"><div class="wrap foot__g">
+  <span>© <span id="yr"></span> Manşet — bağımsız haber</span>
+  <span class="faint">İçerik ve yüklenen dosyalar bu tarayıcıda saklanır.</span>
+</div></footer>
+
+<input type="file" id="filePick" accept="image/*,video/*" multiple hidden>
+
+<script>
+(function(){
+"use strict";
+
+/* ==================================================================
+   YARDIMCILAR
+   ================================================================== */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+  return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]; }); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function fmtSize(b){
+  if(b < 1024) return b + ' B';
+  if(b < 1048576) return (b/1024).toFixed(0) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+function fmtDate(ts){
+  var d = new Date(ts);
+  return d.toLocaleDateString('tr-TR',{ day:'numeric', month:'long', year:'numeric' });
+}
+function relDate(ts){
+  var s = (Date.now()-ts)/1000;
+  if(s < 3600) return Math.max(1,Math.round(s/60)) + ' dakika önce';
+  if(s < 86400) return Math.round(s/3600) + ' saat önce';
+  if(s < 604800) return Math.round(s/86400) + ' gün önce';
+  return fmtDate(ts);
+}
+function toast(msg){
+  var el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 2600);
+}
+function readTime(text){ return Math.max(1, Math.round(text.split(/\s+/).length / 200)); }
+
+var CATS = [
+  { s:'gundem',   n:'Gündem' },
+  { s:'ekonomi',  n:'Ekonomi' },
+  { s:'spor',     n:'Spor' },
+  { s:'teknoloji',n:'Teknoloji' },
+  { s:'kultur',   n:'Kültür' },
+  { s:'dunya',    n:'Dünya' }
+];
+function catName(s){ var c = CATS.filter(function(x){ return x.s === s; })[0]; return c ? c.n : 'Haber'; }
+
+/* ==================================================================
+   DEPOLAMA
+   Makale metni localStorage'da, medya (resim/video) IndexedDB'de blob
+   olarak tutulur. Video base64 olarak localStorage'a sığmaz, bu yüzden
+   ikiye ayrıldı.
+   ================================================================== */
+var LS_KEY = 'manset_articles_v1';
+var DB_NAME = 'manset_media', DB_STORE = 'files';
+var db = null;
+
+/* Dosyayı çift tıklayıp file:// ile açtığında bazı tarayıcılar IndexedDB'yi
+   kapatır. O durumda medya yalnızca o oturum boyunca bellekte tutulur ve
+   kullanıcı uyarılır; site çökmez. Kalıcı saklama için sayfanın bir sunucu
+   (localhost ya da cPanel) üzerinden açılması gerekir. */
+var memStore = {}, dbBroken = false;
+
+function openDb(){
+  return new Promise(function(res, rej){
+    if(db) return res(db);
+    if(dbBroken) return rej(new Error('idb yok'));
+    var rq;
+    try{ rq = indexedDB.open(DB_NAME, 1); }
+    catch(e){ dbBroken = true; warnStorage(); return rej(e); }
+    rq.onupgradeneeded = function(){
+      if(!rq.result.objectStoreNames.contains(DB_STORE)) rq.result.createObjectStore(DB_STORE);
+    };
+    rq.onsuccess = function(){ db = rq.result; res(db); };
+    rq.onerror = function(){ dbBroken = true; warnStorage(); rej(rq.error); };
+    rq.onblocked = function(){ dbBroken = true; warnStorage(); rej(new Error('idb engellendi')); };
+  });
+}
+
+var warned = false;
+function warnStorage(){
+  if(warned) return;
+  warned = true;
+  toast('Tarayıcı kalıcı dosya deposunu kapattı — yüklediğin medya bu oturumda kalır.');
+}
+
+function dbPut(key, blob){
+  return openDb().then(function(d){
+    return new Promise(function(res, rej){
+      var tx = d.transaction(DB_STORE, 'readwrite');
+      tx.objectStore(DB_STORE).put(blob, key);
+      tx.oncomplete = function(){ res(key); };
+      tx.onerror = function(){ rej(tx.error); };
+    });
+  }).catch(function(){ memStore[key] = blob; return key; });
+}
+function dbGet(key){
+  return openDb().then(function(d){
+    return new Promise(function(res, rej){
+      var tx = d.transaction(DB_STORE, 'readonly');
+      var rq = tx.objectStore(DB_STORE).get(key);
+      rq.onsuccess = function(){ res(rq.result || memStore[key] || null); };
+      rq.onerror = function(){ rej(rq.error); };
+    });
+  }).catch(function(){ return memStore[key] || null; });
+}
+function dbDel(key){
+  return openDb().then(function(d){
+    return new Promise(function(res){
+      var tx = d.transaction(DB_STORE, 'readwrite');
+      tx.objectStore(DB_STORE).delete(key);
+      tx.oncomplete = res; tx.onerror = res;
+    });
+  }).catch(function(){ delete memStore[key]; });
+}
+
+/* Nesne URL'lerini tek yerden yönet; sayfa değişince serbest bırak. */
+var urlCache = {};
+function mediaUrl(id){
+  if(!id) return Promise.resolve(null);
+  if(urlCache[id]) return Promise.resolve(urlCache[id]);
+  return dbGet(id).then(function(blob){
+    if(!blob) return null;
+    urlCache[id] = URL.createObjectURL(blob);
+    return urlCache[id];
+  });
+}
+function releaseUrls(){
+  Object.keys(urlCache).forEach(function(k){ URL.revokeObjectURL(urlCache[k]); });
+  urlCache = {};
+}
+
+/* ---- makaleler ---- */
+var articles = [];
+function loadArticles(){
+  try{ articles = JSON.parse(localStorage.getItem(LS_KEY) || '[]') || []; }
+  catch(e){ articles = []; }
+  if(!Array.isArray(articles)) articles = [];
+}
+function saveArticles(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(articles)); }
+  catch(e){ toast('Kaydedilemedi — tarayıcı deposu dolu olabilir.'); }
+}
+function byId(id){ return articles.filter(function(a){ return a.id === id; })[0] || null; }
+function published(){
+  return articles.filter(function(a){ return a.status === 'published'; })
+                 .sort(function(a,b){ return b.date - a.date; });
+}
+
+/* ==================================================================
+   İLK AÇILIŞ — örnek içerik
+   Kullanıcı kendi haberlerini ekleyince bunlar karışmaz; sadece depo
+   tamamen boşsa yazılır.
+   ================================================================== */
+var SEED = [
+  {
+    cat:'teknoloji', kicker:'Yapay zekâ',
+    title:'Okullarda yapay zekâ kullanımı için ilk yönerge yayımlandı',
+    sum:'Yönerge, öğrenci ödevlerinde yapay zekâ kullanımını yasaklamak yerine kaynak gösterme zorunluluğu getiriyor.',
+    body:'Millî Eğitim müfettişleri tarafından hazırlanan yönerge, ortaöğretim kurumlarında yapay zekâ araçlarının kullanımını ilk kez tanımlı bir çerçeveye oturtuyor. Metnin en dikkat çeken maddesi, yasaklayıcı değil beyan esaslı bir yaklaşım benimsemesi.\n\nÖğrenciler bir ödevde yapay zekâ desteği aldıklarında, hangi araçtan hangi aşamada yararlandıklarını kısa bir notla belirtecek. Beyan edilmeyen kullanım ise intihal kapsamında değerlendirilecek.\n\n## Öğretmenler ne diyor\n\nSahadaki öğretmenlerin temel itirazı, beyanın denetlenebilirliği üzerine toplanıyor. Bir lise edebiyat öğretmeni, "Metnin nereden geldiğini anlamak için elimde bir araç yok; öğrencinin dürüstlüğüne güvenmek zorundayım" diyor.\n\nYönergeyi hazırlayan komisyon ise denetim yükünün zaten çözülemez olduğunu, bu yüzden odağı tespitten şeffaflığa kaydırdıklarını savunuyor.\n\n## Uygulama takvimi\n\nYönerge gelecek dönem başında pilot olarak kırk okulda uygulanacak. Dönem sonunda toplanacak geri bildirimlerle metnin gözden geçirilmesi planlanıyor.',
+    author:'Haber Merkezi'
+  },
+  {
+    cat:'ekonomi', kicker:'Konut',
+    title:'Kira artış oranı iki yılın en düşük seviyesinde',
+    sum:'Büyükşehirlerde yıllık kira artışı, enflasyonun altında kalarak son iki yılın en düşük seviyesine geriledi.',
+    body:'Konut kiralarındaki yıllık artış, üç büyük şehirde de yavaşlama işareti veriyor. Emlak platformlarının ilan verilerine göre ortalama artış, bir önceki yılın aynı dönemine kıyasla belirgin biçimde düştü.\n\nUzmanlar bu yavaşlamayı iki etkene bağlıyor: yeni konut arzının artması ve hane halkı bütçesinin kirayı karşılayamayacak noktaya gelmesi.\n\n## Arz tarafı\n\nSon iki yılda tamamlanan projelerin piyasaya çıkmasıyla ilan sayısı arttı. İlan başına düşen görüntülenme sayısındaki düşüş, talebin arzı karşılayamadığını gösteriyor.\n\n## Kiracı tarafı\n\nHane halkı gelirinin kiraya giden payı hâlâ tarihsel ortalamanın üzerinde. Bu oran düşmeden kiralardaki yavaşlamanın rahatlama olarak hissedilmesi güç görünüyor.',
+    author:'Ekonomi Servisi'
+  },
+  {
+    cat:'kultur', kicker:'Arkeoloji',
+    title:'Kazıda bulunan mozaik, kentin sanılandan iki yüzyıl eski olduğunu gösteriyor',
+    sum:'Antik kentin güney yamacındaki kazıda ortaya çıkarılan taban mozaiği, yerleşimin kuruluş tarihini geriye çekiyor.',
+    body:'Kazı başkanlığı, güney yamaçta ortaya çıkarılan yaklaşık kırk metrekarelik taban mozaiğinin, kentin bilinen kuruluş tarihinden en az iki yüzyıl önceye ait olduğunu açıkladı.\n\nMozaiğin kenar bordüründe kullanılan geometrik örgü deseni ve tesserae boyutu, bölgede aynı dönemden başka örnek bulunmadığı için şaşkınlık yarattı.\n\n## Tarihleme nasıl yapıldı\n\nMozaiğin altındaki dolgu tabakasından alınan seramik parçaları ve kömürleşmiş organik kalıntılar laboratuvara gönderildi. İlk sonuçlar, üslup analiziyle uyumlu çıktı.\n\n## Sırada ne var\n\nEkip, mozaiğin devam ettiği düşünülen kuzey kesiminde çalışmalara başladı. Yapının bir konut mu yoksa kamusal bir mekân mı olduğu henüz belirlenemedi.',
+    author:'Kültür Servisi'
+  },
+  {
+    cat:'spor', kicker:'Atletizm',
+    title:'Genç atlet, yirmi yıllık ülke rekorunu kırdı',
+    sum:'Bin beş yüz metrede koşulan yarışta, 2005\'ten beri kırılamayan ülke rekoru üç saniyeden fazla geride bırakıldı.',
+    body:'Ulusal şampiyonanın ikinci gününde koşulan bin beş yüz metre finalinde, uzun süredir kırılamayan ülke rekoru geride bırakıldı.\n\nYarışın ilk sekiz yüz metresinde grubun arkasında kalan atlet, son iki turda temposunu belirgin biçimde yükselterek bitişe ilk ulaştı.\n\n## Antrenman değişikliği\n\nAtletin antrenörü, son bir yılda yüksek irtifa kamplarının sayısını artırdıklarını ve haftalık hacmi düşürüp şiddeti yükselttiklerini belirtti.\n\n## Sonraki hedef\n\nEkip, kıta şampiyonasında finale kalmayı hedefliyor. Rekorun kırıldığı derece, geçen yılki final barajının içinde kalıyor.',
+    author:'Spor Servisi'
+  },
+  {
+    cat:'dunya', kicker:'Enerji',
+    title:'Deniz üstü rüzgâr santrali ilk kez ülkenin gece tüketimini tek başına karşıladı',
+    sum:'Rüzgârın güçlü estiği bir gecede santral, şebekeye bağlı tüm konutların tüketimini birkaç saat boyunca karşıladı.',
+    body:'Kuzey kıyısındaki deniz üstü rüzgâr santrali, geçen hafta yaşanan yüksek rüzgâr koşullarında rekor üretim yaptı.\n\nŞebeke operatörünün verilerine göre santral, gece yarısından sonraki üç saat boyunca konut tüketiminin tamamını tek başına karşıladı.\n\n## Depolama sorunu\n\nAynı dönemde üretilen fazlalığın bir kısmı depolanamadığı için değerlendirilemedi. Operatör, batarya kapasitesinin artırılması için ihaleye çıkıldığını duyurdu.\n\n## Maliyet tarafı\n\nSantralin megavat saat başına maliyeti, devreye alındığı yıla kıyasla belirgin biçimde düştü. Bakım giderleri ise deniz koşulları nedeniyle karasal santrallerin üzerinde kalmaya devam ediyor.',
+    author:'Dış Haberler'
+  },
+  {
+    cat:'gundem', kicker:'Ulaşım',
+    title:'Şehir içi hatlarda gece seferleri yeniden başlıyor',
+    sum:'Üç yıl önce durdurulan gece otobüs seferleri, hafta sonlarını kapsayacak şekilde kademeli olarak geri geliyor.',
+    body:'Büyükşehir ulaşım dairesi, hafta sonu gece seferlerinin altı ana hatta yeniden başlayacağını duyurdu. Seferler gece yarısından sabah beşe kadar saat başı yapılacak.\n\nKarar, gece çalışan sektörlerdeki personelin ulaşım sorununa ilişkin yürütülen anket sonuçlarının ardından alındı.\n\n## Hangi hatlar\n\nİlk aşamada merkez ile üç ilçe arasındaki ana koridorlar kapsama alınıyor. Talebe göre hat sayısının artırılması planlanıyor.\n\n## Ücretlendirme\n\nGece tarifesi gündüzle aynı olacak. Aktarma süresi ise seferlerin seyrekliği düşünülerek doksan dakikaya çıkarıldı.',
+    author:'Haber Merkezi'
+  }
+];
+
+function seedIfEmpty(){
+  if(articles.length) return;
+  var now = Date.now();
+  articles = SEED.map(function(s, i){
+    return {
+      id: uid(), cat:s.cat, kicker:s.kicker, title:s.title, sum:s.sum, body:s.body,
+      author:s.author, status:'published',
+      date: now - (i * 5 + 1) * 3600000,
+      cover:null, coverType:null, caption:'', media:[]
+    };
+  });
+  saveArticles();
+}
+
+/* ==================================================================
+   YÖNLENDİRME
+   ================================================================== */
+function route(){
+  return (location.hash || '#/').slice(1);
+}
+function go(path){
+  if(location.hash === '#' + path) render();
+  else location.hash = path;
+}
+window.addEventListener('hashchange', render);
+
+/* ==================================================================
+   GÖRÜNÜMLER
+   ================================================================== */
+var searchTerm = '';
+
+function render(){
+  releaseUrls();
+  var p = route();
+  var m;
+  if((m = p.match(/^\/haber\/(.+)$/))) return renderArticle(m[1]);
+  if(p === '/yonetim') return renderAdmin();
+  if((m = p.match(/^\/duzenle\/(.+)$/))) return renderEditor(m[1]);
+  if(p === '/yeni') return renderEditor(null);
+  if((m = p.match(/^\/kategori\/(.+)$/))) return renderHome(m[1]);
+  return renderHome(null);
+}
+
+/* ---- kategori menüsü ---- */
+function paintNav(active){
+  $('catNav').innerHTML =
+    '<a href="#/" class="' + (!active ? 'on' : '') + '">Ana Sayfa</a>' +
+    CATS.map(function(c){
+      return '<a href="#/kategori/' + c.s + '" class="' + (active === c.s ? 'on' : '') + '">' + esc(c.n) + '</a>';
+    }).join('') +
+    '<a href="#/yonetim" style="margin-left:auto;color:var(--ink-3)">Yönetim</a>';
+}
+
+/* ---- kart yardımcıları ---- */
+function coverHtml(a, cls){
+  var id = 'cv_' + a.id + '_' + Math.random().toString(36).slice(2,7);
+  var isVid = a.coverType && a.coverType.indexOf('video') === 0;
+  var html = '<div class="a-cover ' + (cls||'') + '" id="' + id + '">' +
+    '<div class="ph">' + (isVid ? '▶' : '🖼') + '</div>' +
+    (isVid ? '<span class="vbadge">▶ video</span>' : '') + '</div>';
+  if(a.cover){
+    mediaUrl(a.cover).then(function(u){
+      var el = $(id); if(!el || !u) return;
+      el.innerHTML = (isVid
+        ? '<video src="' + u + '" muted playsinline preload="metadata"></video><span class="vbadge">▶ video</span>'
+        : '<img src="' + u + '" alt="" loading="lazy">');
+    });
+  }
+  return html;
+}
+function metaHtml(a){
+  return '<div class="meta"><b>' + esc(catName(a.cat)) + '</b><span>·</span>' +
+    '<span>' + relDate(a.date) + '</span><span>·</span>' +
+    '<span>' + readTime(a.body || '') + ' dk okuma</span>' +
+    (a.author ? '<span>·</span><span>' + esc(a.author) + '</span>' : '') + '</div>';
+}
+
+/* ---- ANA SAYFA ---- */
+function renderHome(cat){
+  paintNav(cat);
+  var list = published();
+  if(cat) list = list.filter(function(a){ return a.cat === cat; });
+  if(searchTerm){
+    var q = searchTerm.toLocaleLowerCase('tr');
+    list = list.filter(function(a){
+      return (a.title + ' ' + a.sum + ' ' + a.body).toLocaleLowerCase('tr').indexOf(q) !== -1;
+    });
+  }
+
+  if(!list.length){
+    $('view').innerHTML = '<div class="wrap"><div class="empty" style="margin:40px 0">' +
+      (searchTerm ? 'Aramanla eşleşen haber yok.' : 'Bu kategoride henüz haber yok.') +
+      ' <a href="#/yeni" style="color:var(--red);font-weight:700">Haber ekle →</a></div></div>';
+    return;
+  }
+
+  var lead = list[0], side = list.slice(1,4), rest = list.slice(4);
+
+  $('view').innerHTML =
+    '<div class="wrap">' +
+      '<section class="lead">' +
+        '<article>' + coverHtml(lead) +
+          '<div style="padding-top:14px">' +
+            (lead.kicker ? '<span class="kicker">' + esc(lead.kicker) + '</span>' : '') +
+            '<h2 class="h-lead"><a href="#/haber/' + lead.id + '">' + esc(lead.title) + '</a></h2>' +
+            '<p class="sum">' + esc(lead.sum) + '</p>' + metaHtml(lead) +
+          '</div>' +
+        '</article>' +
+        '<div class="lead__side">' + (side.length ? side.map(function(a){
+          return '<article class="mini">' + coverHtml(a) +
+            '<div>' + (a.kicker ? '<span class="kicker">' + esc(a.kicker) + '</span>' : '') +
+            '<h3><a href="#/haber/' + a.id + '">' + esc(a.title) + '</a></h3>' +
+            '<div class="meta" style="margin-top:6px"><span>' + relDate(a.date) + '</span></div></div></article>';
+        }).join('') : '<p class="faint">Başka haber yok.</p>') + '</div>' +
+      '</section>' +
+
+      (rest.length ?
+      '<section class="sec"><div class="sec__h"><h2>' +
+        (cat ? esc(catName(cat)) : 'Daha fazla haber') + '</h2><span class="rule"></span></div>' +
+      '<div class="grid">' + rest.map(function(a){
+        return '<article class="card">' + coverHtml(a) +
+          (a.kicker ? '<span class="kicker" style="margin-top:10px;display:inline-block">' + esc(a.kicker) + '</span>' : '') +
+          '<h3><a href="#/haber/' + a.id + '">' + esc(a.title) + '</a></h3>' +
+          '<p>' + esc(a.sum) + '</p>' + metaHtml(a) + '</article>';
+      }).join('') + '</div></section>' : '') +
+    '</div>';
+
+  window.scrollTo(0,0);
+}
+
+/* ---- HABER DETAY ---- */
+function renderArticle(id){
+  var a = byId(id);
+  if(!a){ $('view').innerHTML = '<div class="wrap"><div class="empty" style="margin:40px 0">Haber bulunamadı. <a href="#/" style="color:var(--red)">Ana sayfa</a></div></div>'; return; }
+  paintNav(a.cat);
+
+  var galId = 'gal_' + a.id;
+  var vidId = 'vid_' + a.id;
+  var images = (a.media||[]).filter(function(m){ return m.type.indexOf('image') === 0; });
+  var videos = (a.media||[]).filter(function(m){ return m.type.indexOf('video') === 0; });
+
+  $('view').innerHTML =
+    '<div class="wrap"><article class="article">' +
+      '<a href="#/kategori/' + a.cat + '" class="kicker">' + esc(a.kicker || catName(a.cat)) + '</a>' +
+      '<h1>' + esc(a.title) + '</h1>' +
+      '<p class="sum">' + esc(a.sum) + '</p>' +
+      metaHtml(a) +
+      '<div style="height:20px"></div>' +
+      (a.cover ? coverHtml(a) + '<div class="cap">' + esc(a.caption || '') + '</div>' : '') +
+      '<div class="body">' + bodyHtml(a.body) + '</div>' +
+      (videos.length ? '<div id="' + vidId + '"></div>' : '') +
+      (images.length ? '<div class="gal" id="' + galId + '"></div>' : '') +
+      '<div class="share">' +
+        '<button class="btn btn--ghost btn--sm" id="copyLink">🔗 Bağlantıyı kopyala</button>' +
+        '<a class="btn btn--ghost btn--sm" href="#/kategori/' + a.cat + '">' + esc(catName(a.cat)) + ' haberleri</a>' +
+        '<a class="btn btn--ghost btn--sm" href="#/duzenle/' + a.id + '">✎ Düzenle</a>' +
+      '</div>' +
+    '</article></div>';
+
+  // galeri ve videoları asenkron doldur
+  videos.forEach(function(m){
+    mediaUrl(m.id).then(function(u){
+      if(!u || !$(vidId)) return;
+      var w = document.createElement('div');
+      w.className = 'vidwrap';
+      w.innerHTML = '<video src="' + u + '" controls preload="metadata"></video>';
+      $(vidId).appendChild(w);
+    });
+  });
+  images.forEach(function(m){
+    mediaUrl(m.id).then(function(u){
+      if(!u || !$(galId)) return;
+      var f = document.createElement('figure');
+      f.innerHTML = '<img src="' + u + '" alt="" loading="lazy">';
+      f.addEventListener('click', function(){ lightbox(u); });
+      $(galId).appendChild(f);
+    });
+  });
+
+  var cb = $('copyLink');
+  if(cb) cb.addEventListener('click', function(){
+    var url = location.href;
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(function(){ toast('Bağlantı kopyalandı'); },
+                                             function(){ toast('Kopyalanamadı'); });
+    } else { toast('Bağlantı: ' + url); }
+  });
+
+  window.scrollTo(0,0);
+}
+
+/** Basit metin biçimlendirme: boş satır = paragraf, "## " = ara başlık, "> " = alıntı. */
+function bodyHtml(text){
+  return String(text || '').split(/\n{2,}/).map(function(blok){
+    var t = blok.trim();
+    if(!t) return '';
+    if(t.indexOf('## ') === 0) return '<h2>' + esc(t.slice(3)) + '</h2>';
+    if(t.indexOf('> ') === 0) return '<blockquote>' + esc(t.slice(2)) + '</blockquote>';
+    return '<p>' + esc(t).replace(/\n/g,'<br>') + '</p>';
+  }).join('');
+}
+
+function lightbox(url){
+  var el = document.createElement('div');
+  el.className = 'lightbox';
+  el.innerHTML = '<img src="' + url + '" alt="">';
+  el.addEventListener('click', function(){ el.remove(); });
+  document.addEventListener('keydown', function esc2(e){
+    if(e.key === 'Escape'){ el.remove(); document.removeEventListener('keydown', esc2); }
+  });
+  document.body.appendChild(el);
+}
+
+/* ---- YÖNETİM LİSTESİ ---- */
+function renderAdmin(){
+  paintNav(null);
+  var all = articles.slice().sort(function(a,b){ return b.date - a.date; });
+  var pub = all.filter(function(a){ return a.status === 'published'; }).length;
+  var mediaCount = all.reduce(function(s,a){ return s + (a.media ? a.media.length : 0) + (a.cover ? 1 : 0); }, 0);
+
+  $('view').innerHTML =
+    '<div class="wrap admin">' +
+      '<div class="admin__bar"><h1>Yönetim</h1>' +
+        '<button class="btn btn--ghost btn--sm" id="expBtn">↓ Yedek al</button>' +
+        '<button class="btn btn--ghost btn--sm" id="impBtn">↑ Yedek yükle</button>' +
+        '<a class="btn btn--sm" href="#/yeni">+ Yeni haber</a>' +
+      '</div>' +
+
+      '<div class="card-box" style="margin-bottom:20px"><div style="display:flex;gap:34px;flex-wrap:wrap">' +
+        '<div><b style="font-size:1.5rem">' + all.length + '</b><div class="faint" style="font-size:.76rem">toplam haber</div></div>' +
+        '<div><b style="font-size:1.5rem">' + pub + '</b><div class="faint" style="font-size:.76rem">yayında</div></div>' +
+        '<div><b style="font-size:1.5rem">' + (all.length - pub) + '</b><div class="faint" style="font-size:.76rem">taslak</div></div>' +
+        '<div><b style="font-size:1.5rem">' + mediaCount + '</b><div class="faint" style="font-size:.76rem">medya dosyası</div></div>' +
+      '</div></div>' +
+
+      (all.length ? '<div class="list">' + all.map(function(a){
+        return '<div class="row" data-id="' + a.id + '">' +
+          '<div class="row__th" id="th_' + a.id + '">' + (a.cover ? '' : '📄') + '</div>' +
+          '<div><h4>' + esc(a.title || '(başlıksız)') + '</h4>' +
+            '<div class="sub">' +
+              '<span class="pill ' + (a.status === 'published' ? 'pill--pub">yayında' : 'pill--dr">taslak') + '</span> ' +
+              esc(catName(a.cat)) + ' · ' + fmtDate(a.date) +
+              ((a.media && a.media.length) ? ' · ' + a.media.length + ' medya' : '') +
+            '</div></div>' +
+          '<div class="btn-row">' +
+            '<a class="btn btn--ghost btn--sm" href="#/haber/' + a.id + '">Gör</a>' +
+            '<a class="btn btn--ghost btn--sm" href="#/duzenle/' + a.id + '">Düzenle</a>' +
+            '<button class="btn btn--ghost btn--sm del" data-id="' + a.id + '">Sil</button>' +
+          '</div></div>';
+      }).join('') + '</div>'
+      : '<div class="empty">Henüz haber yok. <a href="#/yeni" style="color:var(--red);font-weight:700">İlkini ekle →</a></div>') +
+    '</div>';
+
+  all.forEach(function(a){
+    if(!a.cover) return;
+    mediaUrl(a.cover).then(function(u){
+      var el = $('th_' + a.id); if(!el || !u) return;
+      el.innerHTML = (a.coverType && a.coverType.indexOf('video') === 0)
+        ? '<video src="' + u + '" muted preload="metadata"></video>'
+        : '<img src="' + u + '" alt="">';
+    });
+  });
+
+  [].forEach.call(document.querySelectorAll('.del'), function(b){
+    b.addEventListener('click', function(){
+      var a = byId(b.dataset.id); if(!a) return;
+      if(!confirm('"' + (a.title || 'Başlıksız') + '" silinsin mi? Yüklediğin görsel ve videolar da silinir.')) return;
+      (a.media || []).forEach(function(m){ dbDel(m.id); });
+      if(a.cover) dbDel(a.cover);
+      articles = articles.filter(function(x){ return x.id !== a.id; });
+      saveArticles();
+      toast('Haber silindi');
+      renderAdmin();
+    });
+  });
+
+  $('expBtn').addEventListener('click', exportBackup);
+  $('impBtn').addEventListener('click', importBackup);
+  window.scrollTo(0,0);
+}
+
+/* ---- EDİTÖR ---- */
+var draft = null;
+
+function renderEditor(id){
+  paintNav(null);
+  var a = id ? byId(id) : null;
+  draft = a ? JSON.parse(JSON.stringify(a)) : {
+    id: uid(), cat:'gundem', kicker:'', title:'', sum:'', body:'', author:'',
+    status:'draft', date: Date.now(), cover:null, coverType:null, caption:'', media:[]
+  };
+  if(!draft.media) draft.media = [];
+
+  $('view').innerHTML =
+    '<div class="wrap admin">' +
+      '<div class="admin__bar"><h1>' + (a ? 'Haberi düzenle' : 'Yeni haber') + '</h1>' +
+        '<a class="btn btn--ghost btn--sm" href="#/yonetim">← Listeye dön</a>' +
+      '</div>' +
+      '<div class="editor">' +
+        '<div>' +
+          '<div class="card-box">' +
+            '<div class="fl"><label for="eTitle">Başlık</label>' +
+              '<input id="eTitle" type="text" maxlength="160" placeholder="Haberin başlığı"></div>' +
+            '<div class="fl"><label for="eSum">Özet (spot)</label>' +
+              '<textarea id="eSum" style="min-height:76px;font-family:var(--sans);font-size:.94rem" maxlength="400" placeholder="Bir iki cümlelik özet"></textarea></div>' +
+            '<div class="fl"><label for="eBody">Haber metni</label>' +
+              '<textarea id="eBody" placeholder="Metni yaz.&#10;&#10;Boş satır bırakırsan yeni paragraf olur.&#10;&#10;## Satır başına iki diyez koyarsan ara başlık olur&#10;&#10;&gt; Büyüktür işareti alıntı yapar"></textarea>' +
+              '<span class="hint">Boş satır = paragraf · <b>##</b> = ara başlık · <b>&gt;</b> = alıntı</span></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div>' +
+          '<div class="card-box"><h3>Yayın</h3>' +
+            '<div class="fl2">' +
+              '<div class="fl"><label for="eCat">Kategori</label><select id="eCat">' +
+                CATS.map(function(c){ return '<option value="' + c.s + '">' + esc(c.n) + '</option>'; }).join('') +
+              '</select></div>' +
+              '<div class="fl"><label for="eStatus">Durum</label><select id="eStatus">' +
+                '<option value="draft">Taslak</option><option value="published">Yayında</option></select></div>' +
+            '</div>' +
+            '<div class="fl2">' +
+              '<div class="fl"><label for="eKicker">Üst başlık</label><input id="eKicker" type="text" maxlength="40" placeholder="örn. Arkeoloji"></div>' +
+              '<div class="fl"><label for="eAuthor">Yazar / servis</label><input id="eAuthor" type="text" maxlength="60" placeholder="Haber Merkezi"></div>' +
+            '</div>' +
+            '<div class="btn-row" style="margin-top:6px">' +
+              '<button class="btn" id="eSave">Kaydet</button>' +
+              '<button class="btn btn--ghost" id="ePreview">Önizle</button>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="card-box"><h3>🖼 Kapak görseli / videosu</h3>' +
+            '<div class="drop" id="dropCover"><b>Dosya seç ya da sürükle</b>' +
+              '<span>JPG, PNG, WebP, GIF, MP4, WebM — tek dosya</span></div>' +
+            '<div id="coverPrev"></div>' +
+            '<div class="fl" style="margin-top:12px"><label for="eCap">Fotoğraf altı yazısı</label>' +
+              '<input id="eCap" type="text" maxlength="180" placeholder="Kaynak, yer, tarih"></div>' +
+          '</div>' +
+
+          '<div class="card-box"><h3>📎 Galeri ve videolar</h3>' +
+            '<div class="drop" id="dropMedia"><b>Birden fazla dosya ekle</b>' +
+              '<span>Görseller galeri olarak, videolar oynatıcı olarak eklenir</span></div>' +
+            '<div class="thumbs" id="mediaPrev"></div>' +
+            '<p class="hint faint" style="margin-top:10px;font-size:.76rem">' +
+              'Dosyalar tarayıcının kendi deposunda (IndexedDB) saklanır. Tarayıcı verilerini ' +
+              'temizlersen silinirler — önemli içerik için yedek al.</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  $('eTitle').value = draft.title;
+  $('eSum').value = draft.sum;
+  $('eBody').value = draft.body;
+  $('eCat').value = draft.cat;
+  $('eStatus').value = draft.status;
+  $('eKicker').value = draft.kicker || '';
+  $('eAuthor').value = draft.author || '';
+  $('eCap').value = draft.caption || '';
+
+  paintCoverPrev();
+  paintMediaPrev();
+
+  wireDrop($('dropCover'), false);
+  wireDrop($('dropMedia'), true);
+
+  $('eSave').addEventListener('click', saveDraft);
+  $('ePreview').addEventListener('click', function(){
+    if(!collectDraft()) return;
+    upsertDraft();
+    go('/haber/' + draft.id);
+  });
+
+  window.scrollTo(0,0);
+}
+
+function collectDraft(){
+  draft.title  = $('eTitle').value.trim();
+  draft.sum    = $('eSum').value.trim();
+  draft.body   = $('eBody').value;
+  draft.cat    = $('eCat').value;
+  draft.status = $('eStatus').value;
+  draft.kicker = $('eKicker').value.trim();
+  draft.author = $('eAuthor').value.trim();
+  draft.caption= $('eCap').value.trim();
+  if(!draft.title){ toast('Başlık boş olamaz'); $('eTitle').focus(); return false; }
+  if(!draft.sum){ toast('Özet boş olamaz'); $('eSum').focus(); return false; }
+  return true;
+}
+function upsertDraft(){
+  var i = articles.findIndex(function(x){ return x.id === draft.id; });
+  if(i === -1){ draft.date = Date.now(); articles.unshift(JSON.parse(JSON.stringify(draft))); }
+  else articles[i] = JSON.parse(JSON.stringify(draft));
+  saveArticles();
+}
+function saveDraft(){
+  if(!collectDraft()) return;
+  upsertDraft();
+  toast(draft.status === 'published' ? 'Yayınlandı' : 'Taslak kaydedildi');
+  go('/yonetim');
+}
+
+/* ---- dosya yükleme ---- */
+var dropTargetMulti = false;
+function wireDrop(el, multi){
+  el.addEventListener('click', function(){
+    dropTargetMulti = multi;
+    $('filePick').multiple = multi;
+    $('filePick').value = '';
+    $('filePick').click();
+  });
+  el.addEventListener('dragover', function(e){ e.preventDefault(); el.classList.add('over'); });
+  el.addEventListener('dragleave', function(){ el.classList.remove('over'); });
+  el.addEventListener('drop', function(e){
+    e.preventDefault(); el.classList.remove('over');
+    handleFiles(e.dataTransfer.files, multi);
+  });
+}
+$('filePick').addEventListener('change', function(){
+  handleFiles(this.files, dropTargetMulti);
+});
+
+var MAX_BYTES = 120 * 1024 * 1024; // 120 MB — tarayıcı deposunu zorlamamak için
+
+function handleFiles(files, multi){
+  if(!files || !files.length || !draft) return;
+  var list = [].slice.call(files);
+  if(!multi) list = list.slice(0,1);
+
+  var chain = Promise.resolve();
+  list.forEach(function(f){
+    chain = chain.then(function(){
+      if(!/^(image|video)\//.test(f.type)){ toast('Desteklenmeyen dosya: ' + f.name); return; }
+      if(f.size > MAX_BYTES){ toast(f.name + ' çok büyük (' + fmtSize(f.size) + ')'); return; }
+      var key = 'm_' + uid();
+      return dbPut(key, f).then(function(){
+        if(multi){
+          draft.media.push({ id:key, type:f.type, name:f.name, size:f.size });
+        }else{
+          if(draft.cover) dbDel(draft.cover);
+          draft.cover = key; draft.coverType = f.type;
+        }
+      });
+    });
+  });
+
+  chain.then(function(){
+    paintCoverPrev(); paintMediaPrev();
+    toast(list.length > 1 ? list.length + ' dosya eklendi' : 'Dosya eklendi');
+  }).catch(function(){ toast('Dosya kaydedilemedi'); });
+}
+
+function paintCoverPrev(){
+  var box = $('coverPrev'); if(!box) return;
+  if(!draft.cover){ box.innerHTML = ''; return; }
+  box.innerHTML = '<div class="thumbs"><div class="thumb" id="cvThumb">' +
+    '<button title="Kaldır" id="cvDel">×</button>' +
+    '<span class="kind">' + (draft.coverType.indexOf('video') === 0 ? 'video' : 'görsel') + '</span></div></div>';
+  mediaUrl(draft.cover).then(function(u){
+    var el = $('cvThumb'); if(!el || !u) return;
+    el.insertAdjacentHTML('afterbegin', draft.coverType.indexOf('video') === 0
+      ? '<video src="' + u + '" muted preload="metadata"></video>'
+      : '<img src="' + u + '" alt="">');
+  });
+  $('cvDel').addEventListener('click', function(){
+    dbDel(draft.cover); draft.cover = null; draft.coverType = null; paintCoverPrev();
+  });
+}
+
+function paintMediaPrev(){
+  var box = $('mediaPrev'); if(!box) return;
+  if(!draft.media.length){ box.innerHTML = ''; return; }
+  box.innerHTML = draft.media.map(function(m){
+    return '<div class="thumb" id="t_' + m.id + '">' +
+      '<button title="Kaldır" data-id="' + m.id + '">×</button>' +
+      '<span class="kind">' + (m.type.indexOf('video') === 0 ? 'video' : fmtSize(m.size)) + '</span></div>';
+  }).join('');
+  draft.media.forEach(function(m){
+    mediaUrl(m.id).then(function(u){
+      var el = $('t_' + m.id); if(!el || !u) return;
+      el.insertAdjacentHTML('afterbegin', m.type.indexOf('video') === 0
+        ? '<video src="' + u + '" muted preload="metadata"></video>'
+        : '<img src="' + u + '" alt="">');
+    });
+  });
+  [].forEach.call(box.querySelectorAll('button'), function(b){
+    b.addEventListener('click', function(){
+      dbDel(b.dataset.id);
+      draft.media = draft.media.filter(function(x){ return x.id !== b.dataset.id; });
+      paintMediaPrev();
+    });
+  });
+}
+
+/* ---- yedekleme ---- */
+function exportBackup(){
+  var blob = new Blob([JSON.stringify({ v:1, exportedAt:Date.now(), articles:articles }, null, 2)],
+                      { type:'application/json' });
+  var u = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = u; a.download = 'manset-yedek-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(u); }, 1000);
+  toast('Yedek indirildi — medya dosyaları yedeğe dahil değil');
+}
+function importBackup(){
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'application/json';
+  inp.addEventListener('change', function(){
+    var f = inp.files[0]; if(!f) return;
+    var r = new FileReader();
+    r.onload = function(){
+      try{
+        var d = JSON.parse(r.result);
+        if(!d || !Array.isArray(d.articles)) throw new Error('biçim');
+        if(!confirm('Yedekteki ' + d.articles.length + ' haber mevcutların üzerine yazılsın mı?')) return;
+        articles = d.articles;
+        saveArticles();
+        toast('Yedek yüklendi');
+        renderAdmin();
+      }catch(e){ toast('Dosya okunamadı — geçerli bir yedek değil'); }
+    };
+    r.readAsText(f);
+  });
+  inp.click();
+}
+
+/* ==================================================================
+   ÜST ÇUBUK
+   ================================================================== */
+var root = document.documentElement;
+try{ if(localStorage.getItem('manset_theme') === 'dark') root.setAttribute('data-theme','dark'); }catch(e){}
+function syncTheme(){ $('themeBtn').textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; }
+syncTheme();
+$('themeBtn').addEventListener('click', function(){
+  var dark = root.getAttribute('data-theme') === 'dark';
+  if(dark) root.removeAttribute('data-theme'); else root.setAttribute('data-theme','dark');
+  try{ localStorage.setItem('manset_theme', dark ? 'light' : 'dark'); }catch(e){}
+  syncTheme();
+});
+
+$('searchBtn').addEventListener('click', function(){
+  var open = !$('searchBar').classList.toggle('hidden');
+  this.classList.toggle('on', open);
+  if(open) $('searchInput').focus();
+  else { searchTerm = ''; $('searchInput').value = ''; render(); }
+});
+var searchTimer;
+$('searchInput').addEventListener('input', function(){
+  var v = this.value.trim();
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(function(){
+    searchTerm = v;
+    if(route().indexOf('/haber/') === 0 || route().indexOf('/yonetim') === 0) go('/');
+    else render();
+  }, 220);
+});
+
+$('adminBtn').addEventListener('click', function(){ go('/yonetim'); });
+
+$('today').textContent = new Date().toLocaleDateString('tr-TR',
+  { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+$('yr').textContent = new Date().getFullYear();
+
+/* ==================================================================
+   BAŞLAT
+   ================================================================== */
+loadArticles();
+seedIfEmpty();
+
+/* son dakika şeridi — en yeni beş başlık, kesintisiz akması için iki kez */
+(function(){
+  var t = published().slice(0,5).map(function(a){ return a.title; });
+  if(!t.length) t = ['Haber eklemek için sağ üstteki kalem simgesine bas'];
+  $('tickList').innerHTML = t.concat(t).map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('');
+})();
+
+render();
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1194 @@
+<title>Tuş Temposu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#e7e9e0;
+    --surface:#d9dcd0;
+    --surface-2:#ffffff;
+    --border:#c3c7b8;
+    --text:#23261f;
+    --text-dim:#63675b;
+    --text-faint:#9a9d8e;
+    --accent:#a8720f;
+    --accent-soft:#a8720f22;
+    --accent-2:#1f6f61;
+    --good:#2f7d4f;
+    --bad:#b23a2c;
+    --bad-soft:#b23a2c1a;
+    --shadow: 0 1px 2px rgba(30,28,20,.06), 0 8px 24px -12px rgba(30,28,20,.18);
+    --radius: 14px;
+
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono:'JetBrains Mono','SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1b1d1a;
+      --surface:#252822;
+      --surface-2:#2c2f28;
+      --border:#3a3d34;
+      --text:#e9e7dc;
+      --text-dim:#9a9d8e;
+      --text-faint:#6c6f61;
+      --accent:#e0a940;
+      --accent-soft:#e0a94022;
+      --accent-2:#5ec3ae;
+      --good:#7ecb92;
+      --bad:#e2695c;
+      --bad-soft:#e2695c22;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -14px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#1b1d1a;
+    --surface:#252822;
+    --surface-2:#2c2f28;
+    --border:#3a3d34;
+    --text:#e9e7dc;
+    --text-dim:#9a9d8e;
+    --text-faint:#6c6f61;
+    --accent:#e0a940;
+    --accent-soft:#e0a94022;
+    --accent-2:#5ec3ae;
+    --good:#7ecb92;
+    --bad:#e2695c;
+    --bad-soft:#e2695c22;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 32px -14px rgba(0,0,0,.55);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--accent-soft); }
+  button{ font-family:inherit; }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .page{
+    width:100%;
+    max-width:920px;
+    margin:0 auto;
+    padding:32px 20px 64px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+
+  /* ---------- Header ---------- */
+  .header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .brand{ display:flex; flex-direction:column; gap:2px; }
+  .brand-mark{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.9rem;
+    letter-spacing:-0.01em;
+    display:flex;
+    align-items:baseline;
+    gap:2px;
+  }
+  .brand-mark em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--accent);
+  }
+  .brand-tag{
+    font-size:.8rem;
+    color:var(--text-dim);
+    font-weight:500;
+  }
+  .header-actions{ display:flex; gap:8px; align-items:center; }
+  .icon-btn{
+    width:38px; height:38px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text-dim);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .icon-btn:hover{ color:var(--text); border-color:var(--text-faint); }
+  .icon-btn.on{ color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+  .icon-btn svg{ width:18px; height:18px; }
+
+  /* ---------- Controls ---------- */
+  .controls{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:8px;
+  }
+  .chip-row{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .divider{ width:1px; height:20px; background:var(--border); margin:0 4px; }
+  .chip{
+    font-family:var(--font-mono);
+    font-size:.78rem;
+    font-weight:500;
+    color:var(--text-dim);
+    background:transparent;
+    border:1px solid transparent;
+    border-radius:8px;
+    padding:6px 11px;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+    white-space:nowrap;
+  }
+  .chip:hover{ color:var(--text); background:var(--surface-2); }
+  .chip.active{ color:var(--accent); background:var(--surface-2); border-color:var(--border); font-weight:700; }
+  .chip.toggle.on{ color:var(--accent-2); }
+  .chip.toggle.on::before{ content:"● "; }
+  .chip.toggle::before{ content:"○ "; color:var(--text-faint); }
+  .chip.toggle.on::before{ color:var(--accent-2); }
+
+  /* ---------- Stage ---------- */
+  .stage{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:26px 28px 20px;
+    position:relative;
+    min-height:300px;
+    display:flex;
+    flex-direction:column;
+    flex-shrink:0;
+  }
+
+  .live-stats{
+    display:flex;
+    gap:26px;
+    align-items:baseline;
+    margin-bottom:18px;
+    font-family:var(--font-mono);
+    min-height:34px;
+  }
+  .live-stat{ display:flex; flex-direction:column; gap:1px; }
+  .live-stat .val{ font-size:1.5rem; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums; }
+  .live-stat .lbl{ font-size:.65rem; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); }
+  .caps-warning{
+    margin-left:auto;
+    align-self:center;
+    font-size:.72rem;
+    font-weight:700;
+    color:var(--bad);
+    background:var(--bad-soft);
+    border:1px solid var(--bad);
+    padding:4px 9px;
+    border-radius:7px;
+    display:none;
+  }
+  .caps-warning.show{ display:inline-block; }
+
+  .type-wrap{
+    position:relative;
+    overflow:hidden;
+    height:calc(3 * 2.5rem);
+    cursor:text;
+  }
+  .type-wrap.blurred .words{ filter:blur(5px); }
+  .type-wrap.blurred .caret{ opacity:0; }
+
+  .words{
+    font-family:var(--font-mono);
+    font-size:1.45rem;
+    line-height:2.5rem;
+    display:flex;
+    flex-wrap:wrap;
+    align-content:flex-start;
+    transition:transform .18s ease;
+    will-change:transform;
+    user-select:none;
+  }
+  .word{ margin:0 .45em .1em 0; position:relative; white-space:nowrap; }
+  .char{ color:var(--text-faint); transition:color .05s; }
+  .char.correct{ color:var(--text); }
+  .char.incorrect{ color:var(--bad); text-decoration:underline; text-decoration-color:var(--bad); text-decoration-thickness:2px; text-underline-offset:3px;}
+  .char.extra{ color:var(--bad); opacity:.7; }
+  .word.current{ }
+
+  .caret{
+    position:absolute;
+    top:0; left:0;
+    width:2px;
+    height:1.9rem;
+    background:var(--accent);
+    border-radius:2px;
+    animation:blink 1.05s step-end infinite;
+    transition:transform .09s ease;
+    pointer-events:none;
+  }
+  @keyframes blink{ 0%,45%{opacity:1;} 50%,95%{opacity:0;} 100%{opacity:1;} }
+  @media (prefers-reduced-motion: reduce){
+    .caret{ animation:none; }
+    .words{ transition:none; }
+  }
+
+  .hidden-input{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:0;
+    border:0;
+    outline:none;
+    padding:0;
+    margin:0;
+    background:transparent;
+    color:transparent;
+    caret-color:transparent;
+    cursor:text;
+    z-index:2;
+  }
+
+  .focus-overlay{
+    position:absolute; inset:0;
+    background:color-mix(in srgb, var(--surface) 75%, transparent);
+    backdrop-filter:blur(1px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    border-radius:var(--radius);
+    font-size:.9rem;
+    font-weight:600;
+    color:var(--text-dim);
+    cursor:pointer;
+    text-align:center;
+    padding:20px;
+    z-index:3;
+  }
+  .focus-overlay.show{ display:flex; }
+
+  .stage-foot{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding-top:16px;
+    margin-top:auto;
+  }
+  .restart-btn{
+    display:flex; align-items:center; gap:8px;
+    background:transparent;
+    border:none;
+    color:var(--text-faint);
+    cursor:pointer;
+    padding:8px 12px;
+    border-radius:9px;
+    font-size:.8rem;
+    font-weight:600;
+  }
+  .restart-btn:hover{ color:var(--accent); background:var(--surface-2); }
+  .restart-btn svg{ width:16px; height:16px; }
+  kbd{
+    font-family:var(--font-mono);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-bottom-width:2px;
+    padding:1px 6px;
+    border-radius:5px;
+    font-size:.7rem;
+  }
+
+  /* ---------- Results ---------- */
+  .results{ display:none; flex-direction:column; gap:22px; }
+  .results.show{ display:flex; }
+  .results-top{
+    display:flex;
+    gap:34px;
+    flex-wrap:wrap;
+  }
+  .headline-stat{ display:flex; flex-direction:column; gap:2px; }
+  .headline-stat .val{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:3.6rem;
+    line-height:1;
+    color:var(--accent);
+    font-variant-numeric:tabular-nums;
+  }
+  .headline-stat.secondary .val{ font-size:3.6rem; color:var(--accent-2); font-family:var(--font-display); }
+  .headline-stat .lbl{ font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-dim); font-weight:600; margin-top:4px; }
+
+  .mini-stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(108px,1fr));
+    gap:1px;
+    background:var(--border);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .mini-stat{ background:var(--surface-2); padding:10px 12px; display:flex; flex-direction:column; gap:2px; }
+  .mini-stat .val{ font-family:var(--font-mono); font-weight:700; font-size:1.05rem; font-variant-numeric:tabular-nums; }
+  .mini-stat .lbl{ font-size:.66rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; }
+  .mini-stat.pos .val{ color:var(--good); }
+  .mini-stat.neg .val{ color:var(--bad); }
+
+  .graph-wrap{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
+  }
+  canvas{ width:100%; display:block; }
+
+  .results-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:.85rem;
+    padding:10px 18px;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--text);
+    cursor:pointer;
+  }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#1b1a12; }
+  .btn:hover{ filter:brightness(1.05); }
+
+  /* ---------- History ---------- */
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px 22px;
+  }
+  .panel h2{
+    font-family:var(--font-display);
+    font-size:1.05rem;
+    font-weight:600;
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .panel h2 .best{
+    font-family:var(--font-mono);
+    font-size:.72rem;
+    font-weight:600;
+    color:var(--accent);
+    background:var(--accent-soft);
+    padding:4px 9px;
+    border-radius:7px;
+  }
+  .history-table{ width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:.8rem; }
+  .history-table th{ text-align:left; color:var(--text-faint); font-weight:600; text-transform:uppercase; font-size:.64rem; letter-spacing:.05em; padding:0 8px 8px; }
+  .history-table td{ padding:7px 8px; border-top:1px solid var(--border); }
+  .history-table tr:hover td{ background:var(--surface-2); }
+  .empty-note{ color:var(--text-faint); font-size:.85rem; }
+
+  /* ---------- Keyboard ---------- */
+  .kb-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+  .keyboard{ display:flex; flex-direction:column; gap:6px; align-items:center; }
+  .kb-row{ display:flex; gap:6px; }
+  .key{
+    font-family:var(--font-mono);
+    font-size:.72rem;
+    color:var(--text-dim);
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-bottom-width:2px;
+    border-radius:6px;
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+    text-transform:uppercase;
+    transition:background .1s, color .1s, transform .05s;
+  }
+  .key.wide{ width:64px; }
+  .key.space{ width:280px; }
+  .key.active{ background:var(--accent); color:#1b1a12; border-color:var(--accent); transform:translateY(1px); }
+  .key.heat{ border-color:transparent; }
+
+  .footer-note{
+    text-align:center;
+    color:var(--text-faint);
+    font-size:.72rem;
+    padding-top:6px;
+  }
+
+  @media (max-width:640px){
+    .words{ font-size:1.15rem; line-height:2.1rem; }
+    .type-wrap{ height:calc(4 * 2.1rem); }
+    .headline-stat .val, .headline-stat.secondary .val{ font-size:2.6rem; }
+    .key.space{ width:150px; }
+    .key{ width:26px; height:26px; font-size:.62rem; }
+    .key.wide{ width:44px; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">Tuş<em>Temposu</em></div>
+      <div class="brand-tag">klavye hız ve doğruluk testi</div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="langBtn" title="Dil"></button>
+      <button class="icon-btn" id="soundBtn" title="Ses">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path id="soundWave" d="M17 8a6 6 0 0 1 0 8"/></svg>
+      </button>
+      <button class="icon-btn" id="themeBtn" title="Tema">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="chip-row" id="modeRow">
+      <button class="chip active" data-mode="time">süre</button>
+      <button class="chip" data-mode="words">kelime</button>
+      <button class="chip" data-mode="quote">alıntı</button>
+      <div class="divider"></div>
+      <span class="chip-row" id="configRow"></span>
+    </div>
+    <div class="chip-row">
+      <button class="chip toggle" id="punctChip">noktalama</button>
+      <button class="chip toggle" id="numChip">sayı</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="live-stats" id="liveStats">
+      <div class="live-stat"><span class="val" id="liveTime">30</span><span class="lbl">süre</span></div>
+      <div class="live-stat"><span class="val" id="liveWpm">0</span><span class="lbl">wpm</span></div>
+      <div class="live-stat"><span class="val" id="liveAcc">100%</span><span class="lbl">doğruluk</span></div>
+      <span class="caps-warning" id="capsWarning">CAPS LOCK AÇIK</span>
+    </div>
+
+    <div class="type-wrap blurred" id="typeWrap">
+      <div class="words" id="words"></div>
+      <div class="caret" id="caret"></div>
+      <input class="hidden-input" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus />
+      <div class="focus-overlay" id="focusOverlay">devam etmek için tıklayın veya bir tuşa basın</div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="results-top">
+        <div class="headline-stat">
+          <span class="val" id="resWpm">0</span>
+          <span class="lbl">wpm</span>
+        </div>
+        <div class="headline-stat secondary">
+          <span class="val" id="resAcc">0%</span>
+          <span class="lbl">doğruluk</span>
+        </div>
+      </div>
+      <div class="mini-stats">
+        <div class="mini-stat"><span class="val" id="mRaw">0</span><span class="lbl">ham wpm</span></div>
+        <div class="mini-stat"><span class="val" id="mCons">0%</span><span class="lbl">tutarlılık</span></div>
+        <div class="mini-stat"><span class="val" id="mTime">0s</span><span class="lbl">süre</span></div>
+        <div class="mini-stat pos"><span class="val" id="mCorrect">0</span><span class="lbl">doğru krk.</span></div>
+        <div class="mini-stat neg"><span class="val" id="mWrong">0</span><span class="lbl">yanlış krk.</span></div>
+        <div class="mini-stat neg"><span class="val" id="mMissed">0</span><span class="lbl">eksik krk.</span></div>
+      </div>
+      <div class="graph-wrap"><canvas id="graph" height="180"></canvas></div>
+      <div class="results-actions">
+        <button class="btn primary" id="retryBtn">tekrar dene</button>
+        <button class="btn" id="nextBtn">yeni test</button>
+      </div>
+    </div>
+
+    <div class="stage-foot" id="stageFoot">
+      <button class="restart-btn" id="restartBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        yeniden başlat <kbd>Tab</kbd>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>geçmiş testler <span class="best" id="bestBadge">rekor yok</span></h2>
+    <div id="historyWrap"><p class="empty-note">Henüz test tamamlanmadı. İlk testini bitirdiğinde burada görünecek.</p></div>
+  </div>
+
+  <div class="panel">
+    <div class="kb-head">
+      <h2 style="margin:0;">sanal klavye</h2>
+      <button class="chip" id="heatToggle">canlı görünüm</button>
+    </div>
+    <div class="keyboard" id="keyboard"></div>
+  </div>
+
+  <div class="footer-note">Tab ile hızlı yeniden başlat · sonuçların bu cihazda saklanır</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ DATA ============ */
+  var WORDS_TR = ["ev","su","ekmek","kitap","kalem","masa","sandalye","pencere","kapı","güneş","ay","yıldız","deniz","dağ","orman","ağaç","çiçek","kuş","kedi","köpek","balık","at","inek","koyun","tavuk","yumurta","süt","peynir","çay","kahve","şeker","tuz","un","pirinç","elma","armut","muz","portakal","çilek","karpuz","kavun","domates","patates","soğan","sarımsak","biber","salatalık","havuç","ıspanak","marul","zeytin","yağ","sabun","şampuan","havlu","çorap","ayakkabı","gömlek","pantolon","ceket","şapka","eldiven","çanta","cüzdan","anahtar","telefon","bilgisayar","televizyon","radyo","saat","takvim","defter","silgi","cetvel","makas","boya","fırça","kağıt","zarf","pul","mektup","gazete","dergi","roman","şiir","hikaye","film","müzik","şarkı","dans","resim","heykel","tiyatro","sinema","müze","kütüphane","okul","üniversite","öğretmen","öğrenci","doktor","hemşire","mühendis","avukat","polis","asker","çiftçi","işçi","patron","müdür","memur","aşçı","garson","berber","terzi","marangoz","şoför","pilot","kaptan","denizci","balıkçı","avcı","çoban","bahçıvan","kasap","fırıncı","manav","bakkal","eczacı","kuaför","ressam","yazar","şair","gazeteci","sunucu","oyuncu","şarkıcı","sporcu","hakem","taraftar","seyirci","misafir","komşu","arkadaş","akraba","aile","anne","baba","kardeş","abla","teyze","dayı","amca","dede","nine","torun","çocuk","bebek","insan","kadın","erkek","sağlık","hastalık","ilaç","ağrı","ateş","kaza","hastane","muayene","aşı","vitamin","egzersiz","spor","yürüyüş","koşu","yüzme","futbol","basketbol","voleybol","tenis","güreş","yoga","uyku","rüya","sabah","öğle","akşam","gece","hafta","yıl","mevsim","yaz","kış","sıcak","soğuk","yağmur","kar","rüzgar","fırtına","bulut","şimşek","deprem","yangın","doğa","çevre","hava","toprak","taş","kum","maden","elektrik","enerji","fabrika","ticaret","ekonomi","para","banka","kredi","borç","fatura","vergi","maaş","market","mağaza","çarşı","pazar","otobüs","tren","uçak","gemi","araba","bisiklet","kamyon","taksi","metro","yol","cadde","sokak","köprü","meydan","park","bahçe","tarla","köy","şehir","ülke","dünya","göl","nehir","vadi","ova","yayla","mağara","ada","harita","seyahat","tatil","otel","çadır","bavul","bilet","havalimanı"];
+  var WORDS_EN = ["the","of","to","and","a","in","is","it","you","that","he","was","for","on","are","with","as","his","they","be","at","one","have","this","from","or","had","by","word","but","not","what","all","were","when","your","can","said","there","use","an","each","which","she","how","their","will","up","other","about","out","many","then","them","these","so","some","her","would","make","like","him","into","time","has","look","two","more","write","go","see","number","no","way","could","people","than","first","water","been","call","who","its","now","find","long","down","day","did","get","come","made","may","part","over","new","sound","take","only","little","work","know","place","year","live","back","give","most","very","after","thing","our","just","name","good","man","think","say","great","where","help","through","much","before","line","right","too","mean","old","any","same","tell","boy","show","also","around","form","three","small","set","put","end","does","another","well","large","must","big","even","such","turn","here","why","ask","went","men","read","need","land","home","move","try","kind"];
+  var QUOTES = [
+    "Damlaya damlaya göl olur.",
+    "Sakla samanı gelir zamanı.",
+    "Ağaç yaşken eğilir.",
+    "Gülü seven dikenine katlanır.",
+    "Bugünün işini yarına bırakma.",
+    "Ne ekersen onu biçersin.",
+    "Üzüm üzüme baka baka kararır.",
+    "Komşu komşunun külüne muhtaçtır.",
+    "İşleyen demir ışıldar.",
+    "Vakit nakittir.",
+    "Bir elin nesi var iki elin sesi var.",
+    "Sona kalan dona kalır.",
+    "Acele işe şeytan karışır.",
+    "Gökten üç elma düşmüş.",
+    "Aç ayı oynamaz.",
+    "Dost kara günde belli olur.",
+    "Ayağını yorganına göre uzat.",
+    "Zahmetsiz rahmet olmaz."
+  ];
+  var KB_ROWS = [
+    ["1","2","3","4","5","6","7","8","9","0"],
+    ["q","w","e","r","t","y","u","ı","o","p","ğ","ü"],
+    ["a","s","d","f","g","h","j","k","l","ş","i"],
+    ["z","x","c","v","b","n","m","ö","ç"]
+  ];
+
+  /* ============ STATE ============ */
+  var state = {
+    mode: 'time',
+    time: 30,
+    wordsCount: 25,
+    punctuation: false,
+    numbers: false,
+    language: 'tr',
+    heat: false,
+    sound: false
+  };
+
+  var els = {};
+  ['words','caret','hiddenInput','typeWrap','focusOverlay','liveStats','liveTime','liveWpm','liveAcc',
+   'capsWarning','results','resWpm','resAcc','mRaw','mCons','mTime','mCorrect','mWrong','mMissed','graph',
+   'restartBtn','retryBtn','nextBtn','stageFoot','configRow','punctChip','numChip','themeBtn','langBtn',
+   'soundBtn','heatToggle','keyboard','historyWrap','bestBadge','modeRow'
+  ].forEach(function(id){ els[id] = document.getElementById(id); });
+
+  var wordList = [];      // target words for this test
+  var wordsTyped = [];    // committed typed strings
+  var currentIndex = 0;
+  var currentInput = '';
+  var prevInputLen = 0;
+  var testStarted = false;
+  var testActive = false;
+  var startTime = 0;
+  var timeLeft = 30;
+  var timerHandle = null;
+  var sampleHandle = null;
+  var wpmHistory = [];     // {t, wpm, raw}
+  var mistakeCounts = {};  // per expected char, error count
+  var totalKeystrokes = 0, correctKeystrokes = 0;
+  var scrollOffset = 0;
+  var lineHeight = 40;
+
+  /* storage may be disabled in some sandboxed contexts; never let that crash the app */
+  var memStore = {};
+  function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return (k in memStore) ? memStore[k] : null; } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){ memStore[k]=v; } }
+  function lsRemove(k){ try{ localStorage.removeItem(k); }catch(e){ delete memStore[k]; } }
+
+  /* ============ WORD GENERATION ============ */
+  function currentList(){ return state.language === 'tr' ? WORDS_TR : WORDS_EN; }
+
+  function decorate(w){
+    if (state.numbers && Math.random() < 0.13){
+      return String(Math.floor(Math.random()*9000)+10);
+    }
+    if (state.punctuation){
+      var r = Math.random();
+      if (r < 0.06) return '"' + w + '"';
+      if (r < 0.14) return w + ',';
+      if (r < 0.20) return w + '.';
+      if (r < 0.24) return w.charAt(0).toUpperCase() + w.slice(1);
+    }
+    return w;
+  }
+
+  function genWords(n){
+    var list = currentList(), out = [], last = '';
+    for (var i=0;i<n;i++){
+      var w;
+      do { w = list[Math.floor(Math.random()*list.length)]; } while (w === last && list.length > 1);
+      last = w;
+      out.push(decorate(w));
+    }
+    return out;
+  }
+
+  function buildWordList(){
+    if (state.mode === 'quote'){
+      var q = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+      wordList = q.split(' ');
+    } else if (state.mode === 'words'){
+      wordList = genWords(state.wordsCount);
+    } else {
+      wordList = genWords(60);
+    }
+  }
+
+  function extendIfNeeded(){
+    if (state.mode === 'time' && currentIndex > wordList.length - 15){
+      wordList = wordList.concat(genWords(40));
+      renderWords();
+    }
+  }
+
+  /* ============ RENDER ============ */
+  function renderWords(){
+    var html = '';
+    for (var i=0;i<wordList.length;i++){
+      html += '<div class="word" data-i="'+i+'">';
+      var w = wordList[i];
+      for (var c=0;c<w.length;c++){
+        html += '<span class="char" data-c="'+c+'">'+escapeHtml(w[c])+'</span>';
+      }
+      html += '</div>';
+    }
+    els.words.innerHTML = html;
+    scrollOffset = 0;
+    els.words.style.transform = 'translateY(0px)';
+  }
+
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderCurrentWord(){
+    var wordEl = els.words.children[currentIndex];
+    if (!wordEl) return;
+    wordEl.classList.add('current');
+    var target = wordList[currentIndex];
+    var chars = wordEl.querySelectorAll('.char[data-c]');
+    // reset base chars
+    for (var i=0;i<chars.length;i++){
+      var el = chars[i];
+      el.className = 'char';
+      if (i < currentInput.length){
+        el.classList.add(currentInput[i] === target[i] ? 'correct' : 'incorrect');
+      }
+    }
+    // extra chars beyond target length
+    var extra = wordEl.querySelectorAll('.char.extra-node');
+    extra.forEach(function(n){ n.remove(); });
+    if (currentInput.length > target.length){
+      for (var j=target.length;j<currentInput.length;j++){
+        var span = document.createElement('span');
+        span.className = 'char extra extra-node';
+        span.textContent = currentInput[j];
+        wordEl.appendChild(span);
+      }
+    }
+    updateCaret();
+  }
+
+  function updateCaret(){
+    var wordEl = els.words.children[currentIndex];
+    if (!wordEl){ return; }
+    var target = wordList[currentIndex] || '';
+    var idx = Math.min(currentInput.length, wordEl.querySelectorAll('.char').length - 1);
+    var refChar = wordEl.querySelectorAll('.char')[currentInput.length];
+    var rect, containerRect = els.words.getBoundingClientRect();
+    if (refChar){
+      rect = refChar.getBoundingClientRect();
+      els.caret.style.transform = 'translate(' + (rect.left - containerRect.left) + 'px,' + (rect.top - containerRect.top + scrollOffset) + 'px)';
+    } else {
+      // after last char of word (word end or empty word)
+      var chars = wordEl.querySelectorAll('.char');
+      if (chars.length){
+        var last = chars[chars.length-1].getBoundingClientRect();
+        els.caret.style.transform = 'translate(' + (last.right - containerRect.left) + 'px,' + (last.top - containerRect.top + scrollOffset) + 'px)';
+      } else {
+        var wr = wordEl.getBoundingClientRect();
+        els.caret.style.transform = 'translate(' + (wr.left - containerRect.left) + 'px,' + (wr.top - containerRect.top + scrollOffset) + 'px)';
+      }
+    }
+    handleScroll();
+  }
+
+  function handleScroll(){
+    var caretTop = parseFloat((els.caret.style.transform.match(/,\s*([-\d.]+)px\)/)||[0,0])[1]) || 0;
+    var visibleTop = caretTop; // already includes scrollOffset compensation baked from render calc below
+  }
+
+  /* proper scroll recalculation using raw (unshifted) positions */
+  function recalcScroll(){
+    var wordEl = els.words.children[currentIndex];
+    if (!wordEl) return;
+    var containerRect = els.typeWrap.getBoundingClientRect();
+    var wordRect = wordEl.getBoundingClientRect();
+    var relTop = wordRect.top - containerRect.top; // includes current transform already
+    var trueTop = relTop; // this already reflects applied transform
+    if (trueTop > lineHeight * 1.15){
+      scrollOffset += lineHeight;
+      els.words.style.transform = 'translateY(-' + scrollOffset + 'px)';
+      updateCaret();
+    }
+  }
+
+  /* ============ TEST FLOW ============ */
+  function resetTest(newSet){
+    clearInterval(timerHandle); clearInterval(sampleHandle);
+    testStarted = false; testActive = false;
+    currentIndex = 0; currentInput = ''; prevInputLen = 0;
+    wordsTyped = []; wpmHistory = []; totalKeystrokes = 0; correctKeystrokes = 0;
+    scrollOffset = 0;
+    timeLeft = state.time;
+    els.hiddenInput.value = '';
+    els.results.classList.remove('show');
+    els.stageFoot.style.display = 'flex';
+    els.typeWrap.style.display = 'block';
+    els.typeWrap.classList.add('blurred');
+    els.liveStats.style.display = 'flex';
+    if (newSet !== false) buildWordList();
+    renderWords();
+    updateLiveHeader();
+    requestAnimationFrame(function(){ updateCaret(); });
+  }
+
+  function updateLiveHeader(){
+    els.liveTime.textContent = state.mode === 'time' ? timeLeft : (currentIndex + '/' + (state.mode==='quote'?wordList.length:state.wordsCount));
+  }
+
+  var lastSampleTime = 0, lastCorrectChars = 0, lastTotalChars = 0;
+
+  function startTest(){
+    testStarted = true; testActive = true;
+    startTime = Date.now();
+    lastSampleTime = startTime; lastCorrectChars = 0; lastTotalChars = 0;
+    els.typeWrap.classList.remove('blurred');
+    if (state.mode === 'time'){
+      timerHandle = setInterval(function(){
+        timeLeft--;
+        updateLiveHeader();
+        if (timeLeft <= 0) endTest();
+      }, 1000);
+    }
+    sampleHandle = setInterval(sampleWpm, 1000);
+  }
+
+  function sampleWpm(){
+    var now = Date.now();
+    var elapsedMin = (now - startTime) / 60000;
+    if (elapsedMin <= 0) return;
+    var correctChars = countCorrectSoFar();
+    var totalChars = totalTypedCharsSoFar();
+
+    // live header shows the stable cumulative pace since test start
+    var cumulativeWpm = Math.round((correctChars/5) / elapsedMin);
+    els.liveWpm.textContent = cumulativeWpm;
+    els.liveAcc.textContent = (totalKeystrokes ? Math.round(correctKeystrokes/totalKeystrokes*100) : 100) + '%';
+
+    // graph/consistency use the pace *within this interval* only, so one
+    // fast or slow burst doesn't get amplified by a tiny elapsed-time denominator
+    var intervalMin = (now - lastSampleTime) / 60000;
+    if (intervalMin > 0){
+      var deltaCorrect = correctChars - lastCorrectChars;
+      var deltaTotal = totalChars - lastTotalChars;
+      var wpm = Math.max(0, Math.round((deltaCorrect/5) / intervalMin));
+      var raw = Math.max(0, Math.round((deltaTotal/5) / intervalMin));
+      wpmHistory.push({ t: Math.round((now-startTime)/1000), wpm: wpm, raw: raw });
+    }
+    lastSampleTime = now; lastCorrectChars = correctChars; lastTotalChars = totalChars;
+  }
+
+  function countCorrectSoFar(){
+    var total = 0;
+    for (var i=0;i<wordsTyped.length;i++){
+      var t = wordList[i] || '', typed = wordsTyped[i] || '';
+      for (var c=0;c<Math.min(t.length, typed.length);c++) if (t[c]===typed[c]) total++;
+      total += 1; // space
+    }
+    for (var c2=0;c2<currentInput.length;c2++){
+      if (currentInput[c2] === (wordList[currentIndex]||'')[c2]) total++;
+    }
+    return total;
+  }
+  function totalTypedCharsSoFar(){
+    var total = 0;
+    for (var i=0;i<wordsTyped.length;i++) total += (wordsTyped[i]||'').length + 1;
+    total += currentInput.length;
+    return total;
+  }
+
+  function commitWord(){
+    if (currentInput.length === 0 && wordList[currentIndex] === undefined) return;
+    wordsTyped[currentIndex] = currentInput;
+    var wordEl = els.words.children[currentIndex];
+    if (wordEl) wordEl.classList.remove('current');
+    currentIndex++;
+    currentInput = ''; prevInputLen = 0;
+    els.hiddenInput.value = '';
+    updateLiveHeader();
+    extendIfNeeded();
+
+    if (state.mode === 'words' && currentIndex >= state.wordsCount) return endTest();
+    if (state.mode === 'quote' && currentIndex >= wordList.length) return endTest();
+
+    requestAnimationFrame(function(){ recalcScroll(); updateCaret(); });
+  }
+
+  function goBackWord(){
+    if (currentIndex === 0) return;
+    var wordEl = els.words.children[currentIndex];
+    if (wordEl) wordEl.classList.remove('current');
+    currentIndex--;
+    currentInput = wordsTyped[currentIndex] || '';
+    prevInputLen = currentInput.length;
+    els.hiddenInput.value = currentInput;
+    var extras = els.words.children[currentIndex].querySelectorAll('.extra-node');
+    renderCurrentWord();
+  }
+
+  function endTest(){
+    if (!testActive && !testStarted) return;
+    testActive = false;
+    clearInterval(timerHandle); clearInterval(sampleHandle);
+    if (currentInput.length > 0){ wordsTyped[currentIndex] = currentInput; }
+    var elapsedSec = state.mode === 'time' ? state.time : Math.max(1, Math.round((Date.now()-startTime)/1000));
+    var elapsedMin = elapsedSec/60;
+
+    var correct=0, wrong=0, missed=0, extra=0, totalTyped=0;
+    for (var i=0;i<wordList.length;i++){
+      if (wordsTyped[i] === undefined) continue;
+      var t = wordList[i], ty = wordsTyped[i];
+      for (var c=0;c<Math.max(t.length, ty.length);c++){
+        if (c < t.length && c < ty.length){
+          if (t[c] === ty[c]) correct++; else { wrong++; mistakeCounts[t[c]] = (mistakeCounts[t[c]]||0)+1; }
+        } else if (c >= t.length){ extra++; }
+        else if (c >= ty.length){ missed++; }
+      }
+      totalTyped += ty.length;
+    }
+    var wpm = Math.round((correct/5)/elapsedMin) || 0;
+    var raw = Math.round((totalTyped/5)/elapsedMin) || 0;
+    var acc = totalKeystrokes ? Math.round(correctKeystrokes/totalKeystrokes*100) : 100;
+
+    var mean = 0, variance = 0;
+    if (wpmHistory.length){
+      mean = wpmHistory.reduce(function(s,p){return s+p.wpm;},0)/wpmHistory.length;
+      variance = wpmHistory.reduce(function(s,p){return s+Math.pow(p.wpm-mean,2);},0)/wpmHistory.length;
+    }
+    var stdev = Math.sqrt(variance);
+    var consistency = mean > 0 ? Math.max(0, Math.round(100 - (stdev/mean*100))) : 100;
+
+    showResults({wpm:wpm, raw:raw, acc:acc, time:elapsedSec, correct:correct, wrong:wrong, missed:missed, extra:extra, consistency:consistency});
+    saveHistory({wpm:wpm, acc:acc, mode:state.mode, cfg: state.mode==='time'?state.time+'s':(state.mode==='words'?state.wordsCount+'k':'alıntı'), date: new Date().toISOString()});
+  }
+
+  function showResults(r){
+    els.typeWrap.style.display = 'none';
+    els.liveStats.style.display = 'none';
+    els.stageFoot.style.display = 'none';
+    els.results.classList.add('show');
+    els.resWpm.textContent = r.wpm;
+    els.resAcc.textContent = r.acc + '%';
+    els.mRaw.textContent = r.raw;
+    els.mCons.textContent = r.consistency + '%';
+    els.mTime.textContent = r.time + 's';
+    els.mCorrect.textContent = r.correct;
+    els.mWrong.textContent = r.wrong;
+    els.mMissed.textContent = r.missed;
+    drawGraph();
+  }
+
+  function drawGraph(){
+    var canvas = els.graph;
+    var dpr = window.devicePixelRatio || 1;
+    var w = canvas.clientWidth || 600, h = 180;
+    canvas.width = w*dpr; canvas.height = h*dpr;
+    var ctx = canvas.getContext('2d');
+    ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,w,h);
+    var style = getComputedStyle(document.documentElement);
+    var accent = style.getPropertyValue('--accent').trim();
+    var accent2 = style.getPropertyValue('--accent-2').trim();
+    var border = style.getPropertyValue('--border').trim();
+    var textFaint = style.getPropertyValue('--text-faint').trim();
+
+    if (wpmHistory.length < 2){
+      ctx.fillStyle = textFaint; ctx.font = '13px monospace';
+      ctx.fillText('grafik için test çok kısa sürdü', 10, h/2);
+      return;
+    }
+    var maxWpm = Math.max.apply(null, wpmHistory.map(function(p){return Math.max(p.wpm,p.raw);})) || 10;
+    maxWpm = Math.ceil(maxWpm/10)*10 || 10;
+    var padL = 34, padB = 20, padT = 10, padR = 8;
+    var plotW = w - padL - padR, plotH = h - padT - padB;
+
+    ctx.strokeStyle = border; ctx.lineWidth = 1; ctx.font = '10px monospace'; ctx.fillStyle = textFaint;
+    for (var g=0; g<=4; g++){
+      var y = padT + plotH - (g/4)*plotH;
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+      ctx.fillText(Math.round(maxWpm*g/4), 2, y+3);
+    }
+
+    function drawLine(key, color, fill){
+      ctx.beginPath();
+      wpmHistory.forEach(function(p,i){
+        var x = padL + (p.t / wpmHistory[wpmHistory.length-1].t || 0) * plotW;
+        var y = padT + plotH - (p[key]/maxWpm)*plotH;
+        if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin='round'; ctx.stroke();
+      if (fill){
+        ctx.lineTo(padL+plotW, padT+plotH); ctx.lineTo(padL, padT+plotH); ctx.closePath();
+        ctx.fillStyle = color.replace(')', ',0.12)').replace('rgb','rgba');
+        ctx.globalAlpha = 1;
+        var grad = ctx.createLinearGradient(0,padT,0,padT+plotH);
+        grad.addColorStop(0, hexToRgba(accent,0.22));
+        grad.addColorStop(1, hexToRgba(accent,0));
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+    }
+    drawLine('raw', accent2, false);
+    drawLine('wpm', accent, true);
+  }
+  function hexToRgba(hex, a){
+    hex = hex.replace('#','');
+    if (hex.length===3) hex = hex.split('').map(function(c){return c+c;}).join('');
+    var r=parseInt(hex.substr(0,2),16), g=parseInt(hex.substr(2,2),16), b=parseInt(hex.substr(4,2),16);
+    return 'rgba('+r+','+g+','+b+','+a+')';
+  }
+
+  /* ============ HISTORY ============ */
+  function saveHistory(entry){
+    var h = JSON.parse(lsGet('tusTemposuHistory') || '[]');
+    h.unshift(entry);
+    h = h.slice(0,10);
+    lsSet('tusTemposuHistory', JSON.stringify(h));
+    lsSet('tusTemposuMistakes', JSON.stringify(mistakeCounts));
+    renderHistory();
+  }
+  function renderHistory(){
+    var h = JSON.parse(lsGet('tusTemposuHistory') || '[]');
+    if (!h.length){
+      els.historyWrap.innerHTML = '<p class="empty-note">Henüz test tamamlanmadı. İlk testini bitirdiğinde burada görünecek.</p>';
+      els.bestBadge.textContent = 'rekor yok';
+      return;
+    }
+    var best = h.reduce(function(m,e){ return e.wpm > m ? e.wpm : m; }, 0);
+    els.bestBadge.textContent = 'rekor ' + best + ' wpm';
+    var rows = h.map(function(e){
+      var d = new Date(e.date);
+      var ds = d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+      return '<tr><td>'+ds+'</td><td>'+e.mode+' · '+e.cfg+'</td><td>'+e.wpm+'</td><td>'+e.acc+'%</td></tr>';
+    }).join('');
+    els.historyWrap.innerHTML = '<div style="overflow-x:auto;"><table class="history-table"><thead><tr><th>tarih</th><th>mod</th><th>wpm</th><th>doğruluk</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  }
+
+  /* ============ KEYBOARD VISUAL ============ */
+  function buildKeyboard(){
+    var html = '';
+    KB_ROWS.forEach(function(row, ri){
+      html += '<div class="kb-row">';
+      row.forEach(function(k){ html += '<div class="key" data-key="'+k+'">'+k+'</div>'; });
+      html += '</div>';
+    });
+    html += '<div class="kb-row"><div class="key space" data-key=" "></div></div>';
+    els.keyboard.innerHTML = html;
+  }
+  function flashKey(key){
+    var el = els.keyboard.querySelector('[data-key="'+CSS.escape(key)+'"]');
+    if (!el) return;
+    el.classList.add('active');
+    setTimeout(function(){ el.classList.remove('active'); }, 110);
+  }
+  function paintHeat(){
+    var counts = JSON.parse(lsGet('tusTemposuMistakes') || '{}');
+    var max = Math.max.apply(null, Object.values(counts).concat([1]));
+    els.keyboard.querySelectorAll('.key').forEach(function(el){
+      var k = el.getAttribute('data-key');
+      var c = counts[k] || 0;
+      if (state.heat && c > 0){
+        el.classList.add('heat');
+        el.style.background = 'color-mix(in srgb, var(--bad) ' + Math.round((c/max)*80+15) + '%, var(--surface-2))';
+        el.style.color = '#fff';
+      } else {
+        el.classList.remove('heat');
+        el.style.background = ''; el.style.color = '';
+      }
+    });
+  }
+
+  /* ============ SOUND ============ */
+  var actx;
+  function beep(freq){
+    if (!state.sound) return;
+    try{
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.frequency.value = freq; o.type = 'square';
+      g.gain.value = 0.03;
+      o.connect(g); g.connect(actx.destination);
+      o.start(); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime+0.05);
+      o.stop(actx.currentTime+0.05);
+    }catch(e){}
+  }
+
+  /* ============ INPUT HANDLING ============ */
+  function focusInput(){ els.hiddenInput.focus(); }
+
+  els.typeWrap.addEventListener('click', focusInput);
+  els.focusOverlay.addEventListener('click', focusInput);
+
+  els.hiddenInput.addEventListener('focus', function(){
+    els.focusOverlay.classList.remove('show');
+    els.typeWrap.classList.remove('blurred');
+  });
+  els.hiddenInput.addEventListener('blur', function(){
+    if (testActive){ els.focusOverlay.classList.add('show'); }
+  });
+
+  els.hiddenInput.addEventListener('keydown', function(e){
+    if (e.getModifierState && e.getModifierState('CapsLock')) els.capsWarning.classList.add('show');
+    else els.capsWarning.classList.remove('show');
+
+    if (e.key === 'Tab'){ e.preventDefault(); resetTest(); focusInput(); return; }
+
+    if (!testActive && !testStarted){
+      if (e.key.length === 1 || e.key === 'Backspace'){ startTest(); }
+    }
+    if (!testActive) return;
+
+    if (e.key === ' '){
+      e.preventDefault();
+      beep(220);
+      if (currentInput.length > 0) commitWord();
+      return;
+    }
+    if (e.key === 'Backspace'){
+      if (currentInput.length === 0){ e.preventDefault(); goBackWord(); }
+      return;
+    }
+    if (e.key.length === 1){
+      totalKeystrokes++;
+      var target = wordList[currentIndex] || '';
+      if (target[currentInput.length] === e.key) correctKeystrokes++;
+      beep(target[currentInput.length] === e.key ? 440 : 180);
+      flashKey(e.key.toLowerCase());
+    }
+  });
+
+  els.hiddenInput.addEventListener('input', function(e){
+    if (!testActive) { e.target.value=''; return; }
+    currentInput = e.target.value;
+    renderCurrentWord();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (document.activeElement !== els.hiddenInput && !els.results.classList.contains('show')) focusInput();
+  });
+
+  /* ============ CONTROLS ============ */
+  function setModeUI(){
+    els.modeRow.querySelectorAll('[data-mode]').forEach(function(b){ b.classList.toggle('active', b.dataset.mode === state.mode); });
+    var cfg = '';
+    if (state.mode === 'time'){
+      [15,30,60,120].forEach(function(t){ cfg += '<button class="chip'+(t===state.time?' active':'')+'" data-time="'+t+'">'+t+'s</button>'; });
+    } else if (state.mode === 'words'){
+      [10,25,50,100].forEach(function(t){ cfg += '<button class="chip'+(t===state.wordsCount?' active':'')+'" data-words="'+t+'">'+t+'</button>'; });
+    } else {
+      cfg += '<button class="chip" id="shuffleQuote">yeni alıntı ↻</button>';
+    }
+    els.configRow.innerHTML = cfg;
+    els.punctChip.style.display = state.mode === 'quote' ? 'none' : 'inline-block';
+    els.numChip.style.display = state.mode === 'quote' ? 'none' : 'inline-block';
+    bindConfigRow();
+  }
+  function bindConfigRow(){
+    els.configRow.querySelectorAll('[data-time]').forEach(function(b){
+      b.addEventListener('click', function(){ state.time = +b.dataset.time; timeLeft = state.time; setModeUI(); resetTest(); });
+    });
+    els.configRow.querySelectorAll('[data-words]').forEach(function(b){
+      b.addEventListener('click', function(){ state.wordsCount = +b.dataset.words; setModeUI(); resetTest(); });
+    });
+    var sh = document.getElementById('shuffleQuote');
+    if (sh) sh.addEventListener('click', function(){ resetTest(); });
+  }
+
+  els.modeRow.querySelectorAll('[data-mode]').forEach(function(b){
+    b.addEventListener('click', function(){ state.mode = b.dataset.mode; setModeUI(); resetTest(); });
+  });
+  els.punctChip.addEventListener('click', function(){ state.punctuation = !state.punctuation; els.punctChip.classList.toggle('on', state.punctuation); resetTest(); });
+  els.numChip.addEventListener('click', function(){ state.numbers = !state.numbers; els.numChip.classList.toggle('on', state.numbers); resetTest(); });
+
+  els.restartBtn.addEventListener('click', function(){ resetTest(); focusInput(); });
+  els.retryBtn.addEventListener('click', function(){ resetTest(false); focusInput(); });
+  els.nextBtn.addEventListener('click', function(){ resetTest(); focusInput(); });
+
+  els.langBtn.textContent = state.language.toUpperCase();
+  els.langBtn.addEventListener('click', function(){
+    state.language = state.language === 'tr' ? 'en' : 'tr';
+    els.langBtn.textContent = state.language.toUpperCase();
+    resetTest();
+  });
+
+  els.soundBtn.addEventListener('click', function(){
+    state.sound = !state.sound;
+    els.soundBtn.classList.toggle('on', state.sound);
+  });
+
+  els.heatToggle.addEventListener('click', function(){
+    state.heat = !state.heat;
+    els.heatToggle.textContent = state.heat ? 'ısı haritası' : 'canlı görünüm';
+    paintHeat();
+  });
+
+  /* theme */
+  function applyTheme(t){
+    if (t) document.documentElement.setAttribute('data-theme', t);
+    else document.documentElement.removeAttribute('data-theme');
+    els.themeBtn.classList.toggle('on', !!t);
+  }
+  var savedTheme = lsGet('tusTemposuTheme');
+  if (savedTheme) applyTheme(savedTheme);
+  els.themeBtn.addEventListener('click', function(){
+    var isDark = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim().toLowerCase().indexOf('#1') === 0;
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : (current === 'light' ? null : (isDark ? 'light' : 'dark'));
+    if (next) lsSet('tusTemposuTheme', next); else lsRemove('tusTemposuTheme');
+    applyTheme(next);
+    drawGraph();
+  });
+
+  window.addEventListener('resize', function(){
+    lineHeight = parseFloat(getComputedStyle(els.words).lineHeight) || 40;
+    if (els.results.classList.contains('show')) drawGraph();
+  });
+
+  /* ============ INIT ============ */
+  buildKeyboard();
+  setModeUI();
+  renderHistory();
+  mistakeCounts = JSON.parse(lsGet('tusTemposuMistakes') || '{}');
+  lineHeight = 40;
+  resetTest();
+  setTimeout(function(){ lineHeight = parseFloat(getComputedStyle(els.words).lineHeight) || 40; }, 50);
+  setTimeout(focusInput, 0);
+})();
+</script>
